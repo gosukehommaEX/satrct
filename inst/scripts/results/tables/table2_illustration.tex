@@ -1,0 +1,21 @@
+\begin{table}[!htb]
+\centering
+\small
+\caption{Operating characteristics of a randomized controlled trial (RCT) with 1:1 randomization and a single-arm trial (SAT) of the same total size $N$ for three endpoints, with one-sided $\alpha = 0.025$. The SAT is tested without margin against an unbiased external control of $N_E$ patients or against a fixed threshold ($N_E = \infty$). $\alpha'$ is the one-sided level at which the RCT has the power of the SAT, $b^{*}$ the break-even bias for the mean squared error and $m_{\mathrm{crit}}$ the critical margin.}
+\label{tab:illustration}
+\begin{tabular}{llccccccc}
+\toprule
+Endpoint & Effect & $N$ & $N_E$ & Power of RCT & Power of SAT & $\alpha'$ & $b^{*}$ & $m_{\mathrm{crit}}$ \\
+\midrule
+Continuous & $\delta = 0.5\sigma$ & 40 & 80 & 0.352 & 0.733 & 0.169 & 0.250 & 0.194 \\
+Binary & 0.55 vs 0.30 & 40 & 80 & 0.379 (0.346) & 0.759 (0.760) & 0.171 & 0.119 & 0.095 \\
+Binary & 0.55 vs 0.30 & 40 & $\infty$ & 0.379 (0.346) & 0.888 (0.867) & 0.332 & 0.129 & 0.120 \\
+Time to event & HR 0.6 & 60 & 120 & 0.380 & 0.771 & 0.181 & 0.244 & 0.198 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+Values without parentheses use the normal approximation. The effect is the difference in means (standard deviation $\sigma$), the difference in proportions or the negative log hazard ratio, and $b^{*}$ and $m_{\mathrm{crit}}$ are on the same scale. Values in parentheses are exact rejection probabilities of the score test for two proportions (RCT with $N/2$ patients per group, SAT against external controls) and of the exact binomial test against the threshold 0.30. For the time-to-event endpoint, the probability of an event is 0.7 for every patient.
+\end{minipage}
+\end{table}

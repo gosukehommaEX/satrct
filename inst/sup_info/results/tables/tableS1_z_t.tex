@@ -1,0 +1,26 @@
+\begin{table}[!htb]
+\centering
+\caption{Power of a randomized controlled trial (RCT) with 1:1 randomization and of a single-arm trial (SAT) of the same total size $N$, without margin and with an unbiased external control, computed with the $z$-test and the $t$-test, with one-sided $\alpha = 0.025$.}
+\label{tab:z_t}
+\begin{tabular}{cccccccc}
+\toprule
+ & & \multicolumn{2}{c}{RCT} & \multicolumn{2}{c}{SAT, threshold} & \multicolumn{2}{c}{SAT, $N_E = 2N$} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+$N$ & $\delta/\sigma$ & $z$ & $t$ & $z$ & $t$ & $z$ & $t$ \\
+\midrule
+10 & 0.5 & 0.121 & 0.104 & 0.352 & 0.293 & 0.252 & 0.238 \\
+ & 1 & 0.352 & 0.286 & 0.885 & 0.803 & 0.733 & 0.703 \\
+\addlinespace
+20 & 0.5 & 0.200 & 0.184 & 0.609 & 0.564 & 0.447 & 0.435 \\
+ & 1 & 0.609 & 0.562 & 0.994 & 0.989 & 0.955 & 0.948 \\
+\addlinespace
+40 & 0.5 & 0.352 & 0.338 & 0.885 & 0.869 & 0.733 & 0.726 \\
+ & 1 & 0.885 & 0.869 & $>$0.999 & $>$0.999 & 0.999 & 0.999 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+The $t$-test has $N - 2$ degrees of freedom in the RCT, $N - 1$ against a fixed threshold and $N + N_E - 2$ against $N_E$ external controls, and assumes a common standard deviation $\sigma$.
+\end{minipage}
+\end{table}

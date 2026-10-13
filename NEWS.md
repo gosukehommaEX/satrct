@@ -16,3 +16,5 @@
   Viele et al. (2014) and Taylor et al. (2006).
 * `inst/validation/` compares the functions with an independent Python
   implementation, with rpact and with patient-level simulation.
+* `inst/scripts/` and `inst/sup_info/` compute the tables and figures of the
+  main text and the Supporting Information of the accompanying article.
