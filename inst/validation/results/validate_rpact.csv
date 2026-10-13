@@ -1,0 +1,7 @@
+"script","item","description","source","reference","value","value_low","value_high","rule","tol","digits","verdict","note"
+"validate_rpact","power_sat_z","power_sat(method = ""z"") against rpact::getPowerMeans()","48 settings",0,2.22044604925031e-16,NA,NA,"abs",1e-08,NA,"PASS","largest absolute difference"
+"validate_rpact","power_sat_t","power_sat(method = ""t"") against rpact::getPowerMeans()","48 settings",0,5.99520433297585e-15,NA,NA,"abs",1e-08,NA,"PASS","largest absolute difference"
+"validate_rpact","power_rct_z","power_rct(method = ""z"") against rpact::getPowerMeans()","8 settings",0,5.55111512312578e-17,NA,NA,"abs",1e-08,NA,"PASS","largest absolute difference"
+"validate_rpact","power_rct_t","power_rct(method = ""t"") against rpact::getPowerMeans()","8 settings",0,1.11022302462516e-16,NA,NA,"abs",1e-08,NA,"PASS","largest absolute difference"
+"validate_rpact","power_rct_survival","power_rct() with endpoint_sd(""survival"") against rpact::getPowerSurvival() (Schoenfeld)","6 settings",0,1.11022302462516e-16,NA,NA,"abs",1e-08,NA,"PASS","largest absolute difference"
+"validate_rpact","self_check","Reference of 'power_sat_z' shifted by 1.01e-07 is detected as FAIL","",1,1,NA,NA,"abs",0,NA,"PASS",""

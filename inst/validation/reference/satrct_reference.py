@@ -93,7 +93,8 @@ def matched_alpha(n, delta, n_e=np.inf, margin=0.0, sigma_t=1.0, sigma_c=None, a
 
 def n_rct(delta, power=0.8, sigma_t=1.0, sigma_c=None, alpha=0.025, r=0.5, method="z"):
     f = lambda n: power_rct(n, delta, sigma_t, sigma_c, alpha, r, method) - power
-    lo = 2 + 1e-9 if method == "t" else 1e-9
+    # with the t-test, start at one degree of freedom (scipy is unstable as df -> 0)
+    lo = 3.0 if method == "t" else 1e-9
     return optimize.brentq(f, lo, 1e7, xtol=1e-12, rtol=1e-14, maxiter=2000)
 
 
@@ -108,7 +109,8 @@ def n_sat(delta, power=0.8, n_e=np.inf, bias=0.0, margin=0.0, sigma_t=1.0, sigma
         return np.inf
     f = lambda n: power_sat(n, delta, n_e, bias, margin, 0.0, sigma_t, sigma_c, alpha, method) - power
     if method == "t":
-        lo = 1 + 1e-9 if np.isinf(n_e) else max(1e-9, 2 - n_e + 1e-9)
+        # start at one degree of freedom (scipy is unstable as df -> 0)
+        lo = 2.0 if np.isinf(n_e) else max(1e-9, 3 - n_e)
     else:
         lo = 1e-9
     return optimize.brentq(f, lo, 1e9, xtol=1e-12, rtol=1e-14, maxiter=2000)

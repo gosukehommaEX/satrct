@@ -1,0 +1,4 @@
+"script","item","description","source","reference","value","value_low","value_high","rule","tol","digits","verdict","note"
+"reproduce_KoppSchneider2020","ump_critical_value","Critical value of the UMP test (reject if r >= 13)","p.365",13,13,NA,NA,"abs",0,NA,"PASS",""
+"reproduce_KoppSchneider2020","ump_size","Actual type I error of the UMP test","p.365",0.043,0.0432416223763238,NA,NA,"round",NA,3,"PASS",""
+"reproduce_KoppSchneider2020","self_check","Reference of 'ump_critical_value' shifted by 1e-09 is detected as FAIL","",1,1,NA,NA,"abs",0,NA,"PASS",""

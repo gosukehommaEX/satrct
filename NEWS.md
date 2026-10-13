@@ -11,3 +11,8 @@
 * Exact operating characteristics for binary endpoints:
   `oc_sat_binary_exact()` and `oc_binary_exact()`.
 * `endpoint_sd()` for binary and time-to-event endpoints.
+* `inst/reproduce/` reproduces published results of Collignon et al. (2020),
+  Pocock (1976), Kopp-Schneider et al. (2020, 2024), Tang et al. (2010),
+  Viele et al. (2014) and Taylor et al. (2006).
+* `inst/validation/` compares the functions with an independent Python
+  implementation, with rpact and with patient-level simulation.

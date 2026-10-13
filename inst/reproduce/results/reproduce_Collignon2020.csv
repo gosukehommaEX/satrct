@@ -1,0 +1,7 @@
+"script","item","description","source","reference","value","value_low","value_high","rule","tol","digits","verdict","note"
+"reproduce_Collignon2020","eq6_example","Sample size of the RCT with the same variance (eq. 6 example)","p.1964",130,130.434782608696,NA,NA,"round",NA,0,"PASS",""
+"reproduce_Collignon2020","fig1_intercept_kh1_nh10","Figure 1 at zero between-study variance, k_h = 1, n_h = 10","Figure 1, p.1964",NA,30,NA,NA,"info",NA,NA,"INFO","Read from the figure: about 30, 300, 300 and above the plotted range"
+"reproduce_Collignon2020","fig1_intercept_kh10_nh10","Figure 1 at zero between-study variance, k_h = 10, n_h = 10","Figure 1, p.1964",NA,300,NA,NA,"info",NA,NA,"INFO","Read from the figure: about 30, 300, 300 and above the plotted range"
+"reproduce_Collignon2020","fig1_intercept_kh1_nh100","Figure 1 at zero between-study variance, k_h = 1, n_h = 100","Figure 1, p.1964",NA,300,NA,NA,"info",NA,NA,"INFO","Read from the figure: about 30, 300, 300 and above the plotted range"
+"reproduce_Collignon2020","fig1_intercept_kh10_nh100","Figure 1 at zero between-study variance, k_h = 10, n_h = 100","Figure 1, p.1964",NA,3000,NA,NA,"info",NA,NA,"INFO","Read from the figure: about 30, 300, 300 and above the plotted range"
+"reproduce_Collignon2020","self_check","Reference of 'eq6_example' shifted by 3 is detected as FAIL","",1,1,NA,NA,"abs",0,NA,"PASS",""
