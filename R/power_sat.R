@@ -1,0 +1,87 @@
+#' Rejection probability of a single-arm trial with a bias margin
+#'
+#' Computes the probability that a single-arm trial rejects the null
+#' hypothesis when all \code{n} patients receive the experimental treatment
+#' and are compared with an external control group of size \code{n_e}, or with
+#' a fixed threshold when \code{n_e = Inf}. The test may use a prespecified
+#' bias margin \code{margin}: it rejects when the estimated effect exceeds
+#' \code{margin} by more than the critical value times its standard error.
+#'
+#' @param n Total number of patients in the current trial, all on the
+#'   experimental treatment.
+#' @param delta True treatment effect. Positive values favour the experimental
+#'   treatment. \code{delta = 0} gives the type I error.
+#' @param n_e Number of patients in the external control group. \code{Inf}
+#'   (the default) means comparison with a fixed threshold.
+#' @param bias Fixed bias of the comparison, defined as the expectation of the
+#'   estimated treatment effect minus the true effect.
+#' @param margin Bias margin subtracted from the estimated effect before the
+#'   test. Defaults to \code{0}, the ordinary test.
+#' @param tau Standard deviation of a random bias with mean zero. Defaults to
+#'   \code{0}.
+#' @param sigma_t Standard deviation of the outcome of one patient on the
+#'   experimental treatment, on the scale of the treatment effect.
+#' @param sigma_c Standard deviation for one external control patient.
+#'   Defaults to \code{sigma_t}.
+#' @param alpha One-sided significance level. Defaults to \code{0.025}.
+#' @param method Either \code{"z"} (the default) for the z-test with known
+#'   standard deviations, or \code{"t"} for the t-test with pooled variance,
+#'   with \code{n + n_e - 2} degrees of freedom, or \code{n - 1} when
+#'   \code{n_e = Inf}. The t-test requires \code{sigma_t == sigma_c} and
+#'   \code{tau = 0}.
+#'
+#' @details Write \eqn{V_S = \sigma_T^2 / n + \sigma_C^2 / n_E}{V_S = sigma_t^2 / n + sigma_c^2 / n_e}.
+#'   The test rejects when
+#'   \eqn{(\hat{\delta}_S - m) / \sqrt{V_S} > z_{1 - \alpha}}{(delta_hat_S - margin) / sqrt(V_S) > qnorm(1 - alpha)}.
+#'   With \code{method = "z"} the rejection probability is
+#'   \deqn{\Phi((\delta + b - m - z_{1 - \alpha} \sqrt{V_S}) / \sqrt{V_S + \tau^2}).}{pnorm((delta + bias - margin - qnorm(1 - alpha) sqrt(V_S)) / sqrt(V_S + tau^2)).}
+#'   With \code{delta = 0} and \code{tau = 0} the type I error equals
+#'   \code{alpha} when \code{bias = margin} and is smaller when
+#'   \code{bias < margin}, so the test controls the type I error over all
+#'   biases up to the margin, but not beyond it.
+#'
+#' @return A numeric vector of rejection probabilities. Vector arguments are
+#'   recycled to a common length.
+#'
+#' @seealso \code{\link{power_rct}}, \code{\link{n_sat}},
+#'   \code{\link{critical_margin}}, \code{\link{matched_alpha}}
+#'
+#' @examples
+#' # Power with no bias and a margin of 0.1
+#' power_sat(n = 40, delta = 0.5, n_e = 120, margin = 0.1)
+#' # Type I error as a function of the bias
+#' power_sat(n = 40, delta = 0, n_e = 120, bias = c(0, 0.1, 0.2), margin = 0.1)
+#'
+#' @export
+power_sat <- function(n, delta, n_e = Inf, bias = 0, margin = 0, tau = 0, sigma_t = 1,
+                      sigma_c = sigma_t, alpha = 0.025, method = c("z", "t")) {
+  method <- match.arg(method)
+  check_numeric(n, "n", lower = 0, lower_open = TRUE)
+  check_numeric(delta, "delta")
+  check_numeric(n_e, "n_e", lower = 0, lower_open = TRUE, allow_inf = TRUE)
+  check_numeric(bias, "bias")
+  check_numeric(margin, "margin")
+  check_numeric(tau, "tau", lower = 0)
+  check_numeric(sigma_t, "sigma_t", lower = 0, lower_open = TRUE)
+  check_numeric(sigma_c, "sigma_c", lower = 0, lower_open = TRUE)
+  check_numeric(alpha, "alpha", lower = 0, upper = 1, lower_open = TRUE, upper_open = TRUE)
+  a <- recycle_args(n = n, delta = delta, n_e = n_e, bias = bias, margin = margin, tau = tau,
+                    sigma_t = sigma_t, sigma_c = sigma_c, alpha = alpha)
+  v <- mse_sat(a[["n"]], a[["n_e"]], 0, 0, a[["sigma_t"]], a[["sigma_c"]])
+  shift <- a[["delta"]] + a[["bias"]] - a[["margin"]]
+  if (method == "z") {
+    z_alpha <- qnorm(a[["alpha"]], lower.tail = FALSE)
+    return(pnorm((shift - z_alpha * sqrt(v)) / sqrt(v + a[["tau"]]^2)))
+  }
+  if (any(a[["tau"]] > 0)) {
+    stop("method = \"t\" requires tau = 0.", call. = FALSE)
+  }
+  if (any(abs(a[["sigma_t"]] - a[["sigma_c"]]) > sqrt(.Machine$double.eps) * a[["sigma_t"]])) {
+    stop("method = \"t\" requires sigma_t == sigma_c.", call. = FALSE)
+  }
+  df <- ifelse(is.infinite(a[["n_e"]]), a[["n"]] - 1, a[["n"]] + a[["n_e"]] - 2)
+  if (any(df <= 0)) {
+    stop("method = \"t\" requires positive degrees of freedom.", call. = FALSE)
+  }
+  pt(qt(a[["alpha"]], df, lower.tail = FALSE), df, ncp = shift / sqrt(v), lower.tail = FALSE)
+}

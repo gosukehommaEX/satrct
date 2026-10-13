@@ -1,16 +1,32 @@
 Package: satrct
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Single-Arm Trials Versus Randomized Trials of the Same Size
 Version: 0.1.0
-Authors@R: c(
-    person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
-    )
-  )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Authors@R: 
+    person("Gosuke", "Homma", , "gosuke.homma@astellas.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-6854-5627"))
+Description: Compares a single-arm trial, whose patients all receive the
+    experimental treatment and are compared with an external control group or
+    a fixed threshold, with a randomized controlled trial of the same total
+    sample size. Provides the bias at which the two designs have equal mean
+    squared error (Pocock (1976) <doi:10.1016/0021-9681(76)90044-8>;
+    Collignon et al. (2020) <doi:10.1177/0962280219880213>), the power, type I
+    error and sample size of a single-arm comparison with a prespecified bias
+    margin, the relaxed significance level at which a randomized trial matches
+    its power, hybrid designs with concurrent and external controls, and exact
+    operating characteristics for binary endpoints.
+License: GPL (>= 2)
+URL: https://github.com/gosukehommaEX/satrct
+BugReports: https://github.com/gosukehommaEX/satrct/issues
 Encoding: UTF-8
-LazyData: true
+Imports: 
+    stats
+Suggests: 
+    knitr,
+    rmarkdown,
+    rpact,
+    survival,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

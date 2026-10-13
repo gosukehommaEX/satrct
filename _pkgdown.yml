@@ -1,0 +1,31 @@
+url: ~
+template:
+  bootstrap: 5
+
+reference:
+- title: Mean squared error
+  contents:
+  - mse_rct
+  - mse_sat
+  - breakeven_bias
+  - breakeven_n
+- title: Power, type I error and sample size
+  contents:
+  - power_rct
+  - power_sat
+  - n_rct
+  - n_sat
+  - critical_margin
+  - matched_alpha
+  - compare_designs
+- title: Hybrid designs
+  contents:
+  - mse_hybrid
+  - optimal_nc
+- title: Exact calculations for binary endpoints
+  contents:
+  - oc_sat_binary_exact
+  - oc_binary_exact
+- title: Helpers
+  contents:
+  - endpoint_sd

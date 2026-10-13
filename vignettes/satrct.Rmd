@@ -1,0 +1,130 @@
+---
+title: "Single-arm trials versus randomized trials of the same size"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Single-arm trials versus randomized trials of the same size}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(satrct)
+```
+
+## Setting
+
+When a randomized controlled trial (RCT) would be underpowered, a single-arm
+trial (SAT) is often considered instead. Both designs enrol the same number
+$n$ of patients in the current trial. The RCT allocates them to the
+experimental treatment and a concurrent control. The SAT gives all $n$
+patients the experimental treatment and compares them with an external
+control group of $n_E$ patients, or with a fixed threshold ($n_E = \infty$).
+The SAT comparison may be biased: its estimate has expectation
+$\delta + b$, where $\delta$ is the true effect and $b$ the bias. The package
+uses normal approximations with a standard deviation $\sigma$ per patient on
+the scale of the treatment effect; `endpoint_sd()` gives $\sigma$ for binary
+and time-to-event endpoints.
+
+## Mean squared error and the break-even bias
+
+With 1:1 allocation the RCT estimate has variance $4 \sigma^2 / n$, and the
+SAT estimate has mean squared error $\sigma^2 (1 / n + 1 / n_E) + b^2$. The
+two are equal at the break-even bias
+$b^* = \sigma \sqrt{3 / n - 1 / n_E}$. This condition was given in
+random-effects form by Collignon et al. (2020) and follows from Pocock
+(1976). The tolerable bias shrinks with the size of the trial:
+
+```{r}
+n <- c(20, 40, 80, 160)
+data.frame(n = n, b_star = breakeven_bias(n, n_e = 200))
+```
+
+With $n = 20$ the SAT has the smaller mean squared error for any bias below
+`r round(breakeven_bias(20, n_e = 200), 2)` standard deviations, but with
+$n = 160$ the limit is `r round(breakeven_bias(160, n_e = 200), 2)`. For a
+given bias, `breakeven_n()` returns the sample size above which the RCT is
+preferable:
+
+```{r}
+breakeven_n(bias = 0.2, n_e = 200)
+```
+
+## A single-arm test with a bias margin
+
+A SAT can be tested with a prespecified bias margin $m$: it rejects when the
+estimate exceeds $m$ by more than $z_{1 - \alpha}$ standard errors. Its type
+I error is at most $\alpha$ for every bias up to $m$, and grows beyond it.
+
+```{r}
+power_sat(n = 40, delta = 0, n_e = 120, bias = c(0, 0.1, 0.2, 0.3), margin = 0.2)
+```
+
+At zero bias, the SAT with margin $m$ has more power than the RCT when $m$ is
+below the critical margin
+$\delta (1 - \sqrt{1 + n / n_E} / 2)$:
+
+```{r}
+m_c <- critical_margin(n = 40, delta = 0.6, n_e = 120)
+m_c
+c(rct = power_rct(n = 40, delta = 0.6),
+  sat = power_sat(n = 40, delta = 0.6, n_e = 120, margin = m_c))
+```
+
+## The matched significance level
+
+Some guidance for small populations considers testing an RCT at a relaxed
+significance level. `matched_alpha()` returns the level $\alpha'$ at which
+the RCT has the same power as the SAT with margin $m$, and the bias at which
+the SAT type I error reaches $\alpha'$:
+
+```{r}
+res <- matched_alpha(n = 40, delta = 0.6, n_e = 120, margin = 0.1)
+res
+```
+
+The RCT tested at the one-sided level
+`r signif(res[["alpha_matched"]], 2)` has the power of the SAT
+(`r signif(res[["power"]], 2)`). The SAT has the smaller type I error only
+while the bias is below `r signif(res[["bias_crossing"]], 2)`, which equals the
+critical margin `r signif(critical_margin(40, 0.6, 120), 2)` whatever the
+margin. Preferring the SAT to the RCT at the relaxed level is therefore a
+judgement that the bias is smaller than this value.
+
+## Hybrid designs
+
+Pocock (1976) combined concurrent and external controls. `optimal_nc()`
+returns the number of concurrent controls that minimizes the mean squared
+error when the bias has prior variance $b^2 + \tau^2$:
+
+```{r}
+optimal_nc(n = 200, n_e = 88, tau = c(0.05, 0.1))
+```
+
+These are the values 63.9 and 77 of Pocock's Example 2. The SAT is optimal
+among hybrid designs when $b^2 + \tau^2 \le \sigma^2 (1 / n - 1 / n_E)$.
+
+## Exact calculations for binary endpoints
+
+For small trials with a binary endpoint, `oc_sat_binary_exact()` gives the
+exact binomial test against a threshold, and `oc_binary_exact()` the exact
+rejection probability of two-group comparisons, including a SAT compared
+with an external control:
+
+```{r}
+oc_sat_binary_exact(n = 30, p_t = c(0.3, 0.5), p0 = 0.3, margin = 0.05)
+oc_binary_exact(n_t = 30, n_c = 60, p_t = c(0.35, 0.55), p_c = 0.3, margin = 0.05)
+```
+
+## References
+
+Collignon O, Schritz A, Senn SJ, Spezia R. Clustered allocation as a way of
+understanding historical controls: components of variation and regulatory
+considerations. *Statistical Methods in Medical Research* 2020; 29:
+1960--1971.
+
+Pocock SJ. The combination of randomized and historical controls in clinical
+trials. *Journal of Chronic Diseases* 1976; 29: 175--188.
