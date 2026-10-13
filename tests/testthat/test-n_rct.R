@@ -27,3 +27,14 @@ test_that("n_rct rejects invalid arguments", {
   expect_error(n_rct(0.5, power = 0.02), "must exceed 'alpha'")
   expect_error(n_rct(0.5, sigma_t = 1, sigma_c = 2, method = "t"), "sigma_t == sigma_c")
 })
+
+test_that("n_rct handles vector arguments with both methods", {
+  expect_equal(n_rct(c(0.5, 0.8), method = "t"), c(127.53152744970129, 51.049262459814166),
+               tolerance = 1e-8)
+  expect_equal(n_rct(0.5, power = c(0.8, 0.9)),
+               c(n_rct(0.5, power = 0.8), n_rct(0.5, power = 0.9)), tolerance = 1e-12)
+  # A larger effect, a higher level or a lower power needs fewer patients
+  expect_true(n_rct(0.6) < n_rct(0.5))
+  expect_true(n_rct(0.5, alpha = 0.1) < n_rct(0.5))
+  expect_true(n_rct(0.5, power = 0.7) < n_rct(0.5))
+})

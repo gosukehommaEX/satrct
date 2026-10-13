@@ -53,3 +53,21 @@ test_that("oc_sat_binary_exact rejects invalid arguments", {
   expect_error(oc_sat_binary_exact(20, 0.5, 0.3, margin = 0.7), "p0 \\+ margin")
   expect_error(oc_sat_binary_exact(20, 0.5, 0.3, crit = 22), "'crit'")
 })
+
+test_that("oc_sat_binary_exact handles extreme critical values and probabilities", {
+  res <- oc_sat_binary_exact(10, p_t = c(0, 0.5, 1), p0 = 0.3, crit = 0)
+  expect_equal(res[["size"]], rep(1, 3))
+  expect_equal(res[["prob_reject"]], rep(1, 3))
+  res <- oc_sat_binary_exact(10, p_t = c(0, 0.5, 1), p0 = 0.3, crit = 11)
+  expect_equal(res[["size"]], rep(0, 3))
+  expect_equal(res[["prob_reject"]], rep(0, 3))
+  res <- oc_sat_binary_exact(10, p_t = c(0, 1), p0 = 0.3)
+  expect_equal(res[["prob_reject"]], c(0, 1))
+})
+
+test_that("a higher significance level gives a lower critical value", {
+  crit <- vapply(c(0.01, 0.025, 0.05, 0.1), function(a) {
+    oc_sat_binary_exact(50, p_t = 0.5, p0 = 0.3, alpha = a)[["crit"]]
+  }, numeric(1))
+  expect_true(all(diff(crit) <= 0))
+})

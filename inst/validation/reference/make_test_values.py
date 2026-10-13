@@ -122,3 +122,13 @@ show("Viele separate, pearson_cc: 200/200, p_c=0.65, p_t=0.77", ref.oc_binary_ex
 print("# endpoint_sd")
 show("endpoint_sd(binary, p=0.3)", ref.endpoint_sd("binary", p=0.3))
 show("endpoint_sd(survival, prob_event=0.64)", ref.endpoint_sd("survival", prob_event=0.64))
+
+print("# additional values (second round of tests)")
+show("power_rct(40, 0.5, alpha=0.1)", ref.power_rct(40, 0.5, alpha=0.1))
+show("power_sat(30, 0.5, n_e=c(Inf, 60), method=t)",
+     [ref.power_sat(30, 0.5, INF, method="t"), ref.power_sat(30, 0.5, 60, method="t")])
+show("n_rct(0.8, method=t)", ref.n_rct(0.8, method="t"))
+show("score pooled: n_t=20, n_c=20, p_t=0.5, p_c=0.3, n_ext=30, y_ext=9",
+     ref.oc_binary_exact(20, 20, 0.5, 0.3, 0.0, 0.025, "score", 30, 9))
+show("score pooled: n_t=20, n_c=20, p_t=0.5, p_c=0.3, margin=0.05, n_ext=30, y_ext=9",
+     ref.oc_binary_exact(20, 20, 0.5, 0.3, 0.05, 0.025, "score", 30, 9))

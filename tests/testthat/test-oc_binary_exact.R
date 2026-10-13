@@ -82,3 +82,27 @@ test_that("oc_binary_exact rejects invalid arguments", {
   expect_error(oc_binary_exact(0, 20, 0.5, 0.3), "'n_t'")
   expect_error(oc_binary_exact(20, 20, c(0.5, 0.6, 0.7), c(0.3, 0.4)), "common length")
 })
+
+test_that("oc_binary_exact pools fixed external data into the control group", {
+  expect_equal(oc_binary_exact(20, 20, p_t = 0.5, p_c = 0.3, n_ext = 30, y_ext = 9),
+               0.3236157355585391, tolerance = 1e-10)
+  expect_equal(oc_binary_exact(20, 20, p_t = 0.5, p_c = 0.3, margin = 0.05, n_ext = 30,
+                               y_ext = 9),
+               0.19109106100465828, tolerance = 1e-10)
+})
+
+test_that("oc_binary_exact gives 0 or 1 for degenerate response probabilities", {
+  expect_equal(oc_binary_exact(10, 12, p_t = c(1, 0), p_c = c(0, 1)), c(1, 0),
+               tolerance = 1e-12)
+})
+
+test_that("oc_binary_exact agrees with a simulation", {
+  set.seed(20261013)
+  n_sim <- 40000
+  y_t <- stats::rbinom(n_sim, 30, 0.5)
+  y_c <- stats::rbinom(n_sim, 60, 0.3)
+  z <- binary_z(y_t, 30, y_c, 60, 0.1, "score")
+  sim <- mean(!is.na(z) & z > stats::qnorm(0.975))
+  exact <- oc_binary_exact(30, 60, p_t = 0.5, p_c = 0.3, margin = 0.1)
+  expect_lt(abs(sim - exact), 4 * sqrt(exact * (1 - exact) / n_sim))
+})

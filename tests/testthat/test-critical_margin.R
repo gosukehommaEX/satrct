@@ -33,3 +33,9 @@ test_that("critical_margin rejects invalid arguments", {
   expect_error(critical_margin(0, 0.5), "'n'")
   expect_error(critical_margin(10, NA_real_), "'delta'")
 })
+
+test_that("critical_margin changes sign with the effect and is zero at zero effect", {
+  expect_equal(critical_margin(40, -0.8, n_e = 100), -critical_margin(40, 0.8, n_e = 100),
+               tolerance = 1e-12)
+  expect_identical(critical_margin(40, 0, n_e = 100), 0)
+})

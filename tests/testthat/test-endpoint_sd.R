@@ -21,3 +21,8 @@ test_that("endpoint_sd requires the parameter of the chosen type", {
   expect_error(endpoint_sd("survival", prob_event = 0), "'prob_event'")
   expect_error(endpoint_sd("count", sigma = 1))
 })
+
+test_that("endpoint_sd handles vectors and an event probability of one", {
+  expect_equal(endpoint_sd("survival", prob_event = c(1, 0.25)), c(1, 2), tolerance = 1e-12)
+  expect_equal(endpoint_sd("continuous", sigma = c(1, 2.5)), c(1, 2.5))
+})

@@ -42,3 +42,10 @@ test_that("matched_alpha rejects invalid arguments", {
   expect_error(matched_alpha(40, 0.8, alpha = 2), "'alpha'")
   expect_error(matched_alpha(40, 0.8, margin = "a"), "'margin'")
 })
+
+test_that("matched_alpha at zero effect returns the single-arm type I error at zero bias", {
+  res <- matched_alpha(40, 0, n_e = 100, margin = 0.1)
+  expect_equal(res[["alpha_matched"]], power_sat(40, 0, n_e = 100, margin = 0.1),
+               tolerance = 1e-12)
+  expect_identical(res[["bias_crossing"]], 0)
+})

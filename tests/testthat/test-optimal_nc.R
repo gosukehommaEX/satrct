@@ -46,3 +46,15 @@ test_that("optimal_nc rejects invalid arguments", {
   expect_error(optimal_nc(50, n_e = 0), "'n_e'")
   expect_error(optimal_nc(50, n_e = 100, tau = -1), "'tau'")
 })
+
+test_that("optimal_nc gives a single-arm trial against an exact threshold", {
+  res <- optimal_nc(60, n_e = Inf)
+  expect_identical(res[["n_c"]], 0)
+  expect_identical(res[["n_eff"]], Inf)
+  expect_equal(res[["mse"]], 1 / 60, tolerance = 1e-12)
+})
+
+test_that("optimal_nc approaches Neyman allocation when the external control is uninformative", {
+  res <- optimal_nc(90, n_e = 10, bias = 100, sigma_t = 2, sigma_c = 1)
+  expect_equal(res[["n_c"]], 90 * 1 / 3, tolerance = 1e-3)
+})

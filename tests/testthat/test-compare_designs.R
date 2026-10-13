@@ -47,3 +47,9 @@ test_that("compare_designs requires single values for the standard deviations an
   expect_error(compare_designs(40, 0.5, alpha = c(0.025, 0.05)), "'alpha'")
   expect_error(compare_designs(40, 0.5, r = c(0.5, 0.6)), "'r'")
 })
+
+test_that("compare_designs gives the nominal type I error when the bias equals the margin", {
+  res <- compare_designs(n = c(20, 50), delta = 0.5, n_e = c(40, Inf), bias = 0.1, margin = 0.1,
+                         alpha = 0.05)
+  expect_equal(res[["type1_sat"]], rep(0.05, 4), tolerance = 1e-12)
+})

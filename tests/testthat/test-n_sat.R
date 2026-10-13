@@ -40,3 +40,12 @@ test_that("n_sat rejects invalid arguments", {
   expect_error(n_sat(0.5, n_e = -1), "'n_e'")
   expect_error(n_sat(0.5, sigma_t = 1, sigma_c = 2, method = "t"), "sigma_t == sigma_c")
 })
+
+test_that("n_sat handles vector arguments that mix attainable and unattainable settings", {
+  expect_equal(n_sat(0.5, n_e = c(20, 100), method = "t"), c(Inf, 46.6654407108554),
+               tolerance = 1e-8)
+  expect_equal(n_sat(0.5, n_e = c(20, 100)), c(Inf, 45.76307327322687), tolerance = 1e-12)
+  # A positive bias, as assumed, reduces the required size; a margin increases it
+  expect_true(n_sat(0.5, n_e = 100, bias = 0.05) < n_sat(0.5, n_e = 100))
+  expect_true(n_sat(0.5, n_e = 100, margin = 0.05) > n_sat(0.5, n_e = 100))
+})

@@ -46,3 +46,8 @@ test_that("breakeven_bias rejects invalid arguments", {
   expect_error(breakeven_bias(10, n_e = -1), "'n_e'")
   expect_error(breakeven_bias(10, r = 0), "'r'")
 })
+
+test_that("breakeven_bias is NA for large trials with a small external control group", {
+  # With 1:1 allocation the single-arm trial needs n_e > n / 3
+  expect_identical(is.na(breakeven_bias(c(20, 60, 400), n_e = 100)), c(FALSE, FALSE, TRUE))
+})

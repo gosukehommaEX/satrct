@@ -37,3 +37,16 @@ test_that("mse_hybrid rejects invalid arguments", {
   expect_error(mse_hybrid(40, n_c = 0, n_e = 100, weight = 0.5), "requires 'n_c' > 0")
   expect_error(mse_hybrid(40, n_c = 10, n_e = 100, weight = 1.5), "'weight'")
 })
+
+test_that("mse_hybrid gives no weight to concurrent controls when the threshold is exact", {
+  res <- mse_hybrid(60, n_c = 20, n_e = Inf)
+  expect_identical(res[["weight"]], 0)
+  expect_equal(res[["mse"]], 1 / 40, tolerance = 1e-12)
+})
+
+test_that("mse_hybrid recycles vector arguments", {
+  res <- mse_hybrid(100, n_c = c(0, 20, 50), n_e = 200, bias = 0.1)
+  expect_identical(nrow(res), 3L)
+  expect_equal(res[["mse"]][2], 0.024038461538461543, tolerance = 1e-12)
+  expect_equal(res[["mse"]][1], mse_sat(100, 200, bias = 0.1), tolerance = 1e-12)
+})
