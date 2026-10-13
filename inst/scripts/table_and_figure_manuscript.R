@@ -22,10 +22,10 @@ read_data <- function(name) {
 fig1a <- read_data("fig1a_breakeven_bias.csv")
 fig1b <- read_data("fig1b_relative.csv")
 label_ne <- function(v) {
-  if (is.infinite(v)) quote(italic(N)[E] == infinity) else bquote(italic(N)[E] == .(v))
+  if (is.infinite(v)) quote(italic(N)[E] ~ "=" ~ infinity) else bquote(italic(N)[E] ~ "=" ~ .(v))
 }
 label_ratio <- function(v) {
-  bquote(italic(N) / italic(N)[E] == .(v))
+  bquote(italic(N) / italic(N)[E] ~ "=" ~ .(v))
 }
 draw_fig1 <- function() {
   start_panels()
@@ -33,7 +33,7 @@ draw_fig1 <- function() {
   levels_ne <- unique(fig1a[["n_e"]])
   graphics::plot(NA, xlim = c(0, 200), ylim = c(0, 0.6), xaxs = "i", yaxs = "i",
                  xlab = expression("Total sample size" ~ italic(N)),
-                 ylab = expression("Break-even bias" ~ italic(b)^"*" / sigma))
+                 ylab = expression("Break-even bias" ~ italic(b) * "*" / sigma))
   for (i in seq_along(levels_ne)) {
     d <- fig1a[fig1a[["n_e"]] == levels_ne[i], ]
     graphics::lines(d[["n"]], d[["breakeven_bias"]], col = pal[i], lty = lty_series[i],
@@ -47,7 +47,7 @@ draw_fig1 <- function() {
   levels_ratio <- unique(fig1b[["ratio"]])
   graphics::plot(NA, xlim = c(0.1, 0.9), ylim = c(0, 1.4), xaxs = "i", yaxs = "i",
                  xlab = "Power of the RCT",
-                 ylab = expression("Break-even bias" ~ italic(b)^"*" / delta))
+                 ylab = expression("Break-even bias" ~ italic(b) * "*" / delta))
   for (i in seq_along(levels_ratio)) {
     d <- fig1b[fig1b[["ratio"]] == levels_ratio[i], ]
     graphics::lines(d[["power_rct"]], d[["breakeven_bias_rel"]], col = pal[i],
@@ -81,7 +81,7 @@ draw_fig2 <- function() {
     panel_title(title_ne(c("(a)", "(b)")[j], levels_ne[j]))
   }
   labels <- c(list("RCT"),
-              lapply(levels_m, function(v) bquote("SAT," ~ italic(m) / delta == .(v))))
+              lapply(levels_m, function(v) bquote("SAT," ~ italic(m) / delta ~ "=" ~ .(v))))
   bottom_legend(labels, col = c("black", pal[seq_along(levels_m)]),
                 lty = c(1, lty_with_ref[seq_along(levels_m)]),
                 lwd = c(2.6, rep(1.8, length(levels_m))), ncol = 3)
@@ -113,10 +113,10 @@ draw_fig3 <- function() {
                        bg = pal[i], col = "black", cex = 1.1)
     }
     graphics::text(m_crit, 0.96, expression(italic(m)[crit]), pos = 2, offset = 0.3)
-    graphics::text(b_star, 0.96, expression(italic(b)^"*"), pos = 4, offset = 0.3)
+    graphics::text(b_star, 0.96, expression(italic(b) * "*"), pos = 4, offset = 0.3)
     panel_title(title_ne(c("(a)", "(b)")[j], levels_ne[j]))
   }
-  labels <- c(lapply(levels_m, function(v) bquote(italic(m) / delta == .(v))),
+  labels <- c(lapply(levels_m, function(v) bquote(italic(m) / delta ~ "=" ~ .(v))),
               list("Single-arm trial", quote("RCT at level" ~ alpha * "'")))
   bottom_legend(labels, col = c(pal[seq_along(levels_m)], "black", "black"),
                 lty = c(rep(1, length(levels_m)), 1, 2),
@@ -215,4 +215,4 @@ write_table(tab_dir, "table2_illustration",
                         paste0("Endpoint & Effect & $N$ & $N_E$ & Power of RCT & ",
                                "Power of SAT & $\\alpha'$ & $b^{*}$ & ",
                                "$m_{\\mathrm{crit}}$ \\\\"),
-                        body2, note2, size = "\\small"))
+                        body2, note2, size = c("\\small", "\\setlength{\\tabcolsep}{4pt}")))

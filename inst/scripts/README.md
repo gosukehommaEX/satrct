@@ -21,13 +21,14 @@ source("inst/scripts/copy_results.R")
 
 | Script | Time | Output |
 |---|---|---|
-| `data_generate_main.R` | seconds | `inst/scripts/results/data/*.csv` |
-| `table_and_figure_manuscript.R` | seconds | `inst/scripts/results/figures/Figure1`--`3` (`.pdf`, `.eps`), `inst/scripts/results/tables/table1_relative.tex`, `table2_illustration.tex` |
-| `data_generate_supplement.R` | seconds | `inst/sup_info/results/data/*.csv` |
-| `table_and_figure_supplement.R` | seconds | `inst/sup_info/results/figures/FigureS1`--`S2` (`.pdf`, `.eps`), `inst/sup_info/results/tables/tableS1_z_t.tex`, `tableS2_sensitivity.tex` |
-| `copy_results.R` | seconds | copies in `Manuscript/tables` and `Manuscript/figures`, log `inst/scripts/results/copy_log.csv` |
+| `data_generate_main.R` | < 10 s | `inst/scripts/results/data/*.csv` |
+| `table_and_figure_manuscript.R` | < 10 s | `inst/scripts/results/figures/Figure1`--`3` (`.pdf`, `.eps`), `inst/scripts/results/tables/table1_relative.tex`, `table2_illustration.tex` |
+| `data_generate_supplement.R` | < 10 s | `inst/sup_info/results/data/*.csv` |
+| `table_and_figure_supplement.R` | < 10 s | `inst/sup_info/results/figures/FigureS1`--`S2` (`.pdf`, `.eps`), `inst/sup_info/results/tables/tableS1_z_t.tex`, `tableS2_sensitivity.tex` |
+| `copy_results.R` | < 10 s | copies in `Manuscript/tables` and `Manuscript/figures`, log `inst/scripts/results/copy_log.csv` |
 
-All calculations use closed forms or the enumeration of binomial outcomes, without
+The times were measured on the author's computer; the five scripts together take about 30
+seconds. All calculations use closed forms or the enumeration of binomial outcomes, without
 simulation, so the results do not depend on a random seed. The `data_generate_*.R` scripts
 print the elapsed time and stop if a relation that holds by construction fails (for example,
 that the type I error rate of the single-arm trial equals the matched level alpha' at the

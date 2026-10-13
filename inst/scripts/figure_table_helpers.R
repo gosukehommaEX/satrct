@@ -47,12 +47,14 @@ panel_title <- function(expr) {
   graphics::mtext(expr, side = 3, line = 0.6, adj = 0)
 }
 
-# Panel title naming the external control: a fixed threshold (n_e = Inf) or n_e patients
+# Panel title naming the external control: a fixed threshold (n_e = Inf) or n_e patients.
+# In plotmath labels, "=" is written as a string so that it is set in Helvetica with a space on
+# each side, and the asterisk of b* is set at full size (a superscript asterisk is too small).
 title_ne <- function(label, n_e) {
   if (is.infinite(n_e)) {
-    bquote(bold(.(label)) ~~ "Threshold" ~ (italic(N)[E] == infinity))
+    bquote(bold(.(label)) ~~ "Threshold" ~ (italic(N)[E] ~ "=" ~ infinity))
   } else {
-    bquote(bold(.(label)) ~~ "External control" ~ (italic(N)[E] == .(n_e)))
+    bquote(bold(.(label)) ~~ "External control" ~ (italic(N)[E] ~ "=" ~ .(n_e)))
   }
 }
 

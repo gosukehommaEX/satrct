@@ -33,7 +33,7 @@ draw_fig_s1 <- function() {
                   lwd = 1.8)
   graphics::lines(fig_s1[["bias"]], fig_s1[["mse_hybrid"]], col = pal[2],
                   lty = lty_with_ref[2], lwd = 1.8)
-  graphics::text(b_star, 0.142, expression(italic(b)^"*"), pos = 4, offset = 0.3)
+  graphics::text(b_star, 0.142, expression(italic(b) * "*"), pos = 4, offset = 0.3)
   panel_title(quote(bold("(a)")))
   # (b) optimal number of concurrent controls against the bias
   graphics::plot(NA, xlim = c(0, 0.6), ylim = c(0, 0.55), xaxs = "i",
@@ -44,8 +44,7 @@ draw_fig_s1 <- function() {
   graphics::lines(fig_s1[["bias"]], fig_s1[["n_c_opt"]] / fig_s1[["n"]], col = pal[2],
                   lty = lty_with_ref[2], lwd = 1.8)
   panel_title(quote(bold("(b)")))
-  bottom_legend(list("RCT", "SAT",
-                     quote("Hybrid with optimal" ~ italic(N)[C] ~ "and weight")),
+  bottom_legend(list("RCT", "SAT", "Optimal hybrid"),
                 col = c("black", pal[1], pal[2]), lty = c(1, lty_with_ref[1:2]),
                 lwd = c(2.6, 1.8, 1.8), ncol = 3)
 }
@@ -78,9 +77,8 @@ draw_fig_s2 <- function() {
                     col = col_design[i], lty = 1, lwd = 1.6)
   }
   panel_title(quote(bold("(b)")))
-  labels <- list(quote("RCT" ~ (italic(N) / 2 ~ "per group")),
-                 quote("SAT, external control" ~ (italic(N)[E] == 2 * italic(N))),
-                 "SAT, threshold", "Exact", "Normal approximation")
+  labels <- list("RCT", "SAT, external control", "SAT, threshold", "Exact",
+                 "Normal approximation")
   bottom_legend(labels, col = c(col_design, "black", "black"), lty = c(1, 1, 1, 1, 2),
                 lwd = rep(1.6, 5), ncol = 3)
 }
