@@ -11,3 +11,26 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 10,main.tex,to 0.17 when,0.17,inst/scripts/results/data/table1_relative.csv,alpha_matched[ratio == 0.5 & power_rct == 0.35],sig:2,computed,,"Table 1, N_E = 2 N"
 11,main.tex,0.095 when,0.095,inst/scripts/results/data/table1_relative.csv,alpha_matched[ratio == 1 & power_rct == 0.35],sig:2,computed,,"Table 1, N_E = N"
 12,main.tex,and 0.043 when,0.043,inst/scripts/results/data/table1_relative.csv,alpha_matched[ratio == 2 & power_rct == 0.35],sig:2,computed,,"Table 1, N_E = N / 2"
+13,main.tex,in 14 reference studies,14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 1],int,literature,Incerti2023,p. 169
+14,main.tex,for 14 control groups,14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 3],int,literature,Bahmane2025,p. 1
+15,main.tex,of 12 trials,12,,,exact,literature,Bahmane2025,"p. 1, 14 chemotherapy control arms of 12 trials"
+16,main.tex,emulated 15 treatment comparisons,15,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 7],int,literature,Gupta2025,p. 1
+17,main.tex,from 14 trials,14,,,exact,literature,Gupta2025,"p. 1, Key Points: 14 randomized clinical trials"
+18,main.tex,$m_{\mathrm{crit}} = 0.198$ at every,0.198,inst/scripts/results/data/table3_empirical_bias.csv,critical_margin[id == 1 & n == 30],dp:3,computed,,"Table 3(a), equal for every N"
+19,main.tex,rises from 0.11,0.11,inst/scripts/results/data/table3_empirical_bias.csv,alpha_matched[id == 1 & n == 30],dp:2,computed,,"Table 3(a), N = 30"
+20,main.tex,to 0.32 and,0.32,inst/scripts/results/data/table3_empirical_bias.csv,alpha_matched[id == 1 & n == 120],dp:2,computed,,"Table 3(a), N = 120"
+21,main.tex,falls from 0.35,0.35,inst/scripts/results/data/table3_empirical_bias.csv,breakeven_bias[id == 1 & n == 30],dp:2,computed,,"Table 3(a), N = 30"
+22,main.tex,to 0.17 as,0.17,inst/scripts/results/data/table3_empirical_bias.csv,breakeven_bias[id == 1 & n == 120],dp:2,computed,,"Table 3(a), N = 120"
+23,main.tex,between 0.001,0.001,inst/scripts/results/data/table3_empirical_bias.csv,bias_mean[id == 3 & n == 30],dp:3,literature,Bahmane2025,"smallest weighted mean bias, -log(0.999)"
+24,main.tex,"and 0.139, are below",0.139,inst/scripts/results/data/table3_empirical_bias.csv,bias_mean[id == 8 & n == 30],dp:3,literature,Gupta2025,largest weighted mean bias
+25,main.tex,"Gupta et al., 0.247,",0.247,inst/scripts/results/data/table3_empirical_bias.csv,bias_mean[id == 7 & n == 30],dp:3,literature,Gupta2025,unadjusted mean bias
+26,main.tex,from 0.150 at,0.150,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 7 & n == 30],dp:3,computed,,"Table 3(b), unadjusted, N = 30"
+27,main.tex,at $N = 30$,30,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 7 & n == 30],int,input,,smallest N of Table 3
+28,main.tex,0.456 at,0.456,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 7 & n == 120],dp:3,computed,,"Table 3(b), unadjusted, N = 120"
+29,main.tex,at $N = 120$,120,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 7 & n == 120],int,input,,largest N of Table 3
+30,main.tex,range from 0.041,0.041,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 4 & n == 30],dp:3,computed,,smallest type I error rate under the weighted estimates
+31,main.tex,"to 0.189,",0.189,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 2 & n == 120],dp:3,computed,,largest type I error rate under the weighted estimates
+32,main.tex,instead of 0.025,0.025,inst/scripts/results/data/table3_empirical_bias.csv,alpha[id == 1 & n == 30],dp:3,input,,conventional one-sided level
+33,main.tex,between 0.17,0.17,inst/scripts/results/data/table2_illustration.csv,"alpha_matched[endpoint == ""continuous""]",sig:2,computed,,"Table 2, smallest matched level with N_E = 2 N"
+34,main.tex,and 0.18 for these,0.18,inst/scripts/results/data/table2_illustration.csv,"alpha_matched[endpoint == ""survival""]",sig:2,computed,,"Table 2, largest matched level with N_E = 2 N"
+35,main.tex,the largest difference is 0.03,0.03,inst/scripts/results/data/table2_illustration.csv,"power_rct[endpoint == ""binary"" & n_e == 80] - power_rct_exact[endpoint == ""binary"" & n_e == 80]",dp:2,computed,,"Table 2, normal approximation minus exact power of the RCT; largest absolute difference"
