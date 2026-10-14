@@ -1,1 +1,2 @@
 id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
+1,main.tex,the numerical results use $\alpha = 0.025$,0.025,inst/scripts/results/data/table2_illustration.csv,"alpha[endpoint == ""continuous""]",dp:3,input,,one-sided significance level of all results
