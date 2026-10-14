@@ -1,2 +1,6 @@
 "id","file","text_value","recomputed","rounding","type","verdict","message"
 "1","main.tex","0.025","0.025","dp:3","input","PASS",""
+"2","main.tex","0.31","0.31","dp:2","computed","PASS",""
+"3","main.tex","0.80","0.80","dp:2","input","PASS",""
+"4","main.tex","0.55","0.55","dp:2","computed","PASS",""
+"5","main.tex","0.35","0.35","dp:2","input","PASS",""

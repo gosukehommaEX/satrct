@@ -1,2 +1,6 @@
 id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 1,main.tex,the numerical results use $\alpha = 0.025$,0.025,inst/scripts/results/data/table2_illustration.csv,"alpha[endpoint == ""continuous""]",dp:3,input,,one-sided significance level of all results
+2,main.tex,$b^{*}/\delta$ is 0.31,0.31,inst/scripts/results/data/table1_relative.csv,breakeven_bias_rel[ratio == 0 & power_rct == 0.8],dp:2,computed,,"Table 1, threshold"
+3,main.tex,has power 0.80,0.80,inst/scripts/results/data/table1_relative.csv,power_rct[ratio == 0 & power_rct == 0.8],dp:2,input,,"power of the RCT, Table 1"
+4,main.tex,and 0.55 when,0.55,inst/scripts/results/data/table1_relative.csv,breakeven_bias_rel[ratio == 0 & power_rct == 0.35],dp:2,computed,,"Table 1, threshold"
+5,main.tex,its power is 0.35,0.35,inst/scripts/results/data/table1_relative.csv,power_rct[ratio == 0 & power_rct == 0.35],dp:2,input,,"power of the RCT, Table 1"
