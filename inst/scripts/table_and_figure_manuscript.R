@@ -223,7 +223,8 @@ alpha3 <- unique(tab3[["alpha"]])
 hr3 <- unique(tab3[["hazard_ratio"]])
 prob_event3 <- unique(tab3[["prob_event"]])
 stopifnot(length(alpha3) == 1, length(hr3) == 1, length(prob_event3) == 1,
-          all(tab3[["n_e"]] == 2 * tab3[["n"]]))
+          all(tab3[["n_e"]] == 2 * tab3[["n"]]),
+          all(tab3[["subset"]] %in% c("All", "Outlier removed")))
 sizes3 <- sort(unique(tab3[["n"]]))
 design3 <- tab3[!duplicated(tab3[["n"]]), ]
 design3 <- design3[order(design3[["n"]]), ]
@@ -257,12 +258,17 @@ for (s in sort(unique(tab3[["id"]]))) {
   }
   previous_key <- first[["bibkey"]]
   tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
+  analysis_cell <- if (first[["subset"]] == "Outlier removed") {
+    paste0(first[["analysis"]], "$^{\\ddagger}$")
+  } else {
+    first[["analysis"]]
+  }
   cells <- c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
-             first[["analysis"]], fmt_num(first[["bias_mean"]]), tau_cell, type1)
+             analysis_cell, fmt_num(first[["bias_mean"]]), tau_cell, type1)
   body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
 }
 header3 <- c(
-  paste0("Source & End point & $K$ & Analysis & $\\bar{b}$ & $\\tau$ & \\multicolumn{",
+  paste0("Source & Endpoint & $K$ & Analysis & $\\bar{b}$ & $\\tau$ & \\multicolumn{",
          length(sizes3), "}{c}{$N$} \\\\"),
   paste0("\\cmidrule(lr){7-", n_col3, "}"),
   paste0(" & & & & & & ", paste(fmt_setting(sizes3), collapse = " & "), " \\\\")
@@ -285,7 +291,9 @@ note3 <- paste0(
   "and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report the mean ",
   "difference in log hazard ratios over the trials without a between-study standard ",
   "deviation, and $\\tau = 0$ is used. $K$ is the number of comparisons. Type I error rates ",
-  "above $\\alpha'$ in the same column are marked with $\\dagger$. The probability of an event ",
+  "above $\\alpha'$ in the same column are marked with $\\dagger$. Analyses marked with ",
+  "$\\ddagger$ exclude the study that the authors identified as an outlier. The probability ",
+  "of an event ",
   "is ", fmt_setting(prob_event3), " for every patient. OS, overall survival; PFS, ",
   "progression-free survival (real-world progression-free survival for the external ",
   "controls); QBA, quantitative bias analysis.")
@@ -293,4 +301,4 @@ write_table(tab_dir, "table3_empirical_bias",
             table_lines(caption3, "tab:empirical",
                         paste0("llcl", "cc", strrep("c", length(sizes3))),
                         header3, body3, note3,
-                        size = c("\\small", "\\setlength{\\tabcolsep}{4pt}")))
+                        size = c("\\small", "\\setlength{\\tabcolsep}{3pt}")))

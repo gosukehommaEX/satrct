@@ -57,4 +57,19 @@ The published estimates of the bias of external controls used for Table 3 are en
 is the log hazard ratio estimated with the randomized control minus the log hazard ratio
 estimated with the external control (column `measure`: `hr_internal_vs_external` for a reported
 hazard ratio of the internal versus the external control, `log_hr_difference` for a reported
-difference in log hazard ratios).
+difference in log hazard ratios). The column `subset` marks the estimates that exclude a study
+identified as an outlier by the authors of the source.
+
+## Numbers in the text
+
+Every number written in the manuscript is registered in `number_locations.csv` (one row per
+number, with the string of the .tex file that contains it, the results file and the expression
+that give its value, and the rounding rule). `number_check.R` recomputes every registered value
+from the saved results and stops if a value differs from the text:
+
+```r
+source("inst/scripts/number_check.R")
+```
+
+Its output is written to `results/number_check.csv`. The location of the strings in the .tex
+files is checked by `Manuscript/tools/check_numbers.py`.
