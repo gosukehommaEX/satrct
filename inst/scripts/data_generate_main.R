@@ -210,5 +210,64 @@ table2[["power_sat_exact"]][k_thr] <- oc_sat_binary_exact(table2[["n"]][k_thr], 
                                                           alpha = alpha)[["prob_reject"]]
 save_csv(table2, "table2_illustration.csv")
 
+# ---- Table 3: type I error rate of the SAT under published estimates of the bias ----
+# Published estimates of the bias of external controls for time-to-event endpoints are read
+# from inst/scripts/empirical_bias_sources.csv (one row per estimate, with its location in the
+# source). On the scale of the negative log hazard ratio, the bias is the log hazard ratio
+# estimated with the randomized control minus the log hazard ratio estimated with the external
+# control, so that positive values favour the experimental treatment. A source that reports the
+# hazard ratio of the internal versus the external control gives the mean bias
+# -log(hazard ratio); a source that reports the difference in log hazard ratios gives it
+# directly. A source without a between-study standard deviation tau is used with tau = 0.
+# The designs are the time-to-event setting of Table 2 at several total sizes N, with N_E = 2 N.
+bias_sources <- utils::read.csv("inst/scripts/empirical_bias_sources.csv",
+                                stringsAsFactors = FALSE)
+known_measures <- c("hr_internal_vs_external", "log_hr_difference")
+if (!all(bias_sources[["measure"]] %in% known_measures)) {
+  stop("Unknown measure in inst/scripts/empirical_bias_sources.csv.", call. = FALSE)
+}
+bias_sources[["bias_mean"]] <- ifelse(bias_sources[["measure"]] == "hr_internal_vs_external",
+                                      -log(bias_sources[["value"]]), bias_sources[["value"]])
+bias_sources[["tau_used"]] <- ifelse(is.na(bias_sources[["tau"]]), 0, bias_sources[["tau"]])
+n_tab3 <- c(30, 60, 90, 120)
+design3 <- data.frame(
+  alpha = alpha,
+  n = n_tab3,
+  n_e = 2 * n_tab3,
+  hazard_ratio = hazard_ratio,
+  prob_event = prob_event,
+  delta = -log(hazard_ratio),
+  sigma = sd_surv
+)
+ma3 <- matched_alpha(design3[["n"]], design3[["delta"]], design3[["n_e"]], 0, sd_surv, sd_surv,
+                     alpha)
+design3[["power_rct"]] <- power_rct(design3[["n"]], design3[["delta"]], sd_surv, sd_surv, alpha)
+design3[["power_sat"]] <- ma3[["power"]]
+design3[["alpha_matched"]] <- ma3[["alpha_matched"]]
+design3[["breakeven_bias"]] <- breakeven_bias(design3[["n"]], design3[["n_e"]], sd_surv, sd_surv)
+design3[["critical_margin"]] <- critical_margin(design3[["n"]], design3[["delta"]],
+                                                design3[["n_e"]], sd_surv, sd_surv)
+assert_close(design3[["power_sat"]],
+             power_sat(design3[["n"]], design3[["delta"]], design3[["n_e"]], sigma_t = sd_surv,
+                       alpha = alpha),
+             1e-12, "Table 3: matched_alpha() and power_sat() give the same power of the SAT")
+grid3 <- expand.grid(source_row = seq_len(nrow(bias_sources)),
+                     design_row = seq_len(nrow(design3)), KEEP.OUT.ATTRS = FALSE)
+table3 <- cbind(bias_sources[grid3[["source_row"]], ], design3[grid3[["design_row"]], ])
+rownames(table3) <- NULL
+table3[["rms_bias"]] <- sqrt(table3[["bias_mean"]]^2 + table3[["tau_used"]]^2)
+table3[["type1_sat"]] <- power_sat(table3[["n"]], 0, table3[["n_e"]],
+                                   bias = table3[["bias_mean"]], margin = 0,
+                                   tau = table3[["tau_used"]], sigma_t = table3[["sigma"]],
+                                   alpha = alpha)
+table3[["above_alpha_matched"]] <- table3[["type1_sat"]] > table3[["alpha_matched"]]
+# Without a random bias, the type I error rate of the SAT exceeds alpha' exactly when the bias
+# exceeds m_crit
+k <- table3[["tau_used"]] == 0
+assert_close(table3[["above_alpha_matched"]][k],
+             table3[["bias_mean"]][k] > table3[["critical_margin"]][k], 0,
+             "Table 3: with tau = 0, alpha' is exceeded exactly when the bias exceeds m_crit")
+save_csv(table3, "table3_empirical_bias.csv")
+
 elapsed <- (proc.time() - start_time)[["elapsed"]]
 message(sprintf("data_generate_main.R finished in %.1f seconds.", elapsed))

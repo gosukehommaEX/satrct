@@ -216,3 +216,81 @@ write_table(tab_dir, "table2_illustration",
                                "Power of SAT & $\\alpha'$ & $b^{*}$ & ",
                                "$m_{\\mathrm{crit}}$ \\\\"),
                         body2, note2, size = c("\\small", "\\setlength{\\tabcolsep}{4pt}")))
+
+# ---- Table 3: type I error rate of the SAT under published estimates of the bias ----
+tab3 <- read_data("table3_empirical_bias.csv")
+alpha3 <- unique(tab3[["alpha"]])
+hr3 <- unique(tab3[["hazard_ratio"]])
+prob_event3 <- unique(tab3[["prob_event"]])
+stopifnot(length(alpha3) == 1, length(hr3) == 1, length(prob_event3) == 1,
+          all(tab3[["n_e"]] == 2 * tab3[["n"]]))
+sizes3 <- sort(unique(tab3[["n"]]))
+design3 <- tab3[!duplicated(tab3[["n"]]), ]
+design3 <- design3[order(design3[["n"]]), ]
+n_col3 <- 6 + length(sizes3)
+design_line <- function(label, values) {
+  paste0("\\multicolumn{6}{l}{", label, "} & ", paste(values, collapse = " & "), " \\\\")
+}
+body3 <- c(
+  paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(a) Designs}} \\\\"),
+  design_line("Power of RCT", fmt_prob(design3[["power_rct"]])),
+  design_line("Power of SAT", fmt_prob(design3[["power_sat"]])),
+  design_line("$\\alpha'$", fmt_prob(design3[["alpha_matched"]])),
+  design_line("$b^{*}$", fmt_num(design3[["breakeven_bias"]])),
+  design_line("$m_{\\mathrm{crit}}$", fmt_num(design3[["critical_margin"]])),
+  "\\addlinespace",
+  paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(b) Type I error rate of the SAT under ",
+         "published estimates of the bias}} \\\\")
+)
+previous_key <- ""
+for (s in sort(unique(tab3[["id"]]))) {
+  d <- tab3[tab3[["id"]] == s, ]
+  d <- d[order(d[["n"]]), ]
+  stopifnot(nrow(d) == length(sizes3), all(d[["n"]] == sizes3))
+  first <- d[1, ]
+  type1 <- fmt_prob(d[["type1_sat"]])
+  type1 <- ifelse(d[["above_alpha_matched"]], paste0(type1, "$^{\\dagger}$"), type1)
+  source_cell <- if (first[["bibkey"]] == previous_key) {
+    ""
+  } else {
+    paste0(first[["author"]], "~\\cite{", first[["bibkey"]], "}")
+  }
+  previous_key <- first[["bibkey"]]
+  tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
+  cells <- c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
+             first[["analysis"]], fmt_num(first[["bias_mean"]]), tau_cell, type1)
+  body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
+}
+header3 <- c(
+  paste0("Source & End point & $K$ & Analysis & $\\bar{b}$ & $\\tau$ & \\multicolumn{",
+         length(sizes3), "}{c}{$N$} \\\\"),
+  paste0("\\cmidrule(lr){7-", n_col3, "}"),
+  paste0(" & & & & & & ", paste(fmt_setting(sizes3), collapse = " & "), " \\\\")
+)
+caption3 <- paste0(
+  "Single-arm trial (SAT) with an external control of $N_E = 2N$ patients and randomized ",
+  "controlled trial (RCT) with 1:1 randomization for a time-to-event endpoint with hazard ",
+  "ratio ", fmt_setting(hr3), ", by the total size $N$, with one-sided $\\alpha = ",
+  fmt_setting(alpha3), "$. (a) Power of the RCT and of the SAT without bias, level ",
+  "$\\alpha'$ at which the RCT has the power of the SAT, break-even bias $b^{*}$ and critical ",
+  "margin $m_{\\mathrm{crit}}$. (b) Type I error rate of the SAT without margin when the bias ",
+  "is normally distributed with the published mean $\\bar{b}$ and between-study standard ",
+  "deviation $\\tau$ of the bias of external controls.")
+note3 <- paste0(
+  "The bias is the log hazard ratio estimated with the randomized control minus the log ",
+  "hazard ratio estimated with the external control, so that positive values favour the ",
+  "experimental treatment; $b^{*}$, $m_{\\mathrm{crit}}$, $\\bar{b}$ and $\\tau$ are on this ",
+  "scale. Incerti et al.\\ and Bahmane et al.\\ report posterior medians of the hazard ratio ",
+  "of the internal versus the external control and of the between-study standard deviation, ",
+  "and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report the mean ",
+  "difference in log hazard ratios over the trials without a between-study standard ",
+  "deviation, and $\\tau = 0$ is used. $K$ is the number of comparisons. Type I error rates ",
+  "above $\\alpha'$ in the same column are marked with $\\dagger$. The probability of an event ",
+  "is ", fmt_setting(prob_event3), " for every patient. OS, overall survival; PFS, ",
+  "progression-free survival (real-world progression-free survival for the external ",
+  "controls); QBA, quantitative bias analysis.")
+write_table(tab_dir, "table3_empirical_bias",
+            table_lines(caption3, "tab:empirical",
+                        paste0("llcl", "cc", strrep("c", length(sizes3))),
+                        header3, body3, note3,
+                        size = c("\\small", "\\setlength{\\tabcolsep}{4pt}")))
