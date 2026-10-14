@@ -34,3 +34,4 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 33,main.tex,between 0.17,0.17,inst/scripts/results/data/table2_illustration.csv,"alpha_matched[endpoint == ""continuous""]",sig:2,computed,,"Table 2, smallest matched level with N_E = 2 N"
 34,main.tex,and 0.18 for these,0.18,inst/scripts/results/data/table2_illustration.csv,"alpha_matched[endpoint == ""survival""]",sig:2,computed,,"Table 2, largest matched level with N_E = 2 N"
 35,main.tex,the largest difference is 0.03,0.03,inst/scripts/results/data/table2_illustration.csv,"power_rct[endpoint == ""binary"" & n_e == 80] - power_rct_exact[endpoint == ""binary"" & n_e == 80]",dp:2,computed,,"Table 2, normal approximation minus exact power of the RCT; largest absolute difference"
+36,main.tex,the usual two-sided 5\%,5,,,exact,literature,PMDA2026,Japanese original p. 4: significance level two-sided 5% or less; above 5% basically not recommended
