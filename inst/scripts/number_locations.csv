@@ -4,3 +4,5 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 3,main.tex,has power 0.80,0.80,inst/scripts/results/data/table1_relative.csv,power_rct[ratio == 0 & power_rct == 0.8],dp:2,input,,"power of the RCT, Table 1"
 4,main.tex,and 0.55 when,0.55,inst/scripts/results/data/table1_relative.csv,breakeven_bias_rel[ratio == 0 & power_rct == 0.35],dp:2,computed,,"Table 1, threshold"
 5,main.tex,its power is 0.35,0.35,inst/scripts/results/data/table1_relative.csv,power_rct[ratio == 0 & power_rct == 0.35],dp:2,input,,"power of the RCT, Table 1"
+6,main.tex,it is $0.29\delta$,0.29,inst/scripts/results/data/table1_relative.csv,critical_margin_rel[ratio == 1 & power_rct == 0.2],dp:2,computed,,"Table 1, N_E = N; m_crit / delta does not depend on the power"
+7,main.tex,and $0.13\delta$ when,0.13,inst/scripts/results/data/table1_relative.csv,critical_margin_rel[ratio == 2 & power_rct == 0.2],dp:2,computed,,"Table 1, N_E = N / 2; m_crit / delta does not depend on the power"
