@@ -1,0 +1,34 @@
+\begin{table}[!htb]
+\centering
+\small
+\caption{Verdicts of the scripts that reproduce published results with the \texttt{R} package \texttt{satrct} (version 0.1.0) and validate it, by script.}
+\label{tab:validation}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lp{6.4cm}cccc}
+\toprule
+Script & Comparison & PASS & EXPLAINED & FAIL & INFO \tabularnewline
+\midrule
+\multicolumn{6}{l}{\textit{(a) Reproduction of published results (folder \texttt{inst/reproduce})}} \tabularnewline
+\texttt{Pocock1976} & \raggedright Worked examples of combined estimates and of optimal numbers of randomized controls~\cite{Pocock1976} & 12 & 0 & 0 & 0 \tabularnewline
+\texttt{Taylor2006} & \raggedright Error rates of single-arm and randomized designs~\cite{Taylor2006} & 49 & 0 & 0 & 0 \tabularnewline
+\texttt{Tang2010} & \raggedright Error rates of single-arm decision rules~\cite{Tang2010} & 19 & 0 & 0 & 0 \tabularnewline
+\texttt{Viele2014} & \raggedright Operating characteristics of single-arm, separate and pooled analyses~\cite{Viele2014} & 2 & 0 & 0 & 9 \tabularnewline
+\texttt{Collignon2020} & \raggedright Worked example and values read from a figure~\cite{Collignon2020} & 2 & 0 & 0 & 4 \tabularnewline
+\texttt{KoppSchneider2020} & \raggedright Critical value and size of the uniformly most powerful test~\cite{KoppSchneider2020} & 3 & 0 & 0 & 0 \tabularnewline
+\texttt{KoppSchneider2024} & \raggedright Power of one- and two-group tests and calibrated power~\cite{KoppSchneider2024} & 6 & 1 & 0 & 0 \tabularnewline
+\addlinespace
+\multicolumn{6}{l}{\textit{(b) Validation (folder \texttt{inst/validation})}} \tabularnewline
+\texttt{python\_reference} & \raggedright Independent implementation in Python with numerical root finding and minimization & 30 & 0 & 0 & 0 \tabularnewline
+\texttt{rpact} & \raggedright Power functions of the \texttt{R} package \texttt{rpact}~\cite{rpact2026} & 6 & 0 & 0 & 0 \tabularnewline
+\texttt{simulation} & \raggedright Patient-level simulation of power, type I error rate and mean squared error & 21 & 0 & 0 & 2 \tabularnewline
+\texttt{exact\_binary} & \raggedright Monte Carlo estimates of exact rejection probabilities for binary endpoints & 8 & 0 & 0 & 9 \tabularnewline
+\texttt{test\_mutation} & \raggedright Unit tests fail when an expected value is altered & 16 & 0 & 0 & 2 \tabularnewline
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+PASS, the recomputed value agrees with the reference under the stated rule; EXPLAINED, it does not, and the reason is identified and recorded; FAIL, it does not; INFO, no pass or fail rule applies (values read from figures, qualitative statements or the accuracy of an approximation). The scripts are the files \texttt{reproduce\_}\textit{name}\texttt{.R} in \texttt{inst/reproduce} and \texttt{validate\_}\textit{name}\texttt{.R} in \texttt{inst/validation}. EXPLAINED in \texttt{reproduce\_KoppSchneider2024}. Printed value 0.848 (p.14) is inconsistent within the paper: Appendix (A4) gives 0.902 for the test calibrated to alpha\_B = 0.114, and 0.848 would be below the power 0.860 with borrowing, contradicting the stated power difference of 0.030.
+\end{minipage}
+\end{table}

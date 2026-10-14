@@ -24,7 +24,7 @@ source("inst/scripts/copy_results.R")
 | `data_generate_main.R` | < 10 s | `inst/scripts/results/data/*.csv` |
 | `table_and_figure_manuscript.R` | < 10 s | `inst/scripts/results/figures/Figure1`--`3` (`.pdf`, `.eps`), `inst/scripts/results/tables/table1_relative.tex`, `table2_illustration.tex`, `table3_empirical_bias.tex` |
 | `data_generate_supplement.R` | < 10 s | `inst/sup_info/results/data/*.csv` |
-| `table_and_figure_supplement.R` | < 10 s | `inst/sup_info/results/figures/FigureS1`--`S2` (`.pdf`, `.eps`), `inst/sup_info/results/tables/tableS1_z_t.tex`, `tableS2_sensitivity.tex` |
+| `table_and_figure_supplement.R` | < 10 s | `inst/sup_info/results/figures/FigureS1`--`S2` (`.pdf`, `.eps`), `inst/sup_info/results/tables/tableS1_z_t.tex`, `tableS2_sensitivity.tex`, `tableS3_validation.tex` |
 | `copy_results.R` | < 10 s | copies in `Manuscript/tables` and `Manuscript/figures`, log `inst/scripts/results/copy_log.csv` |
 
 The times were measured on the author's computer; the five scripts together take about 30
@@ -48,6 +48,7 @@ bias m_crit for every margin).
 | Figure S2 | `figS2_binary.csv` | exact and approximate power and exact type I error rate, 0.55 vs 0.30, margin 0.05, N = 20 to 100 |
 | Table S1 | `tableS1_z_t.csv` | z-test and t-test for N = 10, 20, 40 and delta / sigma = 0.5, 1 |
 | Table S2 | `tableS2_sensitivity.csv` | allocation 1:1 and 2:1 and sigma_C / sigma_T = 0.5, 1, 2 |
+| Table S3 | `inst/reproduce/results/summary.csv`, `inst/validation/results/summary.csv`, `inst/sup_info/validation_descriptions.csv` | numbers of verdicts of the reproduction and validation scripts; rerun the summary scripts in `inst/reproduce` and `inst/validation` when their results change |
 
 The figures are vector graphics (PDF and EPS) drawn with base R graphics, so the scripts need
 no package other than satrct.

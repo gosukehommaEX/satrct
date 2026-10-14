@@ -1,5 +1,6 @@
 # Draw the figures and write the tables of the Supporting Information from the results saved
-# by data_generate_supplement.R.
+# by data_generate_supplement.R, except Table S3, which summarizes the verdicts of the scripts
+# in inst/reproduce and inst/validation.
 #
 # Figures: FigureS<k>.pdf and FigureS<k>.eps. Tables: tableS<k>_<content>.tex, each a complete
 # table environment with caption, label and note; the settings quoted in the captions and
@@ -170,3 +171,130 @@ write_table(tab_dir, "tableS2_sensitivity",
                                "Power of SAT & $\\alpha'$ & $b^{*}/\\delta$ & ",
                                "$m_{\\mathrm{crit}}/\\delta$ \\\\"),
                         body_s2, note_s2))
+
+# ---- Table S3: reproduction of published results and validation ----
+# The numbers of verdicts are read from the summaries written by
+# inst/reproduce/summarize_reproduction.R and inst/validation/summarize_validation.R, the
+# description of each script from inst/sup_info/validation_descriptions.csv, the reason for each
+# EXPLAINED verdict from the results file of its script and the version of the package from
+# DESCRIPTION. The section stops if the scripts in the summaries and in the descriptions differ,
+# if the verdicts do not add up to the totals, if any comparison failed or if an EXPLAINED
+# verdict has no reason.
+verdict_names <- c("PASS", "EXPLAINED", "FAIL", "INFO")
+results_dirs_s3 <- c(Reproduction = "inst/reproduce/results",
+                     Validation = "inst/validation/results")
+summary_s3 <- do.call(rbind, lapply(names(results_dirs_s3), function(g) {
+  path <- file.path(results_dirs_s3[[g]], "summary.csv")
+  if (!file.exists(path)) {
+    stop("Missing ", path, ". Run the summary scripts in inst/reproduce and inst/validation ",
+         "first.", call. = FALSE)
+  }
+  s <- utils::read.csv(path, stringsAsFactors = FALSE)
+  s[["group"]] <- g
+  s
+}))
+desc_s3 <- utils::read.csv("inst/sup_info/validation_descriptions.csv",
+                           colClasses = "character")
+if (!identical(names(desc_s3), c("group", "script", "comparison", "bibkey")) ||
+    !all(c("script", verdict_names, "total") %in% names(summary_s3))) {
+  stop("Unexpected columns in the summaries or in validation_descriptions.csv.", call. = FALSE)
+}
+key_desc <- paste(desc_s3[["group"]], desc_s3[["script"]])
+key_summary <- paste(summary_s3[["group"]], summary_s3[["script"]])
+if (anyDuplicated(key_desc) > 0 || !setequal(key_desc, key_summary)) {
+  stop("The scripts in the summaries and in inst/sup_info/validation_descriptions.csv differ.",
+       call. = FALSE)
+}
+if (any(rowSums(summary_s3[verdict_names]) != summary_s3[["total"]])) {
+  stop("The verdicts in the summaries do not add up to their totals.", call. = FALSE)
+}
+if (sum(summary_s3[["FAIL"]]) > 0) {
+  stop("Some comparisons failed, so Table S3 is not written.", call. = FALSE)
+}
+# Escape the special characters of LaTeX in the names and reasons taken from the results; stop
+# for characters that cannot be escaped this way
+tex_escape <- function(x) {
+  unsupported <- c("\\", "{", "}", "~", "^")
+  for (ch in unsupported) {
+    if (any(grepl(ch, x, fixed = TRUE))) {
+      stop("Unsupported character '", ch, "' in a name or reason for Table S3.", call. = FALSE)
+    }
+  }
+  gsub("([_%&#$])", "\\\\\\1", x)
+}
+explained_s3 <- character(0)
+for (i in which(summary_s3[["EXPLAINED"]] > 0)) {
+  script <- summary_s3[["script"]][i]
+  res <- utils::read.csv(file.path(results_dirs_s3[[summary_s3[["group"]][i]]],
+                                   paste0(script, ".csv")),
+                         stringsAsFactors = FALSE)
+  reasons <- res[["note"]][res[["verdict"]] == "EXPLAINED"]
+  if (length(reasons) != summary_s3[["EXPLAINED"]][i] || any(is.na(reasons) | reasons == "")) {
+    stop("An EXPLAINED verdict of ", script, " has no reason.", call. = FALSE)
+  }
+  explained_s3 <- c(explained_s3, paste0("EXPLAINED in \\texttt{", tex_escape(script), "}. ",
+                                         tex_escape(reasons)))
+}
+version_s3 <- read.dcf("DESCRIPTION", fields = "Version")[1, "Version"]
+group_label_s3 <- c(
+  Reproduction = "(a) Reproduction of published results (folder \\texttt{inst/reproduce})",
+  Validation = "(b) Validation (folder \\texttt{inst/validation})")
+n_col_s3 <- 2 + length(verdict_names)
+body_s3 <- character(0)
+for (g in names(group_label_s3)) {
+  if (length(body_s3) > 0) {
+    body_s3 <- c(body_s3, "\\addlinespace")
+  }
+  body_s3 <- c(body_s3, paste0("\\multicolumn{", n_col_s3, "}{l}{\\textit{",
+                               group_label_s3[[g]], "}} \\tabularnewline"))
+  d <- desc_s3[desc_s3[["group"]] == g, ]
+  for (j in seq_len(nrow(d))) {
+    s <- summary_s3[key_summary == paste(g, d[["script"]][j]), ]
+    comparison <- if (d[["bibkey"]][j] == "") {
+      d[["comparison"]][j]
+    } else {
+      paste0(d[["comparison"]][j], "~\\cite{", d[["bibkey"]][j], "}")
+    }
+    # the files are reproduce_<name>.R and validate_<name>.R; the table shows <name>
+    name <- sub("^(reproduce|validate)_", "", d[["script"]][j])
+    cells <- c(paste0("\\texttt{", tex_escape(name), "}"), paste0("\\raggedright ", comparison),
+               as.character(unlist(s[verdict_names])))
+    body_s3 <- c(body_s3, paste0(paste(cells, collapse = " & "), " \\tabularnewline"))
+  }
+}
+caption_s3 <- paste0(
+  "Verdicts of the scripts that reproduce published results with the \\texttt{R} package ",
+  "\\texttt{satrct} (version ", version_s3, ") and validate it, by script.")
+note_s3 <- paste0(
+  "PASS, the recomputed value agrees with the reference under the stated rule; EXPLAINED, it ",
+  "does not, and the reason is identified and recorded; FAIL, it does not; INFO, no pass or fail ",
+  "rule applies (values read from figures, qualitative statements or the accuracy of an ",
+  "approximation). The scripts are the files \\texttt{reproduce\\_}\\textit{name}\\texttt{.R} in ",
+  "\\texttt{inst/reproduce} and \\texttt{validate\\_}\\textit{name}\\texttt{.R} in ",
+  "\\texttt{inst/validation}.")
+if (length(explained_s3) > 0) {
+  note_s3 <- paste(note_s3, paste(explained_s3, collapse = " "))
+}
+# The comparison column is a paragraph column, so the rows end with \tabularnewline, which
+# \raggedright does not redefine
+write_table(tab_dir, "tableS3_validation", c(
+  "\\begin{table}[!htb]",
+  "\\centering",
+  "\\small",
+  paste0("\\caption{", caption_s3, "}"),
+  "\\label{tab:validation}",
+  "\\footnotesize",
+  "\\setlength{\\tabcolsep}{4pt}",
+  paste0("\\begin{tabular}{lp{6.4cm}", strrep("c", length(verdict_names)), "}"),
+  "\\toprule",
+  paste0("Script & Comparison & ", paste(verdict_names, collapse = " & "), " \\tabularnewline"),
+  "\\midrule",
+  body_s3,
+  "\\bottomrule",
+  "\\end{tabular}",
+  "\\par\\smallskip",
+  "\\begin{minipage}{0.95\\linewidth}",
+  "\\footnotesize",
+  note_s3,
+  "\\end{minipage}",
+  "\\end{table}"))
