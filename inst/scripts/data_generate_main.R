@@ -272,7 +272,11 @@ assert_close(table3[["above_alpha_matched"]][k],
 # m_avg = b_bar + z_{1 - alpha} (sqrt(V_S + tau^2) - sqrt(V_S)), and the margin
 # m_0.95 = b_bar + z_{0.95} tau is the 95th percentile of the bias, so that the type I error rate
 # given the bias is at most alpha in 95% of trials. Both margins equal b_bar when tau = 0. The
-# power of the SAT with either margin is evaluated without bias.
+# power of the SAT with either margin is evaluated without bias (power_sat_margin_avg and
+# power_sat_margin_q95), as in the definition of m_crit, and averaged over the distribution of
+# the bias from which the margins are derived (power_sat_margin_avg_averaged and
+# power_sat_margin_q95_averaged). The type I error rate averaged over this distribution is also
+# computed for m_0.95 (type1_sat_margin_q95).
 v_sat3 <- mse_sat(table3[["n"]], table3[["n_e"]], sigma_t = table3[["sigma"]])
 table3[["margin_avg"]] <- table3[["bias_mean"]] +
   z_alpha * (sqrt(v_sat3 + table3[["tau_used"]]^2) - sqrt(v_sat3))
@@ -299,6 +303,57 @@ for (v in c("avg", "q95")) {
                paste0("Table 3: the SAT with the margin m_", v, " has more power than the RCT ",
                       "exactly when the margin is below m_crit"))
 }
+# Power of the SAT with each margin and type I error rate with m_0.95, averaged over the
+# distribution of the bias
+table3[["power_sat_margin_avg_averaged"]] <- power_sat(table3[["n"]], table3[["delta"]],
+                                                       table3[["n_e"]],
+                                                       bias = table3[["bias_mean"]],
+                                                       margin = table3[["margin_avg"]],
+                                                       tau = table3[["tau_used"]],
+                                                       sigma_t = table3[["sigma"]],
+                                                       alpha = alpha)
+table3[["power_sat_margin_q95_averaged"]] <- power_sat(table3[["n"]], table3[["delta"]],
+                                                       table3[["n_e"]],
+                                                       bias = table3[["bias_mean"]],
+                                                       margin = table3[["margin_q95"]],
+                                                       tau = table3[["tau_used"]],
+                                                       sigma_t = table3[["sigma"]],
+                                                       alpha = alpha)
+table3[["type1_sat_margin_q95"]] <- power_sat(table3[["n"]], 0, table3[["n_e"]],
+                                              bias = table3[["bias_mean"]],
+                                              margin = table3[["margin_q95"]],
+                                              tau = table3[["tau_used"]],
+                                              sigma_t = table3[["sigma"]], alpha = alpha)
+# Averaged over the distribution of the bias, the mean bias cancels: with m_avg the power is
+# Phi(delta / sqrt(V_S + tau^2) - z_{1 - alpha}), and with m_0.95 it is
+# Phi((delta - z_{0.95} tau - z_{1 - alpha} sqrt(V_S)) / sqrt(V_S + tau^2))
+sd_bias_avg3 <- sqrt(v_sat3 + table3[["tau_used"]]^2)
+assert_close(table3[["power_sat_margin_avg_averaged"]],
+             pnorm(table3[["delta"]] / sd_bias_avg3 - z_alpha), 1e-12,
+             "Table 4: closed form of the averaged power of the SAT with m_avg")
+assert_close(table3[["power_sat_margin_q95_averaged"]],
+             pnorm((table3[["delta"]] - qnorm(0.95) * table3[["tau_used"]] -
+                      z_alpha * sqrt(v_sat3)) / sd_bias_avg3), 1e-12,
+             "Table 4: closed form of the averaged power of the SAT with m_0.95")
+# Hence the SAT with m_avg has more averaged power than the RCT exactly when tau < b*, whatever
+# b_bar, which is the condition under which the ROC curve of the SAT with a random bias lies
+# above that of the RCT
+assert_close(table3[["power_sat_margin_avg_averaged"]] > table3[["power_rct"]],
+             table3[["tau_below_breakeven"]], 0,
+             paste("Table 4: averaged over the bias, the SAT with m_avg has more power than the",
+                   "RCT exactly when tau is below b*"))
+# With tau = 0 both margins equal b_bar, and the averaged power is the power of the SAT without
+# bias and margin
+k <- table3[["tau_used"]] == 0
+assert_close(table3[["power_sat_margin_avg_averaged"]][k], table3[["power_sat"]][k], 1e-12,
+             "Table 4: with tau = 0, the averaged power with m_avg is the power without bias")
+# With tau > 0, the averaged type I error rate with m_0.95 is below alpha exactly when m_0.95
+# exceeds m_avg
+k <- table3[["tau_used"]] > 0
+assert_close(table3[["type1_sat_margin_q95"]][k] < alpha,
+             table3[["margin_q95"]][k] > table3[["margin_avg"]][k], 0,
+             paste("Table 4: the averaged type I error rate with m_0.95 is below alpha exactly",
+                   "when m_0.95 exceeds m_avg"))
 save_csv(table3, "table3_empirical_bias.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]

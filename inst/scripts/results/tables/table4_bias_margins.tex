@@ -2,14 +2,15 @@
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\caption{Bias margins for the single-arm trial (SAT) of Table~\ref{tab:empirical} under the published estimates of the bias from the weighted analyses. With the margin $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha = 0.025$. The margin $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution, so that the type I error rate given the bias is at most $\alpha$ in 95\% of trials.}
+\caption{Bias margins for the single-arm trial (SAT) of Table~\ref{tab:empirical} under the published estimates of the bias from the weighted analyses (a), and power of the SAT with each margin, averaged over the distribution of the bias, and of the randomized controlled trial (RCT) with 1:1 randomization at one-sided $\alpha = 0.025$ (b).}
 \label{tab:margins}
 \begin{tabular}{lclccccccc}
 \toprule
-Endpoint & $K$ & Analysis & $\bar{b}$ & $\tau$ & $m_{0.95}$ & \multicolumn{4}{c}{$m_{\mathrm{avg}}$ by $N$} \\
+Endpoint & $K$ & Analysis & $\bar{b}$ & $\tau$ & $m_{0.95}$ & \multicolumn{4}{c}{$N$} \\
 \cmidrule(lr){7-10}
  & & & & & & 30 & 60 & 90 & 120 \\
 \midrule
+\multicolumn{10}{l}{\textit{(a) Bias margins, with $m_{\mathrm{avg}}$ by $N$}} \\
 \multicolumn{10}{l}{Incerti et al.~\cite{Incerti2023}} \\
 OS & 14 & Weighted & 0.098 & 0.114 & 0.285$^{\S}$ & 0.143 & 0.160 & 0.171 & 0.180 \\
 OS & 13 & Weighted$^{\ddagger}$ & 0.132 & 0.061 & 0.233$^{\S}$ & 0.146 & 0.151 & 0.155 & 0.158 \\
@@ -21,15 +22,33 @@ OS & 14 & Weighted & 0.061 & 0.109 & 0.240$^{\S}$ & 0.103 & 0.118 & 0.129 & 0.13
 OS & 13 & Weighted$^{\ddagger}$ & 0.086 & 0.059 & 0.183 & 0.098 & 0.103 & 0.107 & 0.110 \\
 \addlinespace
 \multicolumn{10}{l}{Gupta et al.~\cite{Gupta2025}} \\
-OS & 15 & Weighted & 0.139 & -- & 0.139 & 0.139 & 0.139 & 0.139 & 0.139 \\
-OS & 15 & Weighted, QBA & 0.098 & -- & 0.098 & 0.098 & 0.098 & 0.098 & 0.098 \\
-OS & 14 & Weighted$^{\ddagger}$ & 0.067 & -- & 0.067 & 0.067 & 0.067 & 0.067 & 0.067 \\
-OS & 14 & Weighted, QBA$^{\ddagger}$ & 0.025 & -- & 0.025 & 0.025 & 0.025 & 0.025 & 0.025 \\
+OS & 15 & Weighted & 0.139 & -- & -- & 0.139 & 0.139 & 0.139 & 0.139 \\
+OS & 15 & Weighted, QBA & 0.098 & -- & -- & 0.098 & 0.098 & 0.098 & 0.098 \\
+OS & 14 & Weighted$^{\ddagger}$ & 0.067 & -- & -- & 0.067 & 0.067 & 0.067 & 0.067 \\
+OS & 14 & Weighted, QBA$^{\ddagger}$ & 0.025 & -- & -- & 0.025 & 0.025 & 0.025 & 0.025 \\
+\addlinespace
+\multicolumn{10}{l}{\textit{(b) Power by $N$, averaged over the distribution of the bias}} \\
+\multicolumn{6}{l}{RCT} & 0.215 & 0.380 & 0.527 & 0.648 \\
+\multicolumn{10}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.420 & 0.639 & 0.759 & 0.828 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.245 & 0.416 & 0.543 & 0.637$^{\P}$ \\
+OS & 13 & Weighted$^{\ddagger}$ & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.462 & 0.730 & 0.868 & 0.935 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.340 & 0.580 & 0.743 & 0.844 \\
+\addlinespace
+\multicolumn{10}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.370 & 0.532 & 0.621 & 0.675 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.184$^{\P}$ & 0.303$^{\P}$ & 0.393$^{\P}$ & 0.461$^{\P}$ \\
+PFS & 13 & Weighted$^{\ddagger}$ & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.440 & 0.683 & 0.814 & 0.885 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.282 & 0.482 & 0.628 & 0.730 \\
+OS & 14 & Weighted & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.425 & 0.649 & 0.772 & 0.842 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.253 & 0.429 & 0.561 & 0.657 \\
+OS & 13 & Weighted$^{\ddagger}$ & \multicolumn{3}{l}{SAT with $m_{\mathrm{avg}}$} & 0.463 & 0.732 & 0.871 & 0.938 \\
+ &  &  & \multicolumn{3}{l}{SAT with $m_{0.95}$} & 0.344 & 0.587 & 0.750 & 0.851 \\
 \bottomrule
 \end{tabular}
 \par\smallskip
 \begin{minipage}{0.95\linewidth}
 \footnotesize
-The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$ (Table~\ref{tab:empirical}(a)). Margins above $m_{\mathrm{crit}}$ are marked with $\S$; with such a margin, the SAT without bias has less power than the randomized controlled trial. Both margins equal $\bar{b}$ when $\tau = 0$, and they are computed from $\bar{b}$ before rounding. $K$ is the number of comparisons. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier (study 5 of Incerti et al.\ and Bahmane et al.\ and the NILE trial of Gupta et al.). OS, overall survival; PFS, progression-free survival (real-world progression-free survival for the external controls); QBA, quantitative bias analysis.
+With the margin $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha$. The margin $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution, so that the type I error rate given the bias is at most $\alpha$ in 95\% of trials. The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$ (Table~\ref{tab:empirical}(a)), and margins above it are marked with $\S$; with such a margin, the SAT has less power than the RCT when the external control is unbiased. Averaged powers below the power of the RCT in the same column are marked with $\P$. Gupta et al.\ report no between-study standard deviation, so that $m_{0.95}$ and (b) are not shown for their estimates and $m_{\mathrm{avg}}$ equals $\bar{b}$; Section~\ref{S-sec:bias_uncertainty} of the Supporting Information uses the standard deviation of the trial-level differences instead. The margins are computed from $\bar{b}$ before rounding. $K$, $\ddagger$ and the abbreviations are as in Table~\ref{tab:empirical}.
 \end{minipage}
 \end{table}

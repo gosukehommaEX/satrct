@@ -160,7 +160,7 @@ if (!file.exists(table3_path)) {
 table3 <- utils::read.csv(table3_path, stringsAsFactors = FALSE)
 design_s3 <- table3[!duplicated(table3[["n"]]),
                     c("alpha", "n", "n_e", "hazard_ratio", "prob_event", "delta", "sigma",
-                      "alpha_matched", "breakeven_bias", "critical_margin")]
+                      "alpha_matched", "breakeven_bias", "critical_margin", "power_rct")]
 design_s3 <- design_s3[order(design_s3[["n"]]), ]
 rownames(design_s3) <- NULL
 stopifnot(all(design_s3[["alpha"]] == alpha))
@@ -171,6 +171,9 @@ assert_close(design_s3[["alpha_matched"]],
              matched_alpha(design_s3[["n"]], design_s3[["delta"]], design_s3[["n_e"]], 0,
                            sd_surv_s3, sd_surv_s3, alpha)[["alpha_matched"]],
              1e-12, "Table S3: alpha' is that of Table 3")
+assert_close(design_s3[["power_rct"]],
+             power_rct(design_s3[["n"]], design_s3[["delta"]], sd_surv_s3, sd_surv_s3, alpha),
+             1e-12, "Table S5: the power of the RCT is that of Table 3")
 
 known_measures_s3 <- c("hr_internal_vs_external", "log_hr_difference")
 variation_levels <- c("mean_upper", "tau_upper", "ivw_mean", "trial_sd")
@@ -243,6 +246,38 @@ k <- tab_s3[["tau_used"]] == 0
 assert_close(tab_s3[["above_alpha_matched"]][k],
              tab_s3[["bias_mean"]][k] > tab_s3[["critical_margin"]][k], 0,
              "Table S3: with tau = 0, alpha' is exceeded exactly when the bias exceeds m_crit")
+# Tables S4 and S5: the margins m_avg and m_0.95 of Table 4 of the main text, the type I error
+# rate with m_avg and the power of the SAT with each margin, averaged over the distribution of
+# the bias, under each variation of Table S3. They are saved with the results of Table S3.
+z_alpha_s3 <- qnorm(alpha, lower.tail = FALSE)
+v_sat_s3 <- mse_sat(tab_s3[["n"]], tab_s3[["n_e"]], sigma_t = tab_s3[["sigma"]])
+sd_bias_avg_s3 <- sqrt(v_sat_s3 + tab_s3[["tau_used"]]^2)
+tab_s3[["margin_avg"]] <- tab_s3[["bias_mean"]] + z_alpha_s3 * (sd_bias_avg_s3 - sqrt(v_sat_s3))
+tab_s3[["margin_q95"]] <- tab_s3[["bias_mean"]] + qnorm(0.95) * tab_s3[["tau_used"]]
+tab_s3[["type1_sat_margin_avg"]] <- power_sat(tab_s3[["n"]], 0, tab_s3[["n_e"]],
+                                              bias = tab_s3[["bias_mean"]],
+                                              margin = tab_s3[["margin_avg"]],
+                                              tau = tab_s3[["tau_used"]],
+                                              sigma_t = tab_s3[["sigma"]], alpha = alpha)
+for (v in c("avg", "q95")) {
+  tab_s3[[paste0("power_sat_margin_", v, "_averaged")]] <-
+    power_sat(tab_s3[["n"]], tab_s3[["delta"]], tab_s3[["n_e"]], bias = tab_s3[["bias_mean"]],
+              margin = tab_s3[[paste0("margin_", v)]], tau = tab_s3[["tau_used"]],
+              sigma_t = tab_s3[["sigma"]], alpha = alpha)
+}
+assert_close(tab_s3[["type1_sat_margin_avg"]], alpha, 1e-12,
+             "Table S4: the type I error rate averaged over the bias equals alpha at m_avg")
+assert_close(tab_s3[["power_sat_margin_avg_averaged"]],
+             pnorm(tab_s3[["delta"]] / sd_bias_avg_s3 - z_alpha_s3), 1e-12,
+             "Table S5: closed form of the averaged power of the SAT with m_avg")
+assert_close(tab_s3[["power_sat_margin_q95_averaged"]],
+             pnorm((tab_s3[["delta"]] - qnorm(0.95) * tab_s3[["tau_used"]] -
+                      z_alpha_s3 * sqrt(v_sat_s3)) / sd_bias_avg_s3), 1e-12,
+             "Table S5: closed form of the averaged power of the SAT with m_0.95")
+assert_close(tab_s3[["power_sat_margin_avg_averaged"]] > tab_s3[["power_rct"]],
+             tab_s3[["tau_below_breakeven"]], 0,
+             paste("Table S5: averaged over the bias, the SAT with m_avg has more power than the",
+                   "RCT exactly when tau is below b*"))
 save_csv(tab_s3, "tableS3_bias_uncertainty.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]

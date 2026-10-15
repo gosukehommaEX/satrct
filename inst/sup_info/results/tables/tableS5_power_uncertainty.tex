@@ -1,0 +1,48 @@
+\begin{table}[!htb]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Power of the single-arm trial (SAT) with the margin $m_{\mathrm{avg}}$ of Table~\ref{tab:margin_uncertainty}, averaged over the distribution of the bias, and of the randomized controlled trial (RCT) with 1:1 randomization, when the published estimates of the bias are replaced by the values of Table~\ref{tab:bias_uncertainty}, for a time-to-event endpoint with hazard ratio 0.6 and an external control of $N_E = 2N$ patients, by the total size $N$, with one-sided $\alpha = 0.025$.}
+\label{tab:power_uncertainty}
+\begin{tabular}{lcllccccc}
+\toprule
+Endpoint & $K$ & Analysis & Variation & $\tau$ & \multicolumn{4}{c}{$N$} \\
+\cmidrule(lr){6-9}
+ & & & & & 30 & 60 & 90 & 120 \\
+\midrule
+\multicolumn{5}{l}{Power of RCT} & 0.215 & 0.380 & 0.527 & 0.648 \\
+\addlinespace
+\multicolumn{9}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.114 & 0.420 & 0.639 & 0.759 & 0.828 \\
+ &  &  & Upper $\tau$ & 0.263 & 0.275 & 0.351$^{\P}$ & 0.388$^{\P}$ & 0.410$^{\P}$ \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.061 & 0.462 & 0.730 & 0.868 & 0.935 \\
+ &  &  & Upper $\tau$ & 0.168 & 0.366 & 0.524 & 0.610 & 0.663 \\
+\addlinespace
+\multicolumn{9}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & Upper $\bar{b}$ & 0.164 & 0.370 & 0.532 & 0.621 & 0.675 \\
+ &  &  & Upper $\tau$ & 0.314 & 0.235 & 0.286$^{\P}$ & 0.309$^{\P}$ & 0.322$^{\P}$ \\
+PFS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.091 & 0.440 & 0.683 & 0.814 & 0.885 \\
+ &  &  & Upper $\tau$ & 0.219 & 0.315 & 0.423 & 0.479$^{\P}$ & 0.512$^{\P}$ \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.109 & 0.425 & 0.649 & 0.772 & 0.842 \\
+ &  &  & Upper $\tau$ & 0.273 & 0.267 & 0.337$^{\P}$ & 0.370$^{\P}$ & 0.390$^{\P}$ \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.059 & 0.463 & 0.732 & 0.871 & 0.938 \\
+ &  &  & Upper $\tau$ & 0.170 & 0.364 & 0.520 & 0.605 & 0.656 \\
+\addlinespace
+\multicolumn{9}{l}{Gupta et al.~\cite{Gupta2025}} \\
+OS & 15 & Unadjusted & IVW mean & -- & 0.481 & 0.771 & 0.912 & 0.969 \\
+ &  &  & Trial SD & 0.334 & 0.222 & 0.265$^{\P}$ & 0.284$^{\P}$ & 0.295$^{\P}$ \\
+OS & 14 & Unadjusted$^{\ddagger}$ & Trial SD & 0.210 & 0.324 & 0.439 & 0.500$^{\P}$ & 0.536$^{\P}$ \\
+OS & 15 & Weighted & IVW mean & -- & 0.481 & 0.771 & 0.912 & 0.969 \\
+ &  &  & Trial SD & 0.317 & 0.234 & 0.283$^{\P}$ & 0.305$^{\P}$ & 0.318$^{\P}$ \\
+OS & 14 & Weighted$^{\ddagger}$ & Trial SD & 0.151 & 0.384 & 0.560 & 0.657 & 0.716 \\
+OS & 15 & Weighted, QBA & IVW mean & -- & 0.481 & 0.771 & 0.912 & 0.969 \\
+ &  &  & Trial SD & 0.324 & 0.228 & 0.275$^{\P}$ & 0.296$^{\P}$ & 0.308$^{\P}$ \\
+OS & 14 & Weighted, QBA$^{\ddagger}$ & Trial SD & 0.158 & 0.376 & 0.544 & 0.637 & 0.693 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+The power of the SAT is averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$. It does not depend on $\bar{b}$, so that the rows with the upper limit of $\bar{b}$ repeat Table~\ref{M-tab:margins}(b) of the main text, and it exceeds the power of the RCT exactly when $\tau$ is below the break-even bias $b^{*}$ (Table~\ref{M-tab:empirical}(a) of the main text). Powers below the power of the RCT in the same column are marked with $\P$. IVW mean is used with $\tau = 0$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
+\end{minipage}
+\end{table}

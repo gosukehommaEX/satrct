@@ -1,0 +1,46 @@
+\begin{table}[!htb]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Bias margins $m_{\mathrm{avg}}$ and $m_{0.95}$ of Table~\ref{M-tab:margins} of the main text when the published estimates of the bias are replaced by the values of Table~\ref{tab:bias_uncertainty}, for a time-to-event endpoint with hazard ratio 0.6 and an external control of $N_E = 2N$ patients, by the total size $N$, with one-sided $\alpha = 0.025$.}
+\label{tab:margin_uncertainty}
+\begin{tabular}{lcllccccc}
+\toprule
+Endpoint & $K$ & Analysis & Variation & $m_{0.95}$ & \multicolumn{4}{c}{$m_{\mathrm{avg}}$ by $N$} \\
+\cmidrule(lr){6-9}
+ & & & & & 30 & 60 & 90 & 120 \\
+\midrule
+\multicolumn{9}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.387$^{\S}$ & 0.245$^{\S}$ & 0.262$^{\S}$ & 0.273$^{\S}$ & 0.282$^{\S}$ \\
+ &  &  & Upper $\tau$ & 0.530$^{\S}$ & 0.309$^{\S}$ & 0.362$^{\S}$ & 0.393$^{\S}$ & 0.414$^{\S}$ \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.321$^{\S}$ & 0.234$^{\S}$ & 0.239$^{\S}$ & 0.243$^{\S}$ & 0.247$^{\S}$ \\
+ &  &  & Upper $\tau$ & 0.409$^{\S}$ & 0.227$^{\S}$ & 0.258$^{\S}$ & 0.277$^{\S}$ & 0.291$^{\S}$ \\
+\addlinespace
+\multicolumn{9}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & Upper $\bar{b}$ & 0.387$^{\S}$ & 0.208$^{\S}$ & 0.238$^{\S}$ & 0.257$^{\S}$ & 0.270$^{\S}$ \\
+ &  &  & Upper $\tau$ & 0.517$^{\S}$ & 0.285$^{\S}$ & 0.349$^{\S}$ & 0.384$^{\S}$ & 0.408$^{\S}$ \\
+PFS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.272$^{\S}$ & 0.152 & 0.163 & 0.171 & 0.177 \\
+ &  &  & Upper $\tau$ & 0.392$^{\S}$ & 0.185 & 0.228$^{\S}$ & 0.254$^{\S}$ & 0.272$^{\S}$ \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.341$^{\S}$ & 0.203$^{\S}$ & 0.219$^{\S}$ & 0.229$^{\S}$ & 0.237$^{\S}$ \\
+ &  &  & Upper $\tau$ & 0.510$^{\S}$ & 0.286$^{\S}$ & 0.341$^{\S}$ & 0.373$^{\S}$ & 0.395$^{\S}$ \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.270$^{\S}$ & 0.186 & 0.191 & 0.195 & 0.198 \\
+ &  &  & Upper $\tau$ & 0.365$^{\S}$ & 0.183 & 0.213$^{\S}$ & 0.233$^{\S}$ & 0.247$^{\S}$ \\
+\addlinespace
+\multicolumn{9}{l}{Gupta et al.~\cite{Gupta2025}} \\
+OS & 15 & Unadjusted & IVW mean & -- & 0.161 & 0.161 & 0.161 & 0.161 \\
+ &  &  & Trial SD & 0.796$^{\S}$ & 0.561$^{\S}$ & 0.628$^{\S}$ & 0.665$^{\S}$ & 0.689$^{\S}$ \\
+OS & 14 & Unadjusted$^{\ddagger}$ & Trial SD & 0.525$^{\S}$ & 0.322$^{\S}$ & 0.362$^{\S}$ & 0.388$^{\S}$ & 0.405$^{\S}$ \\
+OS & 15 & Weighted & IVW mean & -- & 0.080 & 0.080 & 0.080 & 0.080 \\
+ &  &  & Trial SD & 0.660$^{\S}$ & 0.427$^{\S}$ & 0.491$^{\S}$ & 0.527$^{\S}$ & 0.550$^{\S}$ \\
+OS & 14 & Weighted$^{\ddagger}$ & Trial SD & 0.316$^{\S}$ & 0.145 & 0.171 & 0.188 & 0.200$^{\S}$ \\
+OS & 15 & Weighted, QBA & IVW mean & -- & $-$0.006 & $-$0.006 & $-$0.006 & $-$0.006 \\
+ &  &  & Trial SD & 0.631$^{\S}$ & 0.398$^{\S}$ & 0.463$^{\S}$ & 0.499$^{\S}$ & 0.523$^{\S}$ \\
+OS & 14 & Weighted, QBA$^{\ddagger}$ & Trial SD & 0.286$^{\S}$ & 0.110 & 0.138 & 0.156 & 0.169 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+With $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha$, and $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution. The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$, and margins above it are marked with $\S$. The rows are those of Table~\ref{tab:bias_uncertainty}, which gives $\bar{b}$ and $\tau$. IVW mean is used with $\tau = 0$, so that $m_{0.95}$ is not shown and $m_{\mathrm{avg}}$ equals $\bar{b}$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
+\end{minipage}
+\end{table}

@@ -321,55 +321,102 @@ write_table(tab_dir, "table3_empirical_bias",
                         size = c("\\small", "\\setlength{\\tabcolsep}{2.5pt}")))
 
 # ---- Table 4: bias margins under the published estimates of the bias ----
-# The weighted analyses of Table 3, with the source written in a row of its own. m_crit and
-# m_0.95 do not depend on N in this setting (N_E = 2 N), and margins above m_crit are marked.
+# The weighted analyses of Table 3, with the source written in a row of its own. (a) gives the
+# margins and (b) the power of the SAT with each margin averaged over the distribution of the
+# bias, for the estimates with a between-study standard deviation, beside the power of the RCT.
+# m_crit and m_0.95 do not depend on N in this setting (N_E = 2 N). Margins above m_crit and
+# averaged powers below the power of the RCT are marked. Gupta et al. report no between-study
+# standard deviation, so m_0.95 and (b) are not shown for their estimates.
 stopifnot(diff(range(tab3[["critical_margin"]])) < 1e-12)
 m_crit4 <- tab3[["critical_margin"]][1]
 mark_above_crit <- function(x) {
   ifelse(x > m_crit4, paste0(fmt_num(x), "$^{\\S}$"), fmt_num(x))
 }
+mark_below_rct <- function(x, power_rct) {
+  ifelse(x < power_rct, paste0(fmt_prob(x), "$^{\\P}$"), fmt_prob(x))
+}
 n_col4 <- 6 + length(sizes3)
-body4 <- character(0)
+source_line4 <- function(first) {
+  paste0("\\multicolumn{", n_col4, "}{l}{", first[["author"]], "~\\cite{", first[["bibkey"]],
+         "}} \\\\")
+}
+ids4 <- sort(unique(tab3[["id"]][tab3[["analysis"]] != "Unadjusted"]))
+body4 <- paste0("\\multicolumn{", n_col4, "}{l}{\\textit{(a) Bias margins, with ",
+                "$m_{\\mathrm{avg}}$ by $N$}} \\\\")
 previous_key <- ""
-for (s in sort(unique(tab3[["id"]][tab3[["analysis"]] != "Unadjusted"]))) {
+for (s in ids4) {
   d <- tab3[tab3[["id"]] == s, ]
   d <- d[order(d[["n"]]), ]
   stopifnot(nrow(d) == length(sizes3), all(d[["n"]] == sizes3),
             diff(range(d[["margin_q95"]])) < 1e-12)
   first <- d[1, ]
   if (first[["bibkey"]] != previous_key) {
-    body4 <- c(body4, if (length(body4) > 0) "\\addlinespace",
-               paste0("\\multicolumn{", n_col4, "}{l}{", first[["author"]], "~\\cite{",
-                      first[["bibkey"]], "}} \\\\"))
+    body4 <- c(body4, if (previous_key != "") "\\addlinespace", source_line4(first))
   }
   previous_key <- first[["bibkey"]]
   tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
+  q95_cell <- if (is.na(first[["tau"]])) "--" else mark_above_crit(first[["margin_q95"]])
   cells <- c(first[["endpoint"]], fmt_setting(first[["n_comparisons"]]), analysis_cell(first),
-             fmt_num(first[["bias_mean"]]), tau_cell, mark_above_crit(first[["margin_q95"]]),
+             fmt_num(first[["bias_mean"]]), tau_cell, q95_cell,
              mark_above_crit(d[["margin_avg"]]))
   body4 <- c(body4, paste0(paste(cells, collapse = " & "), " \\\\"))
 }
+body4 <- c(body4, "\\addlinespace",
+           paste0("\\multicolumn{", n_col4, "}{l}{\\textit{(b) Power by $N$, averaged over ",
+                  "the distribution of the bias}} \\\\"),
+           design_line("RCT", fmt_prob(design3[["power_rct"]])))
+margin_label4 <- c(avg = "$m_{\\mathrm{avg}}$", q95 = "$m_{0.95}$")
+previous_key <- ""
+for (s in ids4) {
+  d <- tab3[tab3[["id"]] == s, ]
+  d <- d[order(d[["n"]]), ]
+  first <- d[1, ]
+  if (is.na(first[["tau"]])) {
+    next
+  }
+  stopifnot(max(abs(d[["power_rct"]] - design3[["power_rct"]])) < 1e-12)
+  if (first[["bibkey"]] != previous_key) {
+    body4 <- c(body4, if (previous_key != "") "\\addlinespace", source_line4(first))
+  }
+  previous_key <- first[["bibkey"]]
+  for (v in names(margin_label4)) {
+    lead <- if (v == "avg") {
+      c(first[["endpoint"]], fmt_setting(first[["n_comparisons"]]), analysis_cell(first))
+    } else {
+      c("", "", "")
+    }
+    cells <- c(lead, paste0("\\multicolumn{3}{l}{SAT with ", margin_label4[[v]], "}"),
+               mark_below_rct(d[[paste0("power_sat_margin_", v, "_averaged")]],
+                              d[["power_rct"]]))
+    body4 <- c(body4, paste0(paste(cells, collapse = " & "), " \\\\"))
+  }
+}
 header4 <- c(
   paste0("Endpoint & $K$ & Analysis & $\\bar{b}$ & $\\tau$ & $m_{0.95}$ & \\multicolumn{",
-         length(sizes3), "}{c}{$m_{\\mathrm{avg}}$ by $N$} \\\\"),
+         length(sizes3), "}{c}{$N$} \\\\"),
   paste0("\\cmidrule(lr){7-", n_col4, "}"),
   paste0(" & & & & & & ", paste(fmt_setting(sizes3), collapse = " & "), " \\\\")
 )
 caption4 <- paste0(
   "Bias margins for the single-arm trial (SAT) of Table~\\ref{tab:empirical} under the ",
-  "published estimates of the bias from the weighted analyses. With the margin ",
-  "$m_{\\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias ",
-  "with mean $\\bar{b}$ and standard deviation $\\tau$ equals $\\alpha = ", fmt_setting(alpha3),
-  "$. The margin $m_{0.95} = \\bar{b} + z_{0.95}\\tau$ is the 95th percentile of this ",
-  "distribution, so that the type I error rate given the bias is at most $\\alpha$ in 95\\% ",
-  "of trials.")
+  "published estimates of the bias from the weighted analyses (a), and power of the SAT with ",
+  "each margin, averaged over the distribution of the bias, and of the randomized controlled ",
+  "trial (RCT) with 1:1 randomization at one-sided $\\alpha = ", fmt_setting(alpha3), "$ (b).")
 note4 <- paste0(
-  "The critical margin is $m_{\\mathrm{crit}} = ", fmt_num(m_crit4), "$ at every $N$ ",
-  "(Table~\\ref{tab:empirical}(a)). Margins above $m_{\\mathrm{crit}}$ are marked with ",
-  "$\\S$; with such a margin, the SAT without bias has less power than the randomized ",
-  "controlled trial. Both margins equal $\\bar{b}$ when $\\tau = 0$, and they are computed ",
-  "from $\\bar{b}$ before rounding. $K$ is the number of comparisons. ", outlier_note3, " ",
-  abbreviations3)
+  "With the margin $m_{\\mathrm{avg}}$, the type I error rate averaged over a normal ",
+  "distribution of the bias with mean $\\bar{b}$ and standard deviation $\\tau$ equals ",
+  "$\\alpha$. The margin $m_{0.95} = \\bar{b} + z_{0.95}\\tau$ is the 95th percentile of this ",
+  "distribution, so that the type I error rate given the bias is at most $\\alpha$ in 95\\% of ",
+  "trials. The critical margin is $m_{\\mathrm{crit}} = ", fmt_num(m_crit4), "$ at every $N$ ",
+  "(Table~\\ref{tab:empirical}(a)), and margins above it are marked with $\\S$; with such a ",
+  "margin, the SAT has less power than the RCT when the external control is unbiased. ",
+  "Averaged powers below the power of the RCT in the same column are marked with $\\P$. ",
+  "Gupta et al.\\ report no between-study standard deviation, so that $m_{0.95}$ and (b) are ",
+  "not shown for their estimates and $m_{\\mathrm{avg}}$ equals $\\bar{b}$; ",
+  "Section~\\ref{S-sec:bias_uncertainty} of the Supporting Information uses the standard ",
+  "deviation of the trial-level differences instead. The margins are computed from $\\bar{b}$ ",
+  "before rounding. $K$, $\\ddagger$ and the abbreviations are as in ",
+  "Table~\\ref{tab:empirical}.")
 write_table(tab_dir, "table4_bias_margins",
             table_lines(caption4, "tab:margins",
                         paste0("lcl", "ccc", strrep("c", length(sizes3))),
