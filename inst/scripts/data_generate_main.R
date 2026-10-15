@@ -354,6 +354,18 @@ assert_close(table3[["type1_sat_margin_q95"]][k] < alpha,
              table3[["margin_q95"]][k] > table3[["margin_avg"]][k], 0,
              paste("Table 4: the averaged type I error rate with m_0.95 is below alpha exactly",
                    "when m_0.95 exceeds m_avg"))
+# Proportion of trials whose bias exceeds m_avg, P(B > m_avg), for a random bias (tau > 0); NA
+# when tau = 0. m_avg controls the type I error rate on average over trials, not in each trial.
+k <- table3[["tau_used"]] > 0
+table3[["prob_bias_above_margin_avg"]] <- NA_real_
+table3[["prob_bias_above_margin_avg"]][k] <- pnorm(table3[["margin_avg"]][k],
+                                                   mean = table3[["bias_mean"]][k],
+                                                   sd = table3[["tau_used"]][k],
+                                                   lower.tail = FALSE)
+assert_close(table3[["prob_bias_above_margin_avg"]][k],
+             pnorm(z_alpha * (sd_bias_avg3[k] - sqrt(v_sat3[k])) / table3[["tau_used"]][k],
+                   lower.tail = FALSE), 1e-12,
+             "Table 3: closed form of the proportion of trials whose bias exceeds m_avg")
 save_csv(table3, "table3_empirical_bias.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]

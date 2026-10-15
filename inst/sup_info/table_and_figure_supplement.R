@@ -235,7 +235,8 @@ header_s3 <- c(
 )
 caption_s3 <- paste0(
   "Type I error rate of a single-arm trial (SAT) without margin when the published estimates ",
-  "of the bias of external controls in Table~\\ref{M-tab:empirical} of the main text are ",
+  "of the bias of external controls in Table~\\ref{M-tab:empirical} of the main article ",
+  "are ",
   "replaced by alternative values that reflect their uncertainty, for a time-to-event endpoint ",
   "with hazard ratio ",
   fmt_setting(hr_s3), " and an external control of $N_E = 2N$ patients, by the total size $N$, ",
@@ -342,7 +343,7 @@ header_s4 <- c(
 )
 caption_s4 <- paste0(
   "Bias margins $m_{\\mathrm{avg}}$ and $m_{0.95}$ of Table~\\ref{M-tab:margins} of the main ",
-  "text ", settings_s4)
+  "article ", settings_s4)
 note_s4 <- paste0(
   "With $m_{\\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the ",
   "bias with mean $\\bar{b}$ and standard deviation $\\tau$ equals $\\alpha$, and ",
@@ -382,9 +383,9 @@ note_s5 <- paste0(
   "The power of the SAT is averaged over a normal distribution of the bias with mean ",
   "$\\bar{b}$ and standard deviation $\\tau$. It does not depend on $\\bar{b}$, so that the ",
   "rows with the upper limit of $\\bar{b}$ repeat Table~\\ref{M-tab:margins}(b) of the main ",
-  "text, and it exceeds the power of the RCT exactly when $\\tau$ is below the break-even bias ",
-  "$b^{*}$ (Table~\\ref{M-tab:empirical}(a) of the main text). Powers below the power of the RCT ",
-  "in the same column are marked with $\\P$. IVW mean is used with $\\tau = 0$. ",
+  "article, and it exceeds the power of the RCT exactly when $\\tau$ is below the break-even ",
+  "bias $b^{*}$ (Table~\\ref{M-tab:empirical}(a) of the main article). Powers below the power ",
+  "of the RCT in the same column are marked with $\\P$. IVW mean is used with $\\tau = 0$. ",
   abbreviations_s4)
 write_table(tab_dir, "tableS5_power_uncertainty",
             table_lines(caption_s5, "tab:power_uncertainty",
