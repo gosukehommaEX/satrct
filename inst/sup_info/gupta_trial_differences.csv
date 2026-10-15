@@ -1,0 +1,16 @@
+trial,n_experimental,n_eca,unadjusted,adjusted,adjusted_qba,outlier,location
+OAK,613,225,0.170,0.108,0.061,FALSE,Table 3 (p. 7)
+POPLAR,144,266,0.191,0.219,0.195,FALSE,Table 3 (p. 7)
+Impower110,285,830,0.185,0.044,-0.037,FALSE,Table 3 (p. 7)
+Impower130,483,269,0.263,0.18,0.092,FALSE,Table 3 (p. 7)
+Impower131,681,443,0.234,0.066,-0.004,FALSE,Table 3 (p. 7)
+Impower132,292,456,0.131,0.054,-0.092,FALSE,Table 3 (p. 7)
+Impower150,400,215,0.305,0.279,0.229,FALSE,Table 3 (p. 7)
+ALEX,152,114,0.401,0.108,0.093,FALSE,Table 3 (p. 7)
+ALESIA,125,43,0.614,0.293,0.303,FALSE,Table 3 (p. 7)
+J-ALEX,55,321,0.006,-0.056,-0.110,FALSE,Table 3 (p. 7)
+GO27820,103,112,-0.229,-0.196,-0.227,FALSE,Table 3 (p. 7)
+GO27821 (A),69,159,0.301,0.026,-0.004,FALSE,Table 3 (p. 7)
+GO27821 (B),59,433,0.004,-0.200,-0.229,FALSE,Table 3 (p. 7)
+AvaALL,245,319,-0.076,0.007,0.074,FALSE,Table 3 (p. 7)
+NILE,52,229,1.205,1.155,1.132,TRUE,"Table 3 (p. 7); excluded as an outlier on p. 6"

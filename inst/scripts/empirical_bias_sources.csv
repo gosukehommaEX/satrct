@@ -8,3 +8,6 @@ id,author,bibkey,endpoint,analysis,subset,n_comparisons,measure,value,tau,locati
 7,Gupta et al.,Gupta2025,OS,Unadjusted,All,15,log_hr_difference,0.247,NA,"Table 3 (p. 7), average over the trials"
 8,Gupta et al.,Gupta2025,OS,Weighted,All,15,log_hr_difference,0.139,NA,"Table 3 (p. 7), adjusted for measured variables"
 9,Gupta et al.,Gupta2025,OS,"Weighted, QBA",All,15,log_hr_difference,0.098,NA,"Table 3 (p. 7), plus external adjustment"
+10,Gupta et al.,Gupta2025,OS,Unadjusted,Outlier removed,14,log_hr_difference,0.179,NA,"p. 6, after excluding the NILE trial"
+11,Gupta et al.,Gupta2025,OS,Weighted,Outlier removed,14,log_hr_difference,0.067,NA,"p. 6, after excluding the NILE trial"
+12,Gupta et al.,Gupta2025,OS,"Weighted, QBA",Outlier removed,14,log_hr_difference,0.025,NA,"p. 6, after excluding the NILE trial"

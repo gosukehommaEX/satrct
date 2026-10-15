@@ -22,10 +22,11 @@ read_data <- function(name) {
 fig1a <- read_data("fig1a_breakeven_bias.csv")
 fig1b <- read_data("fig1b_relative.csv")
 label_ne <- function(v) {
-  if (is.infinite(v)) quote(italic(N)[E] ~ "=" ~ infinity) else bquote(italic(N)[E] ~ "=" ~ .(v))
+  if (is.infinite(v)) quote(italic(N)[italic(E)] ~ "=" ~ infinity) else
+    bquote(italic(N)[italic(E)] ~ "=" ~ .(v))
 }
 label_ratio <- function(v) {
-  bquote(italic(N) / italic(N)[E] ~ "=" ~ .(v))
+  bquote(italic(N) / italic(N)[italic(E)] ~ "=" ~ .(v))
 }
 draw_fig1 <- function() {
   start_panels()
@@ -205,7 +206,8 @@ caption2 <- paste0(
 note2 <- paste0(
   "Values without parentheses use the normal approximation. The effect is the difference in ",
   "means (standard deviation $\\sigma$), the difference in proportions or the negative log ",
-  "hazard ratio, and $b^{*}$ and $m_{\\mathrm{crit}}$ are on the same scale. Values in ",
+  "hazard ratio, and $b^{*}$ and $m_{\\mathrm{crit}}$ are on the same scale (in units of ",
+  "$\\sigma$ for the continuous endpoint). Values in ",
   "parentheses are exact rejection probabilities of the score test for two proportions (RCT ",
   "with $N/2$ patients per group, SAT against external controls) and of the exact binomial ",
   "test against the threshold ", sprintf("%.2f", threshold), ". For the time-to-event ",
@@ -243,6 +245,21 @@ body3 <- c(
   paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(b) Type I error rate of the SAT under ",
          "published estimates of the bias}} \\\\")
 )
+# Source, endpoint, number of comparisons and analysis of a row of (b) or (c); the source is
+# written only in its first row
+label_cells3 <- function(first, previous_key) {
+  source_cell <- if (first[["bibkey"]] == previous_key) {
+    ""
+  } else {
+    paste0(first[["author"]], "~\\cite{", first[["bibkey"]], "}")
+  }
+  analysis_cell <- if (first[["subset"]] == "Outlier removed") {
+    paste0(first[["analysis"]], "$^{\\ddagger}$")
+  } else {
+    first[["analysis"]]
+  }
+  c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]), analysis_cell)
+}
 previous_key <- ""
 for (s in sort(unique(tab3[["id"]]))) {
   d <- tab3[tab3[["id"]] == s, ]
@@ -251,20 +268,36 @@ for (s in sort(unique(tab3[["id"]]))) {
   first <- d[1, ]
   type1 <- fmt_prob(d[["type1_sat"]])
   type1 <- ifelse(d[["above_alpha_matched"]], paste0(type1, "$^{\\dagger}$"), type1)
-  source_cell <- if (first[["bibkey"]] == previous_key) {
-    ""
-  } else {
-    paste0(first[["author"]], "~\\cite{", first[["bibkey"]], "}")
-  }
-  previous_key <- first[["bibkey"]]
   tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
-  analysis_cell <- if (first[["subset"]] == "Outlier removed") {
-    paste0(first[["analysis"]], "$^{\\ddagger}$")
-  } else {
-    first[["analysis"]]
-  }
-  cells <- c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
-             analysis_cell, fmt_num(first[["bias_mean"]]), tau_cell, type1)
+  cells <- c(label_cells3(first, previous_key), fmt_num(first[["bias_mean"]]), tau_cell, type1)
+  previous_key <- first[["bibkey"]]
+  body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
+}
+# (c) Bias margins for the weighted analyses; margins above m_crit are marked. m_crit and
+# m_0.95 do not depend on N in this setting (N_E = 2 N).
+stopifnot(diff(range(tab3[["critical_margin"]])) < 1e-12)
+mark_above_crit <- function(x, m_crit) {
+  ifelse(x > m_crit, paste0(fmt_num(x), "$^{\\S}$"), fmt_num(x))
+}
+body3 <- c(
+  body3,
+  "\\addlinespace",
+  paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(c) Bias margins for the weighted analyses}} ",
+         "\\\\"),
+  paste0(" & & & & $m_{0.95}$ & & \\multicolumn{", length(sizes3),
+         "}{c}{$m_{\\mathrm{avg}}$} \\\\")
+)
+previous_key <- ""
+for (s in sort(unique(tab3[["id"]][tab3[["analysis"]] != "Unadjusted"]))) {
+  d <- tab3[tab3[["id"]] == s, ]
+  d <- d[order(d[["n"]]), ]
+  stopifnot(nrow(d) == length(sizes3), all(d[["n"]] == sizes3),
+            diff(range(d[["margin_q95"]])) < 1e-12)
+  first <- d[1, ]
+  cells <- c(label_cells3(first, previous_key),
+             mark_above_crit(first[["margin_q95"]], first[["critical_margin"]]), "",
+             mark_above_crit(d[["margin_avg"]], d[["critical_margin"]]))
+  previous_key <- first[["bibkey"]]
   body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
 }
 header3 <- c(
@@ -279,26 +312,35 @@ caption3 <- paste0(
   "ratio ", fmt_setting(hr3), ", by the total size $N$, with one-sided $\\alpha = ",
   fmt_setting(alpha3), "$. (a) Power of the RCT and of the SAT without bias, level ",
   "$\\alpha'$ at which the RCT has the power of the SAT, break-even bias $b^{*}$ and critical ",
-  "margin $m_{\\mathrm{crit}}$. (b) Type I error rate of the SAT without margin when the bias ",
-  "is normally distributed with the published mean $\\bar{b}$ and between-study standard ",
-  "deviation $\\tau$ of the bias of external controls.")
+  "margin $m_{\\mathrm{crit}}$. (b) Type I error rate of the SAT without margin, averaged over ",
+  "a normal distribution of the bias with the published mean $\\bar{b}$ and between-study ",
+  "standard deviation $\\tau$ of the bias of external controls. (c) Bias margins for the same ",
+  "distributions. With the margin $m_{\\mathrm{avg}}$, the type I error rate averaged over the ",
+  "distribution of the bias equals $\\alpha$. The margin $m_{0.95} = \\bar{b} + z_{0.95}\\tau$ ",
+  "is the 95th percentile of the distribution, so that the type I error rate given the bias ",
+  "is at most $\\alpha$ in 95\\% of trials.")
 note3 <- paste0(
   "The bias is the log hazard ratio estimated with the randomized control minus the log ",
   "hazard ratio estimated with the external control, so that positive values favour the ",
-  "experimental treatment; $b^{*}$, $m_{\\mathrm{crit}}$, $\\bar{b}$ and $\\tau$ are on this ",
-  "scale. Incerti et al.\\ and Bahmane et al.\\ report posterior medians of the hazard ratio ",
-  "of the internal versus the external control and of the between-study standard deviation, ",
-  "and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report the mean ",
-  "difference in log hazard ratios over the trials without a between-study standard ",
-  "deviation, and $\\tau = 0$ is used. $K$ is the number of comparisons. Type I error rates ",
-  "above $\\alpha'$ in the same column are marked with $\\dagger$. Analyses marked with ",
-  "$\\ddagger$ exclude the study that the authors identified as an outlier. The probability ",
-  "of an event ",
-  "is ", fmt_setting(prob_event3), " for every patient. OS, overall survival; PFS, ",
-  "progression-free survival (real-world progression-free survival for the external ",
-  "controls); QBA, quantitative bias analysis.")
+  "experimental treatment; $b^{*}$, $m_{\\mathrm{crit}}$, $\\bar{b}$, $\\tau$ and the margins ",
+  "are on this scale. Incerti et al.\\ and Bahmane et al.\\ report posterior medians of the ",
+  "hazard ratio of the internal versus the external control and of the between-study standard ",
+  "deviation, and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report ",
+  "the mean difference in log hazard ratios over the trials without a between-study standard ",
+  "deviation, and $\\tau = 0$ is used. Type I error rates and margins are computed from ",
+  "$\\bar{b}$ before rounding. $K$ is the number of comparisons. Type I error rates above ",
+  "$\\alpha'$ in the same column are marked with $\\dagger$. Margins above ",
+  "$m_{\\mathrm{crit}}$ are marked with $\\S$; with such a margin, the SAT without bias has ",
+  "less power than the RCT. Analyses marked with $\\ddagger$ exclude the study that the ",
+  "authors identified as an outlier (study 5 of Incerti et al.\\ and Bahmane et al.\\ and the ",
+  "NILE trial of Gupta et al.). Section~\\ref{S-sec:bias_uncertainty} of the Supporting ",
+  "Information repeats (b) with the upper limits of the credible intervals and with the ",
+  "trial-level differences of Gupta et al. The probability of an event is ",
+  fmt_setting(prob_event3), " for every patient. OS, overall survival; PFS, progression-free ",
+  "survival (real-world progression-free survival for the external controls); QBA, ",
+  "quantitative bias analysis.")
 write_table(tab_dir, "table3_empirical_bias",
             table_lines(caption3, "tab:empirical",
                         paste0("llcl", "cc", strrep("c", length(sizes3))),
                         header3, body3, note3,
-                        size = c("\\small", "\\setlength{\\tabcolsep}{3pt}")))
+                        size = c("\\small", "\\setlength{\\tabcolsep}{2.5pt}")))

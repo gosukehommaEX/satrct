@@ -1,0 +1,48 @@
+\begin{table}[!htb]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Type I error rate of a single-arm trial (SAT) without margin when the published estimates of the bias of external controls in Table~\ref{M-tab:empirical} of the main text are replaced by limits of their uncertainty, for a time-to-event endpoint with hazard ratio 0.6 and an external control of $N_E = 2N$ patients, by the total size $N$, with one-sided $\alpha = 0.025$.}
+\label{tab:bias_uncertainty}
+\begin{tabular}{lcllcccccc}
+\toprule
+Endpoint & $K$ & Analysis & Variation & $\bar{b}$ & $\tau$ & \multicolumn{4}{c}{$N$} \\
+\cmidrule(lr){7-10}
+ & & & & & & 30 & 60 & 90 & 120 \\
+\midrule
+\multicolumn{6}{l}{$\alpha'$} & 0.111 & 0.181 & 0.249 & 0.316 \\
+\addlinespace
+\multicolumn{10}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.200 & 0.114 & 0.132$^{\dagger}$ & 0.220$^{\dagger}$ & 0.296$^{\dagger}$ & 0.362$^{\dagger}$ \\
+ &  &  & Upper $\tau$ & 0.098 & 0.263 & 0.128$^{\dagger}$ & 0.200$^{\dagger}$ & 0.251$^{\dagger}$ & 0.289 \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.221 & 0.061 & 0.134$^{\dagger}$ & 0.225$^{\dagger}$ & 0.311$^{\dagger}$ & 0.389$^{\dagger}$ \\
+ &  &  & Upper $\tau$ & 0.132 & 0.168 & 0.107 & 0.173 & 0.228 & 0.273 \\
+\addlinespace
+\multicolumn{10}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & Upper $\bar{b}$ & 0.118 & 0.164 & 0.098 & 0.156 & 0.206 & 0.248 \\
+ &  &  & Upper $\tau$ & 0.001 & 0.314 & 0.102 & 0.157 & 0.194 & 0.222 \\
+PFS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.122 & 0.091 & 0.077 & 0.118 & 0.157 & 0.194 \\
+ &  &  & Upper $\tau$ & 0.031 & 0.219 & 0.077 & 0.121 & 0.156 & 0.185 \\
+OS & 14 & Weighted & Upper $\bar{b}$ & 0.161 & 0.109 & 0.105 & 0.169 & 0.228 & 0.280 \\
+ &  &  & Upper $\tau$ & 0.061 & 0.273 & 0.113$^{\dagger}$ & 0.176 & 0.221 & 0.254 \\
+OS & 13 & Weighted$^{\ddagger}$ & Upper $\bar{b}$ & 0.173 & 0.059 & 0.100 & 0.160 & 0.217 & 0.272 \\
+ &  &  & Upper $\tau$ & 0.086 & 0.170 & 0.083 & 0.131 & 0.172 & 0.207 \\
+\addlinespace
+\multicolumn{10}{l}{Gupta et al.~\cite{Gupta2025}} \\
+OS & 15 & Unadjusted & IVW mean & 0.161 & -- & 0.087 & 0.134 & 0.180 & 0.225 \\
+ &  &  & Trial SD & 0.247 & 0.334 & 0.259$^{\dagger}$ & 0.374$^{\dagger}$ & 0.440$^{\dagger}$ & 0.483$^{\dagger}$ \\
+OS & 14 & Unadjusted$^{\ddagger}$ & Trial SD & 0.179 & 0.210 & 0.155$^{\dagger}$ & 0.249$^{\dagger}$ & 0.318$^{\dagger}$ & 0.370$^{\dagger}$ \\
+OS & 15 & Weighted & IVW mean & 0.080 & -- & 0.048 & 0.062 & 0.075 & 0.087 \\
+ &  &  & Trial SD & 0.139 & 0.317 & 0.176$^{\dagger}$ & 0.265$^{\dagger}$ & 0.321$^{\dagger}$ & 0.360$^{\dagger}$ \\
+OS & 14 & Weighted$^{\ddagger}$ & Trial SD & 0.067 & 0.151 & 0.068 & 0.105 & 0.138 & 0.167 \\
+OS & 15 & Weighted, QBA & IVW mean & $-$0.006 & -- & 0.024 & 0.023 & 0.023 & 0.022 \\
+ &  &  & Trial SD & 0.098 & 0.324 & 0.155$^{\dagger}$ & 0.234$^{\dagger}$ & 0.285$^{\dagger}$ & 0.320$^{\dagger}$ \\
+OS & 14 & Weighted, QBA$^{\ddagger}$ & Trial SD & 0.025 & 0.158 & 0.054 & 0.081 & 0.105 & 0.126 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+Upper $\bar{b}$ replaces the posterior median of the mean bias by the upper limit of its 95\% credible interval, and upper $\tau$ replaces the posterior median of the between-study standard deviation $\tau$ by the upper limit of its 95\% credible interval; the other parameter is kept at its posterior median. IVW mean is the difference in inverse variance-weighted log hazard ratios that Gupta et al.\ report beside the arithmetic mean of the trial-level differences, used with $\tau = 0$. Trial SD uses the published mean with $\tau$ equal to the sample standard deviation of the trial-level differences, which includes the sampling error of each trial and therefore overstates the between-trial variation. The type I error rate is averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$. $\alpha'$ is the level at which the randomized controlled trial with 1:1 randomization has the power of the SAT without bias. Type I error rates above $\alpha'$ in the same column are marked with $\dagger$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
+\end{minipage}
+\end{table}

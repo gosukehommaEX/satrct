@@ -1,8 +1,8 @@
 \begin{table}[!htb]
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
-\caption{Single-arm trial (SAT) with an external control of $N_E = 2N$ patients and randomized controlled trial (RCT) with 1:1 randomization for a time-to-event endpoint with hazard ratio 0.6, by the total size $N$, with one-sided $\alpha = 0.025$. (a) Power of the RCT and of the SAT without bias, level $\alpha'$ at which the RCT has the power of the SAT, break-even bias $b^{*}$ and critical margin $m_{\mathrm{crit}}$. (b) Type I error rate of the SAT without margin when the bias is normally distributed with the published mean $\bar{b}$ and between-study standard deviation $\tau$ of the bias of external controls.}
+\setlength{\tabcolsep}{2.5pt}
+\caption{Single-arm trial (SAT) with an external control of $N_E = 2N$ patients and randomized controlled trial (RCT) with 1:1 randomization for a time-to-event endpoint with hazard ratio 0.6, by the total size $N$, with one-sided $\alpha = 0.025$. (a) Power of the RCT and of the SAT without bias, level $\alpha'$ at which the RCT has the power of the SAT, break-even bias $b^{*}$ and critical margin $m_{\mathrm{crit}}$. (b) Type I error rate of the SAT without margin, averaged over a normal distribution of the bias with the published mean $\bar{b}$ and between-study standard deviation $\tau$ of the bias of external controls. (c) Bias margins for the same distributions. With the margin $m_{\mathrm{avg}}$, the type I error rate averaged over the distribution of the bias equals $\alpha$. The margin $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of the distribution, so that the type I error rate given the bias is at most $\alpha$ in 95\% of trials.}
 \label{tab:empirical}
 \begin{tabular}{llclcccccc}
 \toprule
@@ -27,11 +27,27 @@ Bahmane et al.~\cite{Bahmane2025} & PFS & 14 & Weighted & 0.001 & 0.164 & 0.048 
 Gupta et al.~\cite{Gupta2025} & OS & 15 & Unadjusted & 0.247 & -- & 0.150$^{\dagger}$ & 0.257$^{\dagger}$ & 0.360$^{\dagger}$ & 0.456$^{\dagger}$ \\
  & OS & 15 & Weighted & 0.139 & -- & 0.075 & 0.110 & 0.145 & 0.179 \\
  & OS & 15 & Weighted, QBA & 0.098 & -- & 0.056 & 0.075 & 0.093 & 0.110 \\
+ & OS & 14 & Unadjusted$^{\ddagger}$ & 0.179 & -- & 0.098 & 0.156 & 0.212 & 0.267 \\
+ & OS & 14 & Weighted$^{\ddagger}$ & 0.067 & -- & 0.044 & 0.054 & 0.064 & 0.072 \\
+ & OS & 14 & Weighted, QBA$^{\ddagger}$ & 0.025 & -- & 0.031 & 0.034 & 0.036 & 0.038 \\
+\addlinespace
+\multicolumn{10}{l}{\textit{(c) Bias margins for the weighted analyses}} \\
+ & & & & $m_{0.95}$ & & \multicolumn{4}{c}{$m_{\mathrm{avg}}$} \\
+Incerti et al.~\cite{Incerti2023} & OS & 14 & Weighted & 0.285$^{\S}$ &  & 0.143 & 0.160 & 0.171 & 0.180 \\
+ & OS & 13 & Weighted$^{\ddagger}$ & 0.233$^{\S}$ &  & 0.146 & 0.151 & 0.155 & 0.158 \\
+Bahmane et al.~\cite{Bahmane2025} & PFS & 14 & Weighted & 0.271$^{\S}$ &  & 0.092 & 0.121 & 0.140 & 0.154 \\
+ & PFS & 13 & Weighted$^{\ddagger}$ & 0.181 &  & 0.061 & 0.072 & 0.080 & 0.086 \\
+ & OS & 14 & Weighted & 0.240$^{\S}$ &  & 0.103 & 0.118 & 0.129 & 0.137 \\
+ & OS & 13 & Weighted$^{\ddagger}$ & 0.183 &  & 0.098 & 0.103 & 0.107 & 0.110 \\
+Gupta et al.~\cite{Gupta2025} & OS & 15 & Weighted & 0.139 &  & 0.139 & 0.139 & 0.139 & 0.139 \\
+ & OS & 15 & Weighted, QBA & 0.098 &  & 0.098 & 0.098 & 0.098 & 0.098 \\
+ & OS & 14 & Weighted$^{\ddagger}$ & 0.067 &  & 0.067 & 0.067 & 0.067 & 0.067 \\
+ & OS & 14 & Weighted, QBA$^{\ddagger}$ & 0.025 &  & 0.025 & 0.025 & 0.025 & 0.025 \\
 \bottomrule
 \end{tabular}
 \par\smallskip
 \begin{minipage}{0.95\linewidth}
 \footnotesize
-The bias is the log hazard ratio estimated with the randomized control minus the log hazard ratio estimated with the external control, so that positive values favour the experimental treatment; $b^{*}$, $m_{\mathrm{crit}}$, $\bar{b}$ and $\tau$ are on this scale. Incerti et al.\ and Bahmane et al.\ report posterior medians of the hazard ratio of the internal versus the external control and of the between-study standard deviation, and $\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\ report the mean difference in log hazard ratios over the trials without a between-study standard deviation, and $\tau = 0$ is used. $K$ is the number of comparisons. Type I error rates above $\alpha'$ in the same column are marked with $\dagger$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. The probability of an event is 0.7 for every patient. OS, overall survival; PFS, progression-free survival (real-world progression-free survival for the external controls); QBA, quantitative bias analysis.
+The bias is the log hazard ratio estimated with the randomized control minus the log hazard ratio estimated with the external control, so that positive values favour the experimental treatment; $b^{*}$, $m_{\mathrm{crit}}$, $\bar{b}$, $\tau$ and the margins are on this scale. Incerti et al.\ and Bahmane et al.\ report posterior medians of the hazard ratio of the internal versus the external control and of the between-study standard deviation, and $\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\ report the mean difference in log hazard ratios over the trials without a between-study standard deviation, and $\tau = 0$ is used. Type I error rates and margins are computed from $\bar{b}$ before rounding. $K$ is the number of comparisons. Type I error rates above $\alpha'$ in the same column are marked with $\dagger$. Margins above $m_{\mathrm{crit}}$ are marked with $\S$; with such a margin, the SAT without bias has less power than the RCT. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier (study 5 of Incerti et al.\ and Bahmane et al.\ and the NILE trial of Gupta et al.). Section~\ref{S-sec:bias_uncertainty} of the Supporting Information repeats (b) with the upper limits of the credible intervals and with the trial-level differences of Gupta et al. The probability of an event is 0.7 for every patient. OS, overall survival; PFS, progression-free survival (real-world progression-free survival for the external controls); QBA, quantitative bias analysis.
 \end{minipage}
 \end{table}

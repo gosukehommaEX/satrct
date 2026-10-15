@@ -1,5 +1,5 @@
 # Draw the figures and write the tables of the Supporting Information from the results saved
-# by data_generate_supplement.R, except Table S3, which summarizes the verdicts of the scripts
+# by data_generate_supplement.R, except Table S4, which summarizes the verdicts of the scripts
 # in inst/reproduce and inst/validation.
 #
 # Figures: FigureS<k>.pdf and FigureS<k>.eps. Tables: tableS<k>_<content>.tex, each a complete
@@ -39,7 +39,7 @@ draw_fig_s1 <- function() {
   # (b) optimal number of concurrent controls against the bias
   graphics::plot(NA, xlim = c(0, 0.6), ylim = c(0, 0.55), xaxs = "i",
                  xlab = expression("Bias" ~ italic(b) / sigma),
-                 ylab = expression("Concurrent controls" ~ italic(N)[C] / italic(N)))
+                 ylab = expression("Concurrent controls" ~ italic(N)[italic(C)] / italic(N)))
   graphics::abline(h = 0.5, col = "black", lwd = 2.6)
   graphics::abline(h = 0, col = pal[1], lty = lty_with_ref[1], lwd = 1.8)
   graphics::lines(fig_s1[["bias"]], fig_s1[["n_c_opt"]] / fig_s1[["n"]], col = pal[2],
@@ -78,9 +78,10 @@ draw_fig_s2 <- function() {
                     col = col_design[i], lty = 1, lwd = 1.6)
   }
   panel_title(quote(bold("(b)")))
+  # The designs are told apart by colour and the calculations by line type, shown in grey
   labels <- list("RCT", "SAT, external control", "SAT, threshold", "Exact",
                  "Normal approximation")
-  bottom_legend(labels, col = c(col_design, "black", "black"), lty = c(1, 1, 1, 1, 2),
+  bottom_legend(labels, col = c(col_design, "grey50", "grey50"), lty = c(1, 1, 1, 1, 2),
                 lwd = rep(1.6, 5), ncol = 3)
 }
 save_figure(fig_dir, "FigureS2", draw_fig_s2)
@@ -172,7 +173,96 @@ write_table(tab_dir, "tableS2_sensitivity",
                                "$m_{\\mathrm{crit}}/\\delta$ \\\\"),
                         body_s2, note_s2))
 
-# ---- Table S3: reproduction of published results and validation ----
+# ---- Table S3: uncertainty in the published estimates of the bias ----
+tab_s3 <- read_data("tableS3_bias_uncertainty.csv")
+alpha_s3 <- unique(tab_s3[["alpha"]])
+hr_s3 <- unique(tab_s3[["hazard_ratio"]])
+stopifnot(length(alpha_s3) == 1, length(hr_s3) == 1, all(tab_s3[["n_e"]] == 2 * tab_s3[["n"]]),
+          all(tab_s3[["subset"]] %in% c("All", "Outlier removed")))
+sizes_s3 <- sort(unique(tab_s3[["n"]]))
+design_s3 <- tab_s3[!duplicated(tab_s3[["n"]]), ]
+design_s3 <- design_s3[order(design_s3[["n"]]), ]
+variation_label <- c(mean_upper = "Upper $\\bar{b}$", tau_upper = "Upper $\\tau$",
+                     ivw_mean = "IVW mean", trial_sd = "Trial SD")
+stopifnot(all(tab_s3[["variation"]] %in% names(variation_label)))
+# Negative values are written with a minus sign rather than a hyphen
+fmt_signed <- function(x) {
+  sub("^-", "$-$", fmt_num(x))
+}
+n_col_s3 <- 6 + length(sizes_s3)
+body_s3 <- paste0("\\multicolumn{6}{l}{$\\alpha'$} & ",
+                  paste(fmt_prob(design_s3[["alpha_matched"]]), collapse = " & "), " \\\\")
+previous_source <- ""
+previous_analysis <- ""
+for (s in sort(unique(tab_s3[["id"]]))) {
+  d <- tab_s3[tab_s3[["id"]] == s, ]
+  d <- d[order(d[["n"]]), ]
+  stopifnot(nrow(d) == length(sizes_s3), all(d[["n"]] == sizes_s3))
+  first <- d[1, ]
+  type1 <- fmt_prob(d[["type1_sat"]])
+  type1 <- ifelse(d[["above_alpha_matched"]], paste0(type1, "$^{\\dagger}$"), type1)
+  # Each source starts with a row that names it, and the endpoint, number of comparisons and
+  # analysis are written in the first row of each analysis
+  if (first[["bibkey"]] != previous_source) {
+    body_s3 <- c(body_s3, "\\addlinespace",
+                 paste0("\\multicolumn{", n_col_s3, "}{l}{", first[["author"]], "~\\cite{",
+                        first[["bibkey"]], "}} \\\\"))
+  }
+  analysis_key <- paste(first[["bibkey"]], first[["endpoint"]], first[["analysis"]],
+                        first[["subset"]])
+  analysis_cells <- if (analysis_key == previous_analysis) {
+    c("", "", "")
+  } else {
+    c(first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
+      if (first[["subset"]] == "Outlier removed") {
+        paste0(first[["analysis"]], "$^{\\ddagger}$")
+      } else {
+        first[["analysis"]]
+      })
+  }
+  previous_source <- first[["bibkey"]]
+  previous_analysis <- analysis_key
+  tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
+  cells <- c(analysis_cells, variation_label[[first[["variation"]]]],
+             fmt_signed(first[["bias_mean"]]), tau_cell, type1)
+  body_s3 <- c(body_s3, paste0(paste(cells, collapse = " & "), " \\\\"))
+}
+header_s3 <- c(
+  paste0("Endpoint & $K$ & Analysis & Variation & $\\bar{b}$ & $\\tau$ & ",
+         "\\multicolumn{", length(sizes_s3), "}{c}{$N$} \\\\"),
+  paste0("\\cmidrule(lr){7-", n_col_s3, "}"),
+  paste0(" & & & & & & ", paste(fmt_setting(sizes_s3), collapse = " & "), " \\\\")
+)
+caption_s3 <- paste0(
+  "Type I error rate of a single-arm trial (SAT) without margin when the published estimates ",
+  "of the bias of external controls in Table~\\ref{M-tab:empirical} of the main text are ",
+  "replaced by limits of their uncertainty, for a time-to-event endpoint with hazard ratio ",
+  fmt_setting(hr_s3), " and an external control of $N_E = 2N$ patients, by the total size $N$, ",
+  "with one-sided $\\alpha = ", fmt_setting(alpha_s3), "$.")
+note_s3 <- paste0(
+  "Upper $\\bar{b}$ replaces the posterior median of the mean bias by the upper limit of its ",
+  "95\\% credible interval, and upper $\\tau$ replaces the posterior median of the ",
+  "between-study standard deviation $\\tau$ by the upper limit of its 95\\% credible interval; ",
+  "the other parameter is kept at its posterior median. IVW mean is the difference in ",
+  "inverse variance-weighted log hazard ratios that Gupta et al.\\ report beside the ",
+  "arithmetic mean of the trial-level differences, used with $\\tau = 0$. Trial SD uses the ",
+  "published mean with $\\tau$ equal to ",
+  "the sample standard deviation of the trial-level differences, which includes the sampling ",
+  "error of each trial and therefore overstates the between-trial variation. The type I error ",
+  "rate is averaged over a normal distribution of the bias with mean $\\bar{b}$ and standard ",
+  "deviation $\\tau$. $\\alpha'$ is the level at which the randomized controlled trial with 1:1 ",
+  "randomization has the power of the SAT without bias. Type I error rates above $\\alpha'$ in ",
+  "the same column are marked with $\\dagger$. Analyses marked with $\\ddagger$ exclude the ",
+  "study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, ",
+  "inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, ",
+  "quantitative bias analysis; SD, standard deviation.")
+write_table(tab_dir, "tableS3_bias_uncertainty",
+            table_lines(caption_s3, "tab:bias_uncertainty",
+                        paste0("lcllcc", strrep("c", length(sizes_s3))),
+                        header_s3, body_s3, note_s3,
+                        size = c("\\small", "\\setlength{\\tabcolsep}{3pt}")))
+
+# ---- Table S4: reproduction of published results and validation ----
 # The numbers of verdicts are read from the summaries written by
 # inst/reproduce/summarize_reproduction.R and inst/validation/summarize_validation.R, the
 # description of each script from inst/sup_info/validation_descriptions.csv, the reason for each
@@ -181,10 +271,10 @@ write_table(tab_dir, "tableS2_sensitivity",
 # if the verdicts do not add up to the totals, if any comparison failed or if an EXPLAINED
 # verdict has no reason.
 verdict_names <- c("PASS", "EXPLAINED", "FAIL", "INFO")
-results_dirs_s3 <- c(Reproduction = "inst/reproduce/results",
+results_dirs_s4 <- c(Reproduction = "inst/reproduce/results",
                      Validation = "inst/validation/results")
-summary_s3 <- do.call(rbind, lapply(names(results_dirs_s3), function(g) {
-  path <- file.path(results_dirs_s3[[g]], "summary.csv")
+summary_s4 <- do.call(rbind, lapply(names(results_dirs_s4), function(g) {
+  path <- file.path(results_dirs_s4[[g]], "summary.csv")
   if (!file.exists(path)) {
     stop("Missing ", path, ". Run the summary scripts in inst/reproduce and inst/validation ",
          "first.", call. = FALSE)
@@ -193,23 +283,23 @@ summary_s3 <- do.call(rbind, lapply(names(results_dirs_s3), function(g) {
   s[["group"]] <- g
   s
 }))
-desc_s3 <- utils::read.csv("inst/sup_info/validation_descriptions.csv",
+desc_s4 <- utils::read.csv("inst/sup_info/validation_descriptions.csv",
                            colClasses = "character")
-if (!identical(names(desc_s3), c("group", "script", "comparison", "bibkey")) ||
-    !all(c("script", verdict_names, "total") %in% names(summary_s3))) {
+if (!identical(names(desc_s4), c("group", "script", "comparison", "bibkey")) ||
+    !all(c("script", verdict_names, "total") %in% names(summary_s4))) {
   stop("Unexpected columns in the summaries or in validation_descriptions.csv.", call. = FALSE)
 }
-key_desc <- paste(desc_s3[["group"]], desc_s3[["script"]])
-key_summary <- paste(summary_s3[["group"]], summary_s3[["script"]])
+key_desc <- paste(desc_s4[["group"]], desc_s4[["script"]])
+key_summary <- paste(summary_s4[["group"]], summary_s4[["script"]])
 if (anyDuplicated(key_desc) > 0 || !setequal(key_desc, key_summary)) {
   stop("The scripts in the summaries and in inst/sup_info/validation_descriptions.csv differ.",
        call. = FALSE)
 }
-if (any(rowSums(summary_s3[verdict_names]) != summary_s3[["total"]])) {
+if (any(rowSums(summary_s4[verdict_names]) != summary_s4[["total"]])) {
   stop("The verdicts in the summaries do not add up to their totals.", call. = FALSE)
 }
-if (sum(summary_s3[["FAIL"]]) > 0) {
-  stop("Some comparisons failed, so Table S3 is not written.", call. = FALSE)
+if (sum(summary_s4[["FAIL"]]) > 0) {
+  stop("Some comparisons failed, so Table S4 is not written.", call. = FALSE)
 }
 # Escape the special characters of LaTeX in the names and reasons taken from the results; stop
 # for characters that cannot be escaped this way
@@ -217,39 +307,39 @@ tex_escape <- function(x) {
   unsupported <- c("\\", "{", "}", "~", "^")
   for (ch in unsupported) {
     if (any(grepl(ch, x, fixed = TRUE))) {
-      stop("Unsupported character '", ch, "' in a name or reason for Table S3.", call. = FALSE)
+      stop("Unsupported character '", ch, "' in a name or reason for Table S4.", call. = FALSE)
     }
   }
   gsub("([_%&#$])", "\\\\\\1", x)
 }
-explained_s3 <- character(0)
-for (i in which(summary_s3[["EXPLAINED"]] > 0)) {
-  script <- summary_s3[["script"]][i]
-  res <- utils::read.csv(file.path(results_dirs_s3[[summary_s3[["group"]][i]]],
+explained_s4 <- character(0)
+for (i in which(summary_s4[["EXPLAINED"]] > 0)) {
+  script <- summary_s4[["script"]][i]
+  res <- utils::read.csv(file.path(results_dirs_s4[[summary_s4[["group"]][i]]],
                                    paste0(script, ".csv")),
                          stringsAsFactors = FALSE)
   reasons <- res[["note"]][res[["verdict"]] == "EXPLAINED"]
-  if (length(reasons) != summary_s3[["EXPLAINED"]][i] || any(is.na(reasons) | reasons == "")) {
+  if (length(reasons) != summary_s4[["EXPLAINED"]][i] || any(is.na(reasons) | reasons == "")) {
     stop("An EXPLAINED verdict of ", script, " has no reason.", call. = FALSE)
   }
-  explained_s3 <- c(explained_s3, paste0("EXPLAINED in \\texttt{", tex_escape(script), "}. ",
+  explained_s4 <- c(explained_s4, paste0("EXPLAINED in \\texttt{", tex_escape(script), "}. ",
                                          tex_escape(reasons)))
 }
-version_s3 <- read.dcf("DESCRIPTION", fields = "Version")[1, "Version"]
-group_label_s3 <- c(
+version_s4 <- read.dcf("DESCRIPTION", fields = "Version")[1, "Version"]
+group_label_s4 <- c(
   Reproduction = "(a) Reproduction of published results (folder \\texttt{inst/reproduce})",
   Validation = "(b) Validation (folder \\texttt{inst/validation})")
-n_col_s3 <- 2 + length(verdict_names)
-body_s3 <- character(0)
-for (g in names(group_label_s3)) {
-  if (length(body_s3) > 0) {
-    body_s3 <- c(body_s3, "\\addlinespace")
+n_col_s4 <- 2 + length(verdict_names)
+body_s4 <- character(0)
+for (g in names(group_label_s4)) {
+  if (length(body_s4) > 0) {
+    body_s4 <- c(body_s4, "\\addlinespace")
   }
-  body_s3 <- c(body_s3, paste0("\\multicolumn{", n_col_s3, "}{l}{\\textit{",
-                               group_label_s3[[g]], "}} \\tabularnewline"))
-  d <- desc_s3[desc_s3[["group"]] == g, ]
+  body_s4 <- c(body_s4, paste0("\\multicolumn{", n_col_s4, "}{l}{\\textit{",
+                               group_label_s4[[g]], "}} \\tabularnewline"))
+  d <- desc_s4[desc_s4[["group"]] == g, ]
   for (j in seq_len(nrow(d))) {
-    s <- summary_s3[key_summary == paste(g, d[["script"]][j]), ]
+    s <- summary_s4[key_summary == paste(g, d[["script"]][j]), ]
     comparison <- if (d[["bibkey"]][j] == "") {
       d[["comparison"]][j]
     } else {
@@ -259,29 +349,29 @@ for (g in names(group_label_s3)) {
     name <- sub("^(reproduce|validate)_", "", d[["script"]][j])
     cells <- c(paste0("\\texttt{", tex_escape(name), "}"), paste0("\\raggedright ", comparison),
                as.character(unlist(s[verdict_names])))
-    body_s3 <- c(body_s3, paste0(paste(cells, collapse = " & "), " \\tabularnewline"))
+    body_s4 <- c(body_s4, paste0(paste(cells, collapse = " & "), " \\tabularnewline"))
   }
 }
-caption_s3 <- paste0(
+caption_s4 <- paste0(
   "Verdicts of the scripts that reproduce published results with the \\texttt{R} package ",
-  "\\texttt{satrct} (version ", version_s3, ") and validate it, by script.")
-note_s3 <- paste0(
+  "\\texttt{satrct} (version ", version_s4, ") and validate it, by script.")
+note_s4 <- paste0(
   "PASS, the recomputed value agrees with the reference under the stated rule; EXPLAINED, it ",
   "does not, and the reason is identified and recorded; FAIL, it does not; INFO, no pass or fail ",
   "rule applies (values read from figures, qualitative statements or the accuracy of an ",
   "approximation). The scripts are the files \\texttt{reproduce\\_}\\textit{name}\\texttt{.R} in ",
   "\\texttt{inst/reproduce} and \\texttt{validate\\_}\\textit{name}\\texttt{.R} in ",
   "\\texttt{inst/validation}.")
-if (length(explained_s3) > 0) {
-  note_s3 <- paste(note_s3, paste(explained_s3, collapse = " "))
+if (length(explained_s4) > 0) {
+  note_s4 <- paste(note_s4, paste(explained_s4, collapse = " "))
 }
 # The comparison column is a paragraph column, so the rows end with \tabularnewline, which
 # \raggedright does not redefine
-write_table(tab_dir, "tableS3_validation", c(
+write_table(tab_dir, "tableS4_validation", c(
   "\\begin{table}[!htb]",
   "\\centering",
   "\\small",
-  paste0("\\caption{", caption_s3, "}"),
+  paste0("\\caption{", caption_s4, "}"),
   "\\label{tab:validation}",
   "\\footnotesize",
   "\\setlength{\\tabcolsep}{4pt}",
@@ -289,12 +379,12 @@ write_table(tab_dir, "tableS3_validation", c(
   "\\toprule",
   paste0("Script & Comparison & ", paste(verdict_names, collapse = " & "), " \\tabularnewline"),
   "\\midrule",
-  body_s3,
+  body_s4,
   "\\bottomrule",
   "\\end{tabular}",
   "\\par\\smallskip",
   "\\begin{minipage}{0.95\\linewidth}",
   "\\footnotesize",
-  note_s3,
+  note_s4,
   "\\end{minipage}",
   "\\end{table}"))

@@ -136,5 +136,114 @@ assert_close(ma[["power"]], tab_s2[["power_sat"]], 1e-12,
              "Table S2: matched_alpha() and power_sat() give the same power of the SAT")
 save_csv(tab_s2, "tableS2_sensitivity.csv")
 
+# ---- Table S3: uncertainty in the published estimates of the bias ----
+# Type I error rate of the SAT without margin in the setting of Table 3 of the main text when the
+# published point estimates of the bias are replaced by
+#   mean_upper  the upper limit of the 95% credible interval of the mean bias (minus the log of
+#               the lower limit for the hazard ratio), with the posterior median of tau;
+#   tau_upper   the upper limit of the 95% credible interval of tau, with the posterior median
+#               of the mean bias;
+#   ivw_mean    the difference in inverse variance-weighted hazard ratios that Gupta et al.
+#               report beside the arithmetic mean of the trial-level differences, with
+#               tau = 0;
+#   trial_sd    the published mean, with tau equal to the sample standard deviation of the
+#               trial-level differences, which includes the sampling error of each trial.
+# The first three are entered with their locations in inst/sup_info/bias_uncertainty_sources.csv.
+# The trial-level differences of Gupta et al. are entered in
+# inst/sup_info/gupta_trial_differences.csv and their published means are read from
+# inst/scripts/empirical_bias_sources.csv. The designs are read from the results of
+# inst/scripts/data_generate_main.R, so that they are those of Table 3.
+table3_path <- "inst/scripts/results/data/table3_empirical_bias.csv"
+if (!file.exists(table3_path)) {
+  stop("Missing ", table3_path, ". Run inst/scripts/data_generate_main.R first.", call. = FALSE)
+}
+table3 <- utils::read.csv(table3_path, stringsAsFactors = FALSE)
+design_s3 <- table3[!duplicated(table3[["n"]]),
+                    c("alpha", "n", "n_e", "hazard_ratio", "prob_event", "delta", "sigma",
+                      "alpha_matched", "breakeven_bias", "critical_margin")]
+design_s3 <- design_s3[order(design_s3[["n"]]), ]
+rownames(design_s3) <- NULL
+stopifnot(all(design_s3[["alpha"]] == alpha))
+sd_surv_s3 <- endpoint_sd("survival", prob_event = design_s3[["prob_event"]])
+assert_close(design_s3[["sigma"]], sd_surv_s3, 1e-12,
+             "Table S3: the standard deviation is that of Table 3")
+assert_close(design_s3[["alpha_matched"]],
+             matched_alpha(design_s3[["n"]], design_s3[["delta"]], design_s3[["n_e"]], 0,
+                           sd_surv_s3, sd_surv_s3, alpha)[["alpha_matched"]],
+             1e-12, "Table S3: alpha' is that of Table 3")
+
+known_measures_s3 <- c("hr_internal_vs_external", "log_hr_difference")
+variation_levels <- c("mean_upper", "tau_upper", "ivw_mean", "trial_sd")
+columns_s3 <- c("author", "bibkey", "endpoint", "analysis", "subset", "n_comparisons",
+                "variation", "measure", "value", "tau")
+uncertainty <- utils::read.csv("inst/sup_info/bias_uncertainty_sources.csv",
+                               stringsAsFactors = FALSE)
+if (!all(uncertainty[["measure"]] %in% known_measures_s3) ||
+    !all(uncertainty[["variation"]] %in% setdiff(variation_levels, "trial_sd"))) {
+  stop("Unknown measure or variation in inst/sup_info/bias_uncertainty_sources.csv.",
+       call. = FALSE)
+}
+
+# Trial-level differences of Gupta et al. The sample standard deviation is taken over all
+# trials, or over the trials other than the outlier for the estimates without it. The mean of
+# the transcribed differences must agree with the published mean up to its rounding.
+gupta_trials <- utils::read.csv("inst/sup_info/gupta_trial_differences.csv",
+                                stringsAsFactors = FALSE)
+gupta_published <- utils::read.csv("inst/scripts/empirical_bias_sources.csv",
+                                   stringsAsFactors = FALSE)
+gupta_published <- gupta_published[gupta_published[["bibkey"]] == "Gupta2025", ]
+gupta_column <- c("Unadjusted" = "unadjusted", "Weighted" = "adjusted",
+                  "Weighted, QBA" = "adjusted_qba")
+stopifnot(nrow(gupta_published) == 6, all(gupta_published[["analysis"]] %in% names(gupta_column)),
+          all(gupta_published[["measure"]] == "log_hr_difference"),
+          sum(gupta_trials[["outlier"]]) == 1)
+trial_sd <- do.call(rbind, lapply(seq_len(nrow(gupta_published)), function(i) {
+  p <- gupta_published[i, ]
+  keep <- if (p[["subset"]] == "All") {
+    rep(TRUE, nrow(gupta_trials))
+  } else {
+    !gupta_trials[["outlier"]]
+  }
+  x <- gupta_trials[[gupta_column[[p[["analysis"]]]]]][keep]
+  stopifnot(length(x) == p[["n_comparisons"]])
+  assert_close(mean(x), p[["value"]], 5e-4,
+               paste0("Table S3: the mean of the trial-level differences of Gupta et al. (",
+                      p[["analysis"]], ", ", p[["subset"]], ") is the published mean"))
+  out <- p
+  out[["variation"]] <- "trial_sd"
+  out[["tau"]] <- stats::sd(x)
+  out
+}))
+
+sources_s3 <- rbind(uncertainty[columns_s3], trial_sd[columns_s3])
+stopifnot(all(sources_s3[["subset"]] %in% c("All", "Outlier removed")))
+key_s3 <- paste(sources_s3[["author"]], sources_s3[["endpoint"]], sources_s3[["analysis"]])
+sources_s3 <- sources_s3[order(match(key_s3, unique(key_s3)),
+                               match(sources_s3[["subset"]], c("All", "Outlier removed")),
+                               match(sources_s3[["variation"]], variation_levels)), ]
+rownames(sources_s3) <- NULL
+sources_s3[["id"]] <- seq_len(nrow(sources_s3))
+sources_s3[["bias_mean"]] <- ifelse(sources_s3[["measure"]] == "hr_internal_vs_external",
+                                    -log(sources_s3[["value"]]), sources_s3[["value"]])
+sources_s3[["tau_used"]] <- ifelse(is.na(sources_s3[["tau"]]), 0, sources_s3[["tau"]])
+
+grid_s3 <- expand.grid(source_row = seq_len(nrow(sources_s3)),
+                       design_row = seq_len(nrow(design_s3)), KEEP.OUT.ATTRS = FALSE)
+tab_s3 <- cbind(sources_s3[grid_s3[["source_row"]], ], design_s3[grid_s3[["design_row"]], ])
+rownames(tab_s3) <- NULL
+tab_s3[["type1_sat"]] <- power_sat(tab_s3[["n"]], 0, tab_s3[["n_e"]],
+                                   bias = tab_s3[["bias_mean"]], margin = 0,
+                                   tau = tab_s3[["tau_used"]], sigma_t = tab_s3[["sigma"]],
+                                   alpha = alpha)
+tab_s3[["above_alpha_matched"]] <- tab_s3[["type1_sat"]] > tab_s3[["alpha_matched"]]
+tab_s3[["tau_below_breakeven"]] <- tab_s3[["tau_used"]] < tab_s3[["breakeven_bias"]]
+# Without a random bias, the type I error rate of the SAT exceeds alpha' exactly when the bias
+# exceeds m_crit
+k <- tab_s3[["tau_used"]] == 0
+assert_close(tab_s3[["above_alpha_matched"]][k],
+             tab_s3[["bias_mean"]][k] > tab_s3[["critical_margin"]][k], 0,
+             "Table S3: with tau = 0, alpha' is exceeded exactly when the bias exceeds m_crit")
+save_csv(tab_s3, "tableS3_bias_uncertainty.csv")
+
 elapsed <- (proc.time() - start_time)[["elapsed"]]
 message(sprintf("data_generate_supplement.R finished in %.1f seconds.", elapsed))

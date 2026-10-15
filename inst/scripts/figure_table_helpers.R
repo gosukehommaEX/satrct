@@ -52,9 +52,9 @@ panel_title <- function(expr) {
 # each side, and the asterisk of b* is set at full size (a superscript asterisk is too small).
 title_ne <- function(label, n_e) {
   if (is.infinite(n_e)) {
-    bquote(bold(.(label)) ~~ "Threshold" ~ (italic(N)[E] ~ "=" ~ infinity))
+    bquote(bold(.(label)) ~~ "Threshold" ~ (italic(N)[italic(E)] ~ "=" ~ infinity))
   } else {
-    bquote(bold(.(label)) ~~ "External control" ~ (italic(N)[E] ~ "=" ~ .(n_e)))
+    bquote(bold(.(label)) ~~ "External control" ~ (italic(N)[italic(E)] ~ "=" ~ .(n_e)))
   }
 }
 
