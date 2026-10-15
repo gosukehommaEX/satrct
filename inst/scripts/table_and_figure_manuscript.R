@@ -2,8 +2,9 @@
 # data_generate_main.R.
 #
 # Figures: Figure<k>.pdf and Figure<k>.eps. Tables: table<k>_<content>.tex, each a complete
-# table environment with caption, label and note; the settings quoted in the captions and
-# notes are taken from the saved results. The figure captions are written in main.tex.
+# table environment with caption, label and note; Table 4 is drawn from the results of Table 3.
+# The settings quoted in the captions and notes are taken from the saved results. The figure
+# captions are written in main.tex.
 #
 # Run from the package root (the package does not need to be loaded).
 # Output: inst/scripts/results/figures/ and inst/scripts/results/tables/
@@ -245,7 +246,7 @@ body3 <- c(
   paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(b) Type I error rate of the SAT under ",
          "published estimates of the bias}} \\\\")
 )
-# Source, endpoint, number of comparisons and analysis of a row of (b) or (c); the source is
+# Source, endpoint, number of comparisons and analysis of a row of Table 3(b); the source is
 # written only in its first row
 label_cells3 <- function(first, previous_key) {
   source_cell <- if (first[["bibkey"]] == previous_key) {
@@ -253,12 +254,15 @@ label_cells3 <- function(first, previous_key) {
   } else {
     paste0(first[["author"]], "~\\cite{", first[["bibkey"]], "}")
   }
-  analysis_cell <- if (first[["subset"]] == "Outlier removed") {
+  c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
+    analysis_cell(first))
+}
+analysis_cell <- function(first) {
+  if (first[["subset"]] == "Outlier removed") {
     paste0(first[["analysis"]], "$^{\\ddagger}$")
   } else {
     first[["analysis"]]
   }
-  c(source_cell, first[["endpoint"]], fmt_setting(first[["n_comparisons"]]), analysis_cell)
 }
 previous_key <- ""
 for (s in sort(unique(tab3[["id"]]))) {
@@ -270,33 +274,6 @@ for (s in sort(unique(tab3[["id"]]))) {
   type1 <- ifelse(d[["above_alpha_matched"]], paste0(type1, "$^{\\dagger}$"), type1)
   tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
   cells <- c(label_cells3(first, previous_key), fmt_num(first[["bias_mean"]]), tau_cell, type1)
-  previous_key <- first[["bibkey"]]
-  body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
-}
-# (c) Bias margins for the weighted analyses; margins above m_crit are marked. m_crit and
-# m_0.95 do not depend on N in this setting (N_E = 2 N).
-stopifnot(diff(range(tab3[["critical_margin"]])) < 1e-12)
-mark_above_crit <- function(x, m_crit) {
-  ifelse(x > m_crit, paste0(fmt_num(x), "$^{\\S}$"), fmt_num(x))
-}
-body3 <- c(
-  body3,
-  "\\addlinespace",
-  paste0("\\multicolumn{", n_col3, "}{l}{\\textit{(c) Bias margins for the weighted analyses}} ",
-         "\\\\"),
-  paste0(" & & & & $m_{0.95}$ & & \\multicolumn{", length(sizes3),
-         "}{c}{$m_{\\mathrm{avg}}$} \\\\")
-)
-previous_key <- ""
-for (s in sort(unique(tab3[["id"]][tab3[["analysis"]] != "Unadjusted"]))) {
-  d <- tab3[tab3[["id"]] == s, ]
-  d <- d[order(d[["n"]]), ]
-  stopifnot(nrow(d) == length(sizes3), all(d[["n"]] == sizes3),
-            diff(range(d[["margin_q95"]])) < 1e-12)
-  first <- d[1, ]
-  cells <- c(label_cells3(first, previous_key),
-             mark_above_crit(first[["margin_q95"]], first[["critical_margin"]]), "",
-             mark_above_crit(d[["margin_avg"]], d[["critical_margin"]]))
   previous_key <- first[["bibkey"]]
   body3 <- c(body3, paste0(paste(cells, collapse = " & "), " \\\\"))
 }
@@ -314,33 +291,87 @@ caption3 <- paste0(
   "$\\alpha'$ at which the RCT has the power of the SAT, break-even bias $b^{*}$ and critical ",
   "margin $m_{\\mathrm{crit}}$. (b) Type I error rate of the SAT without margin, averaged over ",
   "a normal distribution of the bias with the published mean $\\bar{b}$ and between-study ",
-  "standard deviation $\\tau$ of the bias of external controls. (c) Bias margins for the same ",
-  "distributions. With the margin $m_{\\mathrm{avg}}$, the type I error rate averaged over the ",
-  "distribution of the bias equals $\\alpha$. The margin $m_{0.95} = \\bar{b} + z_{0.95}\\tau$ ",
-  "is the 95th percentile of the distribution, so that the type I error rate given the bias ",
-  "is at most $\\alpha$ in 95\\% of trials.")
+  "standard deviation $\\tau$ of the bias of external controls.")
+abbreviations3 <- paste0(
+  "OS, overall survival; PFS, progression-free survival (real-world progression-free ",
+  "survival for the external controls); QBA, quantitative bias analysis.")
+outlier_note3 <- paste0(
+  "Analyses marked with $\\ddagger$ exclude the study that the authors identified as an ",
+  "outlier (study 5 of Incerti et al.\\ and Bahmane et al.\\ and the NILE trial of Gupta et ",
+  "al.).")
 note3 <- paste0(
   "The bias is the log hazard ratio estimated with the randomized control minus the log ",
   "hazard ratio estimated with the external control, so that positive values favour the ",
-  "experimental treatment; $b^{*}$, $m_{\\mathrm{crit}}$, $\\bar{b}$, $\\tau$ and the margins ",
-  "are on this scale. Incerti et al.\\ and Bahmane et al.\\ report posterior medians of the ",
-  "hazard ratio of the internal versus the external control and of the between-study standard ",
-  "deviation, and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report ",
-  "the mean difference in log hazard ratios over the trials without a between-study standard ",
-  "deviation, and $\\tau = 0$ is used. Type I error rates and margins are computed from ",
-  "$\\bar{b}$ before rounding. $K$ is the number of comparisons. Type I error rates above ",
-  "$\\alpha'$ in the same column are marked with $\\dagger$. Margins above ",
-  "$m_{\\mathrm{crit}}$ are marked with $\\S$; with such a margin, the SAT without bias has ",
-  "less power than the RCT. Analyses marked with $\\ddagger$ exclude the study that the ",
-  "authors identified as an outlier (study 5 of Incerti et al.\\ and Bahmane et al.\\ and the ",
-  "NILE trial of Gupta et al.). Section~\\ref{S-sec:bias_uncertainty} of the Supporting ",
-  "Information repeats (b) with the upper limits of the credible intervals and with the ",
-  "trial-level differences of Gupta et al. The probability of an event is ",
-  fmt_setting(prob_event3), " for every patient. OS, overall survival; PFS, progression-free ",
-  "survival (real-world progression-free survival for the external controls); QBA, ",
-  "quantitative bias analysis.")
+  "experimental treatment; $b^{*}$, $m_{\\mathrm{crit}}$, $\\bar{b}$ and $\\tau$ are on this ",
+  "scale. Incerti et al.\\ and Bahmane et al.\\ report posterior medians of the hazard ratio ",
+  "of the internal versus the external control and of the between-study standard deviation, ",
+  "and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report the mean ",
+  "difference in log hazard ratios over the trials without a between-study standard ",
+  "deviation, and $\\tau = 0$ is used. Type I error rates are computed from $\\bar{b}$ before ",
+  "rounding. $K$ is the number of comparisons. Type I error rates above $\\alpha'$ in the ",
+  "same column are marked with $\\dagger$. ", outlier_note3, " ",
+  "Section~\\ref{S-sec:bias_uncertainty} of the Supporting Information repeats (b) with the ",
+  "upper limits of the credible intervals and with the trial-level differences of Gupta et ",
+  "al. The probability of an event is ", fmt_setting(prob_event3), " for every patient. ",
+  abbreviations3)
 write_table(tab_dir, "table3_empirical_bias",
             table_lines(caption3, "tab:empirical",
                         paste0("llcl", "cc", strrep("c", length(sizes3))),
                         header3, body3, note3,
                         size = c("\\small", "\\setlength{\\tabcolsep}{2.5pt}")))
+
+# ---- Table 4: bias margins under the published estimates of the bias ----
+# The weighted analyses of Table 3, with the source written in a row of its own. m_crit and
+# m_0.95 do not depend on N in this setting (N_E = 2 N), and margins above m_crit are marked.
+stopifnot(diff(range(tab3[["critical_margin"]])) < 1e-12)
+m_crit4 <- tab3[["critical_margin"]][1]
+mark_above_crit <- function(x) {
+  ifelse(x > m_crit4, paste0(fmt_num(x), "$^{\\S}$"), fmt_num(x))
+}
+n_col4 <- 6 + length(sizes3)
+body4 <- character(0)
+previous_key <- ""
+for (s in sort(unique(tab3[["id"]][tab3[["analysis"]] != "Unadjusted"]))) {
+  d <- tab3[tab3[["id"]] == s, ]
+  d <- d[order(d[["n"]]), ]
+  stopifnot(nrow(d) == length(sizes3), all(d[["n"]] == sizes3),
+            diff(range(d[["margin_q95"]])) < 1e-12)
+  first <- d[1, ]
+  if (first[["bibkey"]] != previous_key) {
+    body4 <- c(body4, if (length(body4) > 0) "\\addlinespace",
+               paste0("\\multicolumn{", n_col4, "}{l}{", first[["author"]], "~\\cite{",
+                      first[["bibkey"]], "}} \\\\"))
+  }
+  previous_key <- first[["bibkey"]]
+  tau_cell <- if (is.na(first[["tau"]])) "--" else fmt_num(first[["tau"]])
+  cells <- c(first[["endpoint"]], fmt_setting(first[["n_comparisons"]]), analysis_cell(first),
+             fmt_num(first[["bias_mean"]]), tau_cell, mark_above_crit(first[["margin_q95"]]),
+             mark_above_crit(d[["margin_avg"]]))
+  body4 <- c(body4, paste0(paste(cells, collapse = " & "), " \\\\"))
+}
+header4 <- c(
+  paste0("Endpoint & $K$ & Analysis & $\\bar{b}$ & $\\tau$ & $m_{0.95}$ & \\multicolumn{",
+         length(sizes3), "}{c}{$m_{\\mathrm{avg}}$ by $N$} \\\\"),
+  paste0("\\cmidrule(lr){7-", n_col4, "}"),
+  paste0(" & & & & & & ", paste(fmt_setting(sizes3), collapse = " & "), " \\\\")
+)
+caption4 <- paste0(
+  "Bias margins for the single-arm trial (SAT) of Table~\\ref{tab:empirical} under the ",
+  "published estimates of the bias from the weighted analyses. With the margin ",
+  "$m_{\\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias ",
+  "with mean $\\bar{b}$ and standard deviation $\\tau$ equals $\\alpha = ", fmt_setting(alpha3),
+  "$. The margin $m_{0.95} = \\bar{b} + z_{0.95}\\tau$ is the 95th percentile of this ",
+  "distribution, so that the type I error rate given the bias is at most $\\alpha$ in 95\\% ",
+  "of trials.")
+note4 <- paste0(
+  "The critical margin is $m_{\\mathrm{crit}} = ", fmt_num(m_crit4), "$ at every $N$ ",
+  "(Table~\\ref{tab:empirical}(a)). Margins above $m_{\\mathrm{crit}}$ are marked with ",
+  "$\\S$; with such a margin, the SAT without bias has less power than the randomized ",
+  "controlled trial. Both margins equal $\\bar{b}$ when $\\tau = 0$, and they are computed ",
+  "from $\\bar{b}$ before rounding. $K$ is the number of comparisons. ", outlier_note3, " ",
+  abbreviations3)
+write_table(tab_dir, "table4_bias_margins",
+            table_lines(caption4, "tab:margins",
+                        paste0("lcl", "ccc", strrep("c", length(sizes3))),
+                        header4, body4, note4,
+                        size = c("\\small", "\\setlength{\\tabcolsep}{3pt}")))

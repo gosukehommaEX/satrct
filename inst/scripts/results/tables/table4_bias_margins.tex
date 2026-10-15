@@ -1,0 +1,35 @@
+\begin{table}[!htb]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Bias margins for the single-arm trial (SAT) of Table~\ref{tab:empirical} under the published estimates of the bias from the weighted analyses. With the margin $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha = 0.025$. The margin $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution, so that the type I error rate given the bias is at most $\alpha$ in 95\% of trials.}
+\label{tab:margins}
+\begin{tabular}{lclccccccc}
+\toprule
+Endpoint & $K$ & Analysis & $\bar{b}$ & $\tau$ & $m_{0.95}$ & \multicolumn{4}{c}{$m_{\mathrm{avg}}$ by $N$} \\
+\cmidrule(lr){7-10}
+ & & & & & & 30 & 60 & 90 & 120 \\
+\midrule
+\multicolumn{10}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & 0.098 & 0.114 & 0.285$^{\S}$ & 0.143 & 0.160 & 0.171 & 0.180 \\
+OS & 13 & Weighted$^{\ddagger}$ & 0.132 & 0.061 & 0.233$^{\S}$ & 0.146 & 0.151 & 0.155 & 0.158 \\
+\addlinespace
+\multicolumn{10}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & 0.001 & 0.164 & 0.271$^{\S}$ & 0.092 & 0.121 & 0.140 & 0.154 \\
+PFS & 13 & Weighted$^{\ddagger}$ & 0.031 & 0.091 & 0.181 & 0.061 & 0.072 & 0.080 & 0.086 \\
+OS & 14 & Weighted & 0.061 & 0.109 & 0.240$^{\S}$ & 0.103 & 0.118 & 0.129 & 0.137 \\
+OS & 13 & Weighted$^{\ddagger}$ & 0.086 & 0.059 & 0.183 & 0.098 & 0.103 & 0.107 & 0.110 \\
+\addlinespace
+\multicolumn{10}{l}{Gupta et al.~\cite{Gupta2025}} \\
+OS & 15 & Weighted & 0.139 & -- & 0.139 & 0.139 & 0.139 & 0.139 & 0.139 \\
+OS & 15 & Weighted, QBA & 0.098 & -- & 0.098 & 0.098 & 0.098 & 0.098 & 0.098 \\
+OS & 14 & Weighted$^{\ddagger}$ & 0.067 & -- & 0.067 & 0.067 & 0.067 & 0.067 & 0.067 \\
+OS & 14 & Weighted, QBA$^{\ddagger}$ & 0.025 & -- & 0.025 & 0.025 & 0.025 & 0.025 & 0.025 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$ (Table~\ref{tab:empirical}(a)). Margins above $m_{\mathrm{crit}}$ are marked with $\S$; with such a margin, the SAT without bias has less power than the randomized controlled trial. Both margins equal $\bar{b}$ when $\tau = 0$, and they are computed from $\bar{b}$ before rounding. $K$ is the number of comparisons. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier (study 5 of Incerti et al.\ and Bahmane et al.\ and the NILE trial of Gupta et al.). OS, overall survival; PFS, progression-free survival (real-world progression-free survival for the external controls); QBA, quantitative bias analysis.
+\end{minipage}
+\end{table}

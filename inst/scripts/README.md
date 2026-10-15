@@ -22,7 +22,7 @@ source("inst/scripts/copy_results.R")
 | Script | Time | Output |
 |---|---|---|
 | `data_generate_main.R` | < 10 s | `inst/scripts/results/data/*.csv` |
-| `table_and_figure_manuscript.R` | < 10 s | `inst/scripts/results/figures/Figure1`--`3` (`.pdf`, `.eps`), `inst/scripts/results/tables/table1_relative.tex`, `table2_illustration.tex`, `table3_empirical_bias.tex` |
+| `table_and_figure_manuscript.R` | < 10 s | `inst/scripts/results/figures/Figure1`--`3` (`.pdf`, `.eps`), `inst/scripts/results/tables/table1_relative.tex`, `table2_illustration.tex`, `table3_empirical_bias.tex`, `table4_bias_margins.tex` |
 | `data_generate_supplement.R` | < 10 s | `inst/sup_info/results/data/*.csv` |
 | `table_and_figure_supplement.R` | < 10 s | `inst/sup_info/results/figures/FigureS1`--`S2` (`.pdf`, `.eps`), `inst/sup_info/results/tables/tableS1_z_t.tex`, `tableS2_sensitivity.tex`, `tableS3_bias_uncertainty.tex`, `tableS4_validation.tex` |
 | `copy_results.R` | < 10 s | copies in `Manuscript/tables` and `Manuscript/figures`, log `inst/scripts/results/copy_log.csv` |
@@ -43,7 +43,8 @@ bias m_crit for every margin).
 | Figure 3 | `fig3_type1.csv`, `fig3_crossing.csv` | type I error rate against the bias for N = 40, delta = 0.5 sigma, m / delta = 0, 0.15, 0.3 and N_E = Inf, 80 |
 | Table 1 | `table1_relative.csv` | power of the RCT 0.2, 0.35, 0.5, 0.8 and N / N_E = 0, 0.5, 1, 2 |
 | Table 2 | `table2_illustration.csv` | continuous, binary (against external controls and a threshold) and time-to-event endpoints |
-| Table 3 | `table3_empirical_bias.csv` | time-to-event endpoint with hazard ratio 0.6, N = 30, 60, 90, 120 and N_E = 2 N, under the published estimates of the bias of external controls in `empirical_bias_sources.csv`, with the bias margins m_avg and m_0.95 for a random bias |
+| Table 3 | `table3_empirical_bias.csv` | time-to-event endpoint with hazard ratio 0.6, N = 30, 60, 90, 120 and N_E = 2 N, under the published estimates of the bias of external controls in `empirical_bias_sources.csv` |
+| Table 4 | `table3_empirical_bias.csv` | bias margins m_avg and m_0.95 for a random bias under the weighted estimates of Table 3 |
 | Figure S1 | `figS1_hybrid.csv` | hybrid design with N = 40 and N_E = 100 |
 | Figure S2 | `figS2_binary.csv` | exact and approximate power and exact type I error rate, 0.55 vs 0.30, margin 0.05, N = 20 to 100 |
 | Table S1 | `tableS1_z_t.csv` | z-test and t-test for N = 10, 20, 40 and delta / sigma = 0.5, 1 |

@@ -267,8 +267,8 @@ k <- table3[["tau_used"]] == 0
 assert_close(table3[["above_alpha_matched"]][k],
              table3[["bias_mean"]][k] > table3[["critical_margin"]][k], 0,
              "Table 3: with tau = 0, alpha' is exceeded exactly when the bias exceeds m_crit")
-# Bias margins for a random bias b ~ N(b_bar, tau^2). The type I error rate of the SAT averaged
-# over the distribution of the bias equals alpha at the margin
+# Bias margins for a random bias b ~ N(b_bar, tau^2), shown in Table 4. The type I error rate
+# of the SAT averaged over the distribution of the bias equals alpha at the margin
 # m_avg = b_bar + z_{1 - alpha} (sqrt(V_S + tau^2) - sqrt(V_S)), and the margin
 # m_0.95 = b_bar + z_{0.95} tau is the 95th percentile of the bias, so that the type I error rate
 # given the bias is at most alpha in 95% of trials. Both margins equal b_bar when tau = 0. The
