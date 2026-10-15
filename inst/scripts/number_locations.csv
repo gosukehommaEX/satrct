@@ -27,7 +27,7 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 26,main.tex,from 0.150 at,0.150,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 7 & n == 30],dp:3,computed,,"Table 3(b), unadjusted, N = 30"
 27,main.tex,at $N = 30$,30,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 7 & n == 30],int,input,,smallest N of Table 3
 28,main.tex,0.456 at,0.456,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 7 & n == 120],dp:3,computed,,"Table 3(b), unadjusted, N = 120"
-29,main.tex,at $N = 120$,120,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 7 & n == 120],int,input,,largest N of Table 3
+29,main.tex,0.456 at $N = 120$,120,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 7 & n == 120],int,input,,largest N of Table 3
 30,main.tex,range from 0.031,0.031,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 12 & n == 30],dp:3,computed,,"smallest type I error rate under the weighted estimates (Gupta et al., QBA without NILE)"
 31,main.tex,"to 0.189,",0.189,inst/scripts/results/data/table3_empirical_bias.csv,type1_sat[id == 2 & n == 120],dp:3,computed,,largest type I error rate under the weighted estimates
 32,main.tex,level of 0.025 in every,0.025,inst/scripts/results/data/table3_empirical_bias.csv,alpha[id == 1 & n == 30],dp:3,input,,conventional one-sided level
@@ -100,26 +100,24 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 99,supporting_information.tex,to 0.42. The,0.42,inst/sup_info/results/data/tableS2_sensitivity.csv,critical_margin_rel[n_e == 80 & r == 0.666666666666667 & sd_ratio == 1],dp:2,computed,,"Table S2, N_E = 80, 2:1"
 100,main.tex,was 55\% instead,55,,,exact,literature,Vanderbeek2019,"p. 1244, type I error rate of the single-arm trial"
 101,main.tex,instead of the targeted 10\%,10,,,exact,literature,Vanderbeek2019,"p. 1244, targeted type I error rate"
-102,main.tex,up to 83\% in,83,,,exact,literature,Ventz2019,"p. 4997, largest type I error rate of the single-arm trial (n = 60)"
+102,main.tex,found rates up to 83\%,83,,,exact,literature,Ventz2019,"p. 4997, largest type I error rate of the single-arm trial (n = 60)"
 103,main.tex,common one-sided 0.025 may,0.025,,,exact,literature,FDA2026,lines 520-523
 104,main.tex,threshold above 0.05 be,0.05,,,exact,literature,ICHE11A,printed p. 26
 105,main.tex,"for example 10\%, may",10,,,exact,literature,PMDA2026,"Japanese original p. 4, two-sided"
 106,main.tex,"estimate is 0.179, below",0.179,inst/scripts/results/data/table3_empirical_bias.csv,bias_mean[id == 10 & n == 30],dp:3,literature,Gupta2025,"p. 6, unadjusted mean without the NILE trial"
-107,main.tex,from the targeted 10\% to,10,,,exact,literature,Vanderbeek2019,"p. 1244, targeted type I error rate"
-108,main.tex,to 21\%.,21,,,exact,literature,Vanderbeek2019,"p. 1244, inflation by the between-trial variability alone"
+108,main.tex,raised it to 21\%,21,,,exact,literature,Vanderbeek2019,"p. 1244, inflation by the between-trial variability alone"
 109,main.tex,is between 0.061,0.061,inst/scripts/results/data/table3_empirical_bias.csv,margin_avg[id == 4 & n == 30],dp:3,computed,,"Table 3(c), smallest m_avg over the estimates with tau > 0"
 110,main.tex,"and 0.180, below",0.180,inst/scripts/results/data/table3_empirical_bias.csv,margin_avg[id == 1 & n == 120],dp:3,computed,,"Table 3(c), largest m_avg"
-111,main.tex,"At $N = 60$, for",60,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 1 & n == 60],int,input,,"Table 3, total size of the example"
-112,main.tex,the margin 0.160 under,0.160,inst/scripts/results/data/table3_empirical_bias.csv,margin_avg[id == 1 & n == 60],dp:3,computed,,"Table 3(c), Incerti et al. K = 14, N = 60"
-113,main.tex,with all 14 studies gives,14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 1],int,literature,Incerti2023,p. 169
-114,main.tex,power 0.459 against,0.459,inst/scripts/results/data/table3_empirical_bias.csv,power_sat_margin_avg[id == 1 & n == 60],dp:3,computed,,"power of the SAT with m_avg without bias, Incerti et al. K = 14, N = 60"
+111,main.tex,At $N = 60$ under the estimate,60,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 1 & n == 60],int,input,,"Table 3, total size of the example"
+112,main.tex,the margins 0.160 and,0.160,inst/scripts/results/data/table3_empirical_bias.csv,margin_avg[id == 1 & n == 60],dp:3,computed,,"Table 4(a), m_avg, Incerti et al. K = 14, N = 60"
+113,main.tex,"Incerti et al. with all 14 studies, for example",14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 1],int,literature,Incerti2023,p. 169
+114,main.tex,power 0.459 and,0.459,inst/scripts/results/data/table3_empirical_bias.csv,power_sat_margin_avg[id == 1 & n == 60],dp:3,computed,,"power of the SAT with m_avg without bias, Incerti et al. K = 14, N = 60"
 115,main.tex,against 0.380 for,0.380,inst/scripts/results/data/table3_empirical_bias.csv,power_rct[id == 1 & n == 60],dp:3,computed,,"Table 3(a), power of the RCT at N = 60"
-116,main.tex,power 0.222 at,0.222,inst/scripts/results/data/table3_empirical_bias.csv,power_sat_margin_q95[id == 1 & n == 60],dp:3,computed,,"power of the SAT with m_0.95 without bias, Incerti et al. K = 14, N = 60"
-117,main.tex,at $N = 60$ under,60,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 1 & n == 60],int,input,,"Table 3, total size of the example"
+116,main.tex,and 0.222 against,0.222,inst/scripts/results/data/table3_empirical_bias.csv,power_sat_margin_q95[id == 1 & n == 60],dp:3,computed,,"power of the SAT with m_0.95 without bias, Incerti et al. K = 14, N = 60"
 118,main.tex,"Incerti et al., 0.200 and",0.200,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,bias_mean[id == 1 & n == 30],dp:3,literature,Incerti2023,"Table S3, -log(0.819), upper limit of the 95% credible interval of mu"
 119,main.tex,"and 0.221, exceed",0.221,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,bias_mean[id == 3 & n == 30],dp:3,literature,Incerti2023,"Table S3, -log(0.802), without reference study 5"
 120,main.tex,with all 14 studies exceed,14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 1],int,literature,Incerti2023,p. 169; also 14 for Bahmane et al. (p. 1)
-121,main.tex,for $N \ge 60$.,60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 2 & n == 60],int,input,,"Table S3, smallest N at which the upper limits of tau exceed b*"
+121,main.tex,"for $N \ge 60$, and that",60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 2 & n == 60],int,input,,"Table S3, smallest N at which the upper limits of tau exceed b*"
 122,main.tex,between 0.11 and,0.11,inst/scripts/results/data/table3_empirical_bias.csv,alpha_matched[id == 1 & n == 30],dp:2,computed,,"smallest matched level without margin of Tables 2 and 3 and Figure 3 (Table 3, N = 30)"
 123,main.tex,and 0.35 one-sided,0.35,inst/scripts/results/data/fig3_crossing.csv,alpha_matched[n_e == Inf & margin == 0],dp:2,computed,,largest matched level without margin of Tables 2 and 3 and Figure 3 (Figure 3(a))
 124,main.tex,the one-sided 0.05 that,0.05,,,exact,literature,PMDA2026,"Japanese original p. 4, one-sided equivalent of the two-sided 10%"
@@ -135,10 +133,17 @@ id,file,anchor,text_value,source_file,source_expr,rounding,type,bibkey,note
 134,supporting_information.tex,"with all 14 studies, between",14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 3],int,literature,Bahmane2025,p. 1; also 14 for Incerti et al. (p. 169)
 135,supporting_information.tex,between 0.263 and,0.263,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,tau_used[id == 2 & n == 30],dp:3,literature,Incerti2023,"upper limit of the 95% credible interval of sigma, p. 172"
 136,supporting_information.tex,"and 0.314, exceed",0.314,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,tau_used[id == 6 & n == 30],dp:3,literature,Bahmane2025,"upper limit of the 95% credible interval of s, PFS, Table 2 (p. 5)"
-137,supporting_information.tex,"$N \ge 60$, so",60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 2 & n == 60],int,input,,"Table S3, smallest N at which the upper limits of tau exceed b*"
+137,supporting_information.tex,"$N \ge 60$, and the upper limit",60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 2 & n == 60],int,input,,"Table S3, smallest N at which the upper limits of tau exceed b*"
 138,supporting_information.tex,up to $N = 90$ and,90,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 2 & n == 90],int,input,,"Table S3, largest N at which the upper limit of tau of Incerti et al. gives a rate above alpha'"
 139,supporting_information.tex,Bahmane et al. at $N = 30$,30,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 10 & n == 30],int,input,,"Table S3, only N at which the upper limit of tau for OS gives a rate above alpha'"
 140,supporting_information.tex,value of 0.161 keeps,0.161,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,bias_mean[id == 13 & n == 30],dp:3,literature,Gupta2025,"Table 3 (p. 7), unadjusted, inverse variance-weighted"
 141,supporting_information.tex,all 15 comparisons and,15,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 7],int,literature,Gupta2025,"Table 3, p. 7"
-142,supporting_information.tex,except at $N = 30$ for,30,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 10 & n == 30],int,input,,"Table S3, OS estimate of Bahmane et al."
-143,supporting_information.tex,all 15 comparisons suggest,15,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 7],int,literature,Gupta2025,"Table 3, p. 7"
+144,main.tex,and 0.285 give,0.285,inst/scripts/results/data/table3_empirical_bias.csv,margin_q95[id == 1 & n == 60],dp:3,computed,,"Table 4(a), m_0.95, Incerti et al. K = 14"
+145,main.tex,"Bahmane et al. with all 14 studies, whose",14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 3],int,literature,Bahmane2025,p. 1
+146,main.tex,only at $N = 120$ under,120,inst/scripts/results/data/table3_empirical_bias.csv,n[id == 1 & n == 120],int,input,,"Table 4(b), size at which the averaged power with m_0.95 of Incerti et al. K = 14 falls below that of the RCT"
+147,main.tex,with all 14 studies. The published,14,inst/scripts/empirical_bias_sources.csv,n_comparisons[id == 1],int,literature,Incerti2023,p. 169
+148,main.tex,exceeds it for $N \ge 90$. Under,90,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 8 & n == 90],int,input,,"Table S3, smallest N at which the upper limit of tau of Bahmane et al. PFS K = 13 exceeds b*"
+149,main.tex,exceeds $m_{\mathrm{crit}}$ for $N \ge 60$,60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 8 & n == 60],int,input,,"Table S4, smallest N at which m_avg exceeds m_crit under every upper limit of tau"
+150,supporting_information.tex,limit of 0.219 for,0.219,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,tau[id == 8 & n == 30],dp:3,literature,Bahmane2025,"p. 6, upper limit of the 95% credible interval of s without study 5"
+151,supporting_information.tex,"exceeds it for $N \ge 90$, so",90,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 8 & n == 90],int,input,,"Table S3, smallest N at which the upper limit of tau of Bahmane et al. PFS K = 13 exceeds b*"
+152,supporting_information.tex,"every estimate for $N \ge 60$, and",60,inst/sup_info/results/data/tableS3_bias_uncertainty.csv,n[id == 8 & n == 60],int,input,,"Table S4, smallest N at which m_avg exceeds m_crit under every upper limit of tau"
