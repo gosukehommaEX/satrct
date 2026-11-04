@@ -1,2 +1,2 @@
-script,item,reason
-reproduce_KoppSchneider2024,calibrated_power_fixedPP_thetaE0.5,"Printed value 0.848 (p.14) is inconsistent within the paper: Appendix (A4) gives 0.902 for the test calibrated to the level 0.114, and 0.848 would be below the power 0.860 with borrowing, contradicting the stated power difference of 0.030."
+script,item,expected_value,tolerance,reason
+reproduce_KoppSchneider2024,calibrated_power_fixedPP_thetaE0.5,0.902248990406811,1e-09,"Printed value 0.848 (p.14) is inconsistent within the paper: Appendix (A4) gives 0.902 for the test calibrated to the level 0.114, and 0.848 would be below the power 0.860 with borrowing, contradicting the stated power difference of 0.030."

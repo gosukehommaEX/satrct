@@ -46,18 +46,34 @@ judge <- function(script, item, description, source, reference, value,
              verdict = verdict, note = note, stringsAsFactors = FALSE)
 }
 
-# Replace FAIL by EXPLAINED for the items registered in explained.csv
+# Replace FAIL by EXPLAINED for the items registered in explained.csv, but only when the value is
+# still the registered one (within the registered tolerance), so that a later change of the
+# value is not hidden by an old explanation
 apply_explained <- function(results, path = "inst/validation/explained.csv") {
   registry <- utils::read.csv(path, stringsAsFactors = FALSE)
+  if (!all(c("script", "item", "expected_value", "tolerance", "reason") %in% names(registry))) {
+    stop("explained.csv needs the columns script, item, expected_value, tolerance and reason.",
+         call. = FALSE)
+  }
   key_results <- paste(results[["script"]], results[["item"]], sep = "::")
   key_registry <- paste(registry[["script"]], registry[["item"]], sep = "::")
-  hit <- results[["verdict"]] == "FAIL" & key_results %in% key_registry
-  results[["verdict"]][hit] <- "EXPLAINED"
-  results[["note"]][hit] <- registry[["reason"]][match(key_results[hit], key_registry)]
+  idx <- match(key_results, key_registry)
+  registered <- results[["verdict"]] == "FAIL" & !is.na(idx)
+  same <- registered &
+    abs(results[["value"]] - registry[["expected_value"]][idx]) <= registry[["tolerance"]][idx]
+  same[is.na(same)] <- FALSE
+  results[["verdict"]][same] <- "EXPLAINED"
+  results[["note"]][same] <- registry[["reason"]][idx[same]]
+  changed <- registered & !same
+  if (any(changed)) {
+    results[["note"]][changed] <- paste0(
+      "Registered explanation not applied: the value differs from the registered value ",
+      format(registry[["expected_value"]][idx[changed]], digits = 15))
+  }
   unused <- key_registry[startsWith(key_registry, paste0(results[["script"]][1], "::")) &
-                           !(key_registry %in% key_results[hit])]
+                           !(key_registry %in% key_results[same])]
   if (length(unused) > 0) {
-    message("Registered explanations not used (the item passes or is absent): ",
+    message("Registered explanations not used (the item passes, is absent or has changed): ",
             paste(unused, collapse = ", "))
   }
   results
@@ -87,7 +103,8 @@ self_check <- function(results) {
         "", 1, as.numeric(detected), "abs", tol = 0)
 }
 
-# Apply the registry, add the self-check, write the CSV and print a summary
+# Apply the registry, add the self-check, write the CSV, print a summary and stop if a
+# comparison failed
 finalize_results <- function(results, out_dir) {
   results <- apply_explained(results)
   results <- rbind(results, self_check(results))
@@ -97,6 +114,11 @@ finalize_results <- function(results, out_dir) {
   print(results[, c("item", "reference", "value", "verdict")], row.names = FALSE)
   print(table(factor(results[["verdict"]], levels = c("PASS", "EXPLAINED", "FAIL", "INFO"))))
   message("Saved: ", path)
+  n_fail <- sum(results[["verdict"]] == "FAIL")
+  if (n_fail > 0) {
+    stop(n_fail, " comparison(s) of ", results[["script"]][1], " failed; see ", path, ".",
+         call. = FALSE)
+  }
   invisible(results)
 }
 

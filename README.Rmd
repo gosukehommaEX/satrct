@@ -51,6 +51,25 @@ matched_alpha(n = 40, delta = 0.6, n_e = 100, margin = 0.1)
 
 The package version used in this README is `r packageVersion("satrct")`.
 
+## Reproducing the article
+
+The folders `inst/scripts` and `inst/sup_info` contain the code for the
+numerical results, tables and figures of the accompanying article, and
+`inst/reproduce` and `inst/validation` the reproduction of published results
+and the validation of the package. From the package root,
+
+```r
+devtools::load_all()
+source("inst/run_all.R")
+```
+
+runs all of them in order, stops if a comparison fails, and records the
+versions of R and of the packages in `inst/scripts/results/session_info.txt`.
+Copying the tables and figures into a manuscript folder is optional (set the
+environment variable `SATRCT_MANUSCRIPT_DIR`). The validation uses the
+suggested packages rpact, survival and testthat. The order of the scripts and
+their outputs are described in `inst/scripts/README.md`.
+
 ## References
 
 Pocock SJ. The combination of randomized and historical controls in clinical

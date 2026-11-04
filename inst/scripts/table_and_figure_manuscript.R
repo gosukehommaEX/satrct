@@ -126,6 +126,55 @@ draw_fig3 <- function() {
 }
 save_figure(fig_dir, "Figure3", draw_fig3)
 
+# ---- Figure 4: bias margins fixed before the trial ----
+fig4 <- read_data("fig4_fixed_margin.csv")
+draw_fig4 <- function() {
+  start_panels(legend_lines = 3.2)
+  alpha4 <- fig4[["alpha"]][1]
+  margin_types <- c("none", "avg", "q95")
+  col4 <- c(none = "black", avg = pal[1], q95 = pal[2])
+  # (a) type I error rate given the bias, with the planning density of the bias in grey,
+  # scaled to a maximum of 0.5
+  a <- fig4[fig4[["panel"]] == "a", ]
+  graphics::plot(NA, xlim = c(0, 0.5), ylim = c(0, 1), xaxs = "i", yaxs = "i",
+                 xlab = expression("Bias" ~ italic(b)), ylab = "Type I error rate")
+  d <- a[a[["margin_type"]] == "none", ]
+  dens <- 0.5 * d[["density"]] / max(d[["density"]])
+  graphics::polygon(c(d[["bias"]], rev(d[["bias"]])), c(dens, rep(0, length(dens))),
+                    col = "grey85", border = NA)
+  graphics::abline(h = alpha4, col = "grey40", lty = 3, lwd = 1)
+  for (v in margin_types) {
+    d <- a[a[["margin_type"]] == v, ]
+    graphics::lines(d[["bias"]], d[["type1"]], col = col4[[v]], lty = 1, lwd = 1.8)
+  }
+  graphics::box()
+  panel_title(quote(bold("(a)") ~~ "Given the bias"))
+  # (b) averaged type I error rate against the actual mean bias, with the planning tau (solid)
+  # and the upper limit of tau (dashed); vertical lines at the planning mean bias (solid) and
+  # at the upper limit of its credible interval (dashed)
+  b <- fig4[fig4[["panel"]] == "b", ]
+  graphics::plot(NA, xlim = c(0, 0.35), ylim = c(0, 0.3), xaxs = "i", yaxs = "i",
+                 xlab = expression("Actual mean bias" ~ bar(italic(b))),
+                 ylab = "Averaged type I error rate")
+  graphics::abline(h = alpha4, col = "grey40", lty = 3, lwd = 1)
+  graphics::abline(v = b[["bias_mean_plan"]][1], col = "grey40", lwd = 1)
+  graphics::abline(v = b[["bias_mean_upper"]][1], col = "grey40", lty = 2, lwd = 1)
+  taus <- sort(unique(b[["tau_true"]]))
+  stopifnot(length(taus) == 2)
+  for (v in c("avg", "q95")) {
+    for (j in seq_along(taus)) {
+      d <- b[b[["margin_type"]] == v & b[["tau_true"]] == taus[j], ]
+      graphics::lines(d[["bias"]], d[["type1"]], col = col4[[v]], lty = c(1, 2)[j], lwd = 1.8)
+    }
+  }
+  panel_title(quote(bold("(b)") ~~ "Averaged over the bias"))
+  labels <- list("No margin", quote(italic(m)[avg]), quote(italic(m)[0.95]),
+                 quote("Planning" ~ tau), quote("Upper limit of" ~ tau))
+  bottom_legend(labels, col = c(col4[["none"]], col4[["avg"]], col4[["q95"]], "grey30", "grey30"),
+                lty = c(1, 1, 1, 1, 2), lwd = c(1.8, 1.8, 1.8, 1.8, 1.8), ncol = 3)
+}
+save_figure(fig_dir, "Figure4", draw_fig4)
+
 # ---- Table 1: results that depend only on the power of the RCT and N / N_E ----
 tab1 <- read_data("table1_relative.csv")
 alpha1 <- unique(tab1[["alpha"]])
@@ -307,7 +356,8 @@ note3 <- paste0(
   "of the internal versus the external control and of the between-study standard deviation, ",
   "and $\\bar{b}$ is minus the logarithm of the hazard ratio. Gupta et al.\\ report the mean ",
   "difference in log hazard ratios over the trials without a between-study standard ",
-  "deviation, and $\\tau = 0$ is used. Type I error rates are computed from $\\bar{b}$ before ",
+  "deviation, and $\\tau = 0$ is used, so that their rows are scenarios with a fixed mean ",
+  "bias. Type I error rates are computed from $\\bar{b}$ before ",
   "rounding. $K$ is the number of comparisons. Type I error rates above $\\alpha'$ in the ",
   "same column are marked with $\\dagger$. ", outlier_note3, " ",
   "Section~\\ref{S-sec:bias_uncertainty} of the Supporting Information repeats (b) with the ",
@@ -411,8 +461,9 @@ note4 <- paste0(
   "(Table~\\ref{tab:empirical}(a)), and margins above it are marked with $\\S$; with such a ",
   "margin, the SAT has less power than the RCT when the external control is unbiased. ",
   "Averaged powers below the power of the RCT in the same column are marked with $\\P$. ",
-  "Gupta et al.\\ report no between-study standard deviation, so that $m_{0.95}$ and (b) are ",
-  "not shown for their estimates and $m_{\\mathrm{avg}}$ equals $\\bar{b}$; ",
+  "Gupta et al.\\ report no between-study standard deviation, so that their rows are ",
+  "scenarios with a fixed mean bias, $m_{0.95}$ and (b) are not shown for their estimates and ",
+  "$m_{\\mathrm{avg}}$ equals $\\bar{b}$; ",
   "Section~\\ref{S-sec:bias_uncertainty} of the Supporting Information uses the standard ",
   "deviation of the trial-level differences instead. The margins are computed from $\\bar{b}$ ",
   "before rounding. $K$, $\\ddagger$ and the abbreviations are as in ",

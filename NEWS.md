@@ -1,6 +1,23 @@
 # satrct 0.1.0
 
 * Initial version.
+* After a review by a co-author, before the first release:
+  - `inst/scripts/` gives Figure 4 (bias margins fixed before the trial),
+    and `inst/sup_info/` gives Figure S3 (bias at which the type I error
+    rates cross for binary and time-to-event endpoints) and Tables S6 and S7
+    (fixed margins, effective number of external controls and unequal event
+    probabilities). Negative margins are replaced by zero in Tables S4 and
+    S5.
+  - `inst/run_all.R` runs every script of the article in order, records the
+    session information and copies the outputs to a manuscript folder only
+    when `SATRCT_MANUSCRIPT_DIR` is set.
+  - The validation scripts stop when a comparison fails, a registered
+    explanation applies only to the registered value, and the check of the
+    unit tests requires an unchanged baseline and a failure of the block that
+    contains the altered value.
+  - The documentation states that `n_rct()` and `n_sat()` return continuous
+    planning values, and the vignette covers a random bias and fixed
+    margins.
 * Normal-approximation comparison of a single-arm trial with an external
   control and an RCT of the same size: `mse_rct()`, `mse_sat()`,
   `breakeven_bias()`, `breakeven_n()`, `power_rct()`, `power_sat()`,

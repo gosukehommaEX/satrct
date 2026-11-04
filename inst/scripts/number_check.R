@@ -5,7 +5,8 @@
 # source_file, source_expr, rounding, type, bibkey, note). For every row with a source
 # expression, the value is computed from the source file, formatted by the rounding rule and
 # printed next to the value written in the manuscript. The location of the anchors in the .tex
-# files is checked separately by Manuscript/tools/check_numbers.py.
+# files is checked separately by the script tools/check_numbers.py of the manuscript folder of
+# the authors, which is not part of the package and is not needed to reproduce the results.
 #
 # source_expr: selectors column[condition] combined with numbers, + - * / and parentheses,
 # evaluated in the data frame read from source_file (path relative to the package root). Every

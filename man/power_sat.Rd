@@ -31,10 +31,16 @@ treatment. \code{delta = 0} gives the type I error.}
 estimated treatment effect minus the true effect.}
 
 \item{margin}{Bias margin subtracted from the estimated effect before the
-test. Defaults to \code{0}, the ordinary test.}
+test. Defaults to \code{0}, the ordinary test. A negative value adds to
+the estimate; the bias margins of the accompanying article are
+nonnegative, and a negative value of a formula for a margin is replaced
+by zero there.}
 
-\item{tau}{Standard deviation of a random bias with mean zero. Defaults to
-\code{0}.}
+\item{tau}{Standard deviation of a normal random bias with mean
+\code{bias}, independent of the sampling error and with the same
+distribution under the null and the alternative hypotheses; the
+rejection probability is then averaged over this distribution. Defaults
+to \code{0}.}
 
 \item{sigma_t}{Standard deviation of the outcome of one patient on the
 experimental treatment, on the scale of the treatment effect.}

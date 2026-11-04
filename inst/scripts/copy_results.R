@@ -1,15 +1,18 @@
 # Copy the tables and figures of the main text and the Supporting Information to the
 # manuscript folder and check that every copy is identical to its source (MD5).
 #
-# The manuscript folder is ../../Manuscript relative to the package root
-# (49_SAT_vs_RCT/Manuscript). The tables go to Manuscript/tables and the figures to
-# Manuscript/figures. Files in these folders are not edited by hand.
+# The manuscript folder is given by the environment variable SATRCT_MANUSCRIPT_DIR and
+# defaults to ../../Manuscript relative to the package root (49_SAT_vs_RCT/Manuscript, the
+# folder of the authors). The tables go to <folder>/tables and the figures to
+# <folder>/figures. Files in these folders are not edited by hand. The copy is not needed to
+# reproduce the results, and inst/run_all.R runs it only when the variable is set.
 #
 # Run from the package root after table_and_figure_manuscript.R and
 # table_and_figure_supplement.R.
 # Output: the copies, and the log inst/scripts/results/copy_log.csv
 
-manuscript_dir <- file.path("..", "..", "Manuscript")
+manuscript_dir <- Sys.getenv("SATRCT_MANUSCRIPT_DIR",
+                            unset = file.path("..", "..", "Manuscript"))
 if (!dir.exists(manuscript_dir)) {
   stop("The manuscript folder ", manuscript_dir, " was not found. Run this script from the ",
        "package root.", call. = FALSE)

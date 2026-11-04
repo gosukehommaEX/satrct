@@ -42,8 +42,9 @@ Defaults to \code{sigma_t}.}
 \code{\link{power_sat}}.}
 }
 \value{
-A numeric vector of sample sizes. Vector arguments are recycled to
-  a common length.
+A numeric vector of sample sizes, as continuous planning values to
+  be rounded up to whole numbers of patients. Vector arguments are
+  recycled to a common length.
 }
 \description{
 Computes the number of patients on the experimental treatment at which a

@@ -281,6 +281,8 @@ v_sat3 <- mse_sat(table3[["n"]], table3[["n_e"]], sigma_t = table3[["sigma"]])
 table3[["margin_avg"]] <- table3[["bias_mean"]] +
   z_alpha * (sqrt(v_sat3 + table3[["tau_used"]]^2) - sqrt(v_sat3))
 table3[["margin_q95"]] <- table3[["bias_mean"]] + qnorm(0.95) * table3[["tau_used"]]
+# A bias margin is nonnegative (Section 2.3 of the main text); no margin of Table 4 is negative
+stopifnot(all(table3[["margin_avg"]] >= 0), all(table3[["margin_q95"]] >= 0))
 table3[["type1_sat_margin_avg"]] <- power_sat(table3[["n"]], 0, table3[["n_e"]],
                                               bias = table3[["bias_mean"]],
                                               margin = table3[["margin_avg"]],
@@ -367,6 +369,82 @@ assert_close(table3[["prob_bias_above_margin_avg"]][k],
                    lower.tail = FALSE), 1e-12,
              "Table 3: closed form of the proportion of trials whose bias exceeds m_avg")
 save_csv(table3, "table3_empirical_bias.csv")
+
+# ---- Figure 4: bias margins fixed before the trial under a misspecified distribution ----
+# The margins m_avg and m_0.95 are derived from the posterior medians of the estimate of
+# Incerti et al. with all 14 studies (id 1 of inst/scripts/empirical_bias_sources.csv) for the
+# SAT of Table 3 with N = 60 and then kept fixed, as a margin stated in a protocol would be.
+# (a) Type I error rate of the SAT given a fixed bias b, without margin and with each margin,
+# and the density of the planning distribution of the bias. (b) Type I error rate averaged over
+# a normal distribution of the bias whose mean differs from the planning value, with the
+# planning tau or the upper limit of its 95% credible interval
+# (inst/sup_info/bias_uncertainty_sources.csv).
+n_fig4 <- 60
+source_fig4 <- bias_sources[bias_sources[["id"]] == 1, ]
+uncertainty_fig4 <- utils::read.csv("inst/sup_info/bias_uncertainty_sources.csv",
+                                    stringsAsFactors = FALSE)
+pick_fig4 <- function(variation) {
+  u <- uncertainty_fig4[uncertainty_fig4[["bibkey"]] == source_fig4[["bibkey"]] &
+                          uncertainty_fig4[["endpoint"]] == source_fig4[["endpoint"]] &
+                          uncertainty_fig4[["analysis"]] == source_fig4[["analysis"]] &
+                          uncertainty_fig4[["subset"]] == source_fig4[["subset"]] &
+                          uncertainty_fig4[["variation"]] == variation, ]
+  stopifnot(nrow(u) == 1, u[["measure"]] == "hr_internal_vs_external")
+  u
+}
+bias_plan_fig4 <- source_fig4[["bias_mean"]]
+tau_plan_fig4 <- source_fig4[["tau_used"]]
+bias_upper_fig4 <- -log(pick_fig4("mean_upper")[["value"]])
+tau_upper_fig4 <- pick_fig4("tau_upper")[["tau"]]
+design_fig4 <- design3[design3[["n"]] == n_fig4, ]
+v_sat_fig4 <- mse_sat(design_fig4[["n"]], design_fig4[["n_e"]], sigma_t = design_fig4[["sigma"]])
+margins_fig4 <- c(none = 0,
+                  avg = bias_plan_fig4 +
+                    z_alpha * (sqrt(v_sat_fig4 + tau_plan_fig4^2) - sqrt(v_sat_fig4)),
+                  q95 = bias_plan_fig4 + qnorm(0.95) * tau_plan_fig4)
+base_fig4 <- data.frame(alpha = alpha, n = design_fig4[["n"]], n_e = design_fig4[["n_e"]],
+                        delta = design_fig4[["delta"]], sigma = design_fig4[["sigma"]],
+                        source_id = 1, bias_mean_plan = bias_plan_fig4,
+                        tau_plan = tau_plan_fig4, bias_mean_upper = bias_upper_fig4,
+                        tau_upper = tau_upper_fig4)
+bias_fig4a <- seq(0, 0.5, by = 0.0025)
+fig4a <- do.call(rbind, lapply(names(margins_fig4), function(v) {
+  data.frame(base_fig4, panel = "a", margin_type = v, margin = margins_fig4[[v]],
+             tau_true = 0, bias = bias_fig4a,
+             type1 = power_sat(design_fig4[["n"]], 0, design_fig4[["n_e"]], bias = bias_fig4a,
+                               margin = margins_fig4[[v]], sigma_t = design_fig4[["sigma"]],
+                               alpha = alpha),
+             density = stats::dnorm(bias_fig4a, bias_plan_fig4, tau_plan_fig4))
+}))
+bias_fig4b <- seq(0, 0.35, by = 0.0025)
+fig4b <- do.call(rbind, lapply(c("avg", "q95"), function(v) {
+  do.call(rbind, lapply(c(tau_plan_fig4, tau_upper_fig4), function(tau_true) {
+    data.frame(base_fig4, panel = "b", margin_type = v, margin = margins_fig4[[v]],
+               tau_true = tau_true, bias = bias_fig4b,
+               type1 = power_sat(design_fig4[["n"]], 0, design_fig4[["n_e"]],
+                                 bias = bias_fig4b, margin = margins_fig4[[v]], tau = tau_true,
+                                 sigma_t = design_fig4[["sigma"]], alpha = alpha),
+               density = NA_real_)
+  }))
+}))
+fig4 <- rbind(fig4a, fig4b)
+k <- table3[["id"]] == 1 & table3[["n"]] == n_fig4
+assert_close(margins_fig4[c("avg", "q95")],
+             c(table3[["margin_avg"]][k], table3[["margin_q95"]][k]), 1e-12,
+             "Figure 4: the margins are those of Table 4")
+assert_close(power_sat(design_fig4[["n"]], 0, design_fig4[["n_e"]], bias = bias_plan_fig4,
+                       margin = margins_fig4[["avg"]], tau = tau_plan_fig4,
+                       sigma_t = design_fig4[["sigma"]], alpha = alpha), alpha, 1e-12,
+             "Figure 4: under the planning distribution, m_avg gives the averaged level alpha")
+# Given the bias, the type I error rate with margin m equals alpha at the bias m
+for (v in names(margins_fig4)) {
+  assert_close(power_sat(design_fig4[["n"]], 0, design_fig4[["n_e"]],
+                         bias = margins_fig4[[v]], margin = margins_fig4[[v]],
+                         sigma_t = design_fig4[["sigma"]], alpha = alpha), alpha, 1e-12,
+               paste0("Figure 4: the type I error rate given the bias is alpha where the bias ",
+                      "equals the margin (", v, ")"))
+}
+save_csv(fig4, "fig4_fixed_margin.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]
 message(sprintf("data_generate_main.R finished in %.1f seconds.", elapsed))

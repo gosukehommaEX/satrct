@@ -1,0 +1,55 @@
+\begin{table}[!htb]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Single-arm trial (SAT) and randomized controlled trial (RCT) with 1:1 randomization of Table~\ref{M-tab:empirical} of the main article when the external control carries the information of fewer patients or the experimental treatment has a smaller probability of an event, for a time-to-event endpoint with hazard ratio 0.6, by the total size $N$, with one-sided $\alpha = 0.025$. (a) Power of the RCT, break-even bias $b^{*}$ and critical margin $m_{\mathrm{crit}}$. (b) Power of the SAT with the margin $m_{\mathrm{avg}}$, averaged over the distribution of the bias, under the published estimates with $\tau > 0$.}
+\label{tab:design_sensitivity}
+\begin{tabular}{llccccc}
+\toprule
+ & Endpoint & $K$ & \multicolumn{4}{c}{$N$} \\
+\cmidrule(lr){4-7}
+ & & & 30 & 60 & 90 & 120 \\
+\midrule
+\multicolumn{7}{l}{\textit{(a) Designs}} \\
+\multicolumn{3}{l}{Power of RCT (probability of an event 0.7)} & 0.215 & 0.380 & 0.527 & 0.648 \\
+\multicolumn{7}{l}{Effective number of external controls $N$} \\
+\multicolumn{3}{l}{\quad $b^{*}$} & 0.309 & 0.218 & 0.178 & 0.154 \\
+\multicolumn{3}{l}{\quad $m_{\mathrm{crit}}$} & 0.150 & 0.150 & 0.150 & 0.150 \\
+\multicolumn{7}{l}{Effective number of external controls $N/2$} \\
+\multicolumn{3}{l}{\quad $b^{*}$} & 0.218 & 0.154 & 0.126 & 0.109 \\
+\multicolumn{3}{l}{\quad $m_{\mathrm{crit}}$} & 0.068 & 0.068 & 0.068 & 0.068 \\
+\multicolumn{7}{l}{Event probability 0.514 on the experimental treatment} \\
+\multicolumn{3}{l}{\quad Power of RCT} & 0.189 & 0.331 & 0.463 & 0.577 \\
+\multicolumn{3}{l}{\quad $b^{*}$} & 0.369 & 0.261 & 0.213 & 0.185 \\
+\multicolumn{3}{l}{\quad $m_{\mathrm{crit}}$} & 0.190 & 0.190 & 0.190 & 0.190 \\
+\addlinespace
+\multicolumn{7}{l}{\textit{(b) Power of the SAT with $m_{\mathrm{avg}}$, averaged over the distribution of the bias}} \\
+\multicolumn{7}{l}{Effective number of external controls $N$} \\
+\quad Incerti et al.~\cite{Incerti2023} & OS & 14 & 0.342 & 0.546$^{\S}$ & 0.675$^{\S}$ & 0.759$^{\S}$ \\
+ & OS & 13$^{\ddagger}$ & 0.368 & 0.616 & 0.774$^{\S}$ & 0.868$^{\S}$ \\
+\quad Bahmane et al.~\cite{Bahmane2025} & PFS & 14 & 0.309 & 0.465 & 0.559 & 0.621$^{\P}$ \\
+ & PFS & 13$^{\ddagger}$ & 0.355 & 0.579 & 0.724 & 0.814 \\
+ & OS & 14 & 0.345 & 0.553 & 0.686 & 0.772 \\
+ & OS & 13$^{\ddagger}$ & 0.369 & 0.618 & 0.777 & 0.871 \\
+\multicolumn{7}{l}{Effective number of external controls $N/2$} \\
+\quad Incerti et al.~\cite{Incerti2023} & OS & 14 & 0.253$^{\S}$ & 0.420$^{\S}$ & 0.546$^{\S}$ & 0.639$^{\S\P}$ \\
+ & OS & 13$^{\ddagger}$ & 0.266$^{\S}$ & 0.462$^{\S}$ & 0.616$^{\S}$ & 0.730$^{\S}$ \\
+\quad Bahmane et al.~\cite{Bahmane2025} & PFS & 14 & 0.236 & 0.370$^{\S\P}$ & 0.465$^{\S\P}$ & 0.532$^{\S\P}$ \\
+ & PFS & 13$^{\ddagger}$ & 0.259 & 0.440 & 0.579 & 0.683$^{\S}$ \\
+ & OS & 14 & 0.254$^{\S}$ & 0.425$^{\S}$ & 0.553$^{\S}$ & 0.649$^{\S}$ \\
+ & OS & 13$^{\ddagger}$ & 0.266$^{\S}$ & 0.463$^{\S}$ & 0.618$^{\S}$ & 0.732$^{\S}$ \\
+\multicolumn{7}{l}{Event probability 0.514 on the experimental treatment} \\
+\quad Incerti et al.~\cite{Incerti2023} & OS & 14 & 0.360 & 0.569 & 0.697 & 0.778 \\
+ & OS & 13$^{\ddagger}$ & 0.390 & 0.645 & 0.800 & 0.888 \\
+\quad Bahmane et al.~\cite{Bahmane2025} & PFS & 14 & 0.324 & 0.482 & 0.575 & 0.636 \\
+ & PFS & 13$^{\ddagger}$ & 0.375 & 0.606 & 0.748 & 0.834 \\
+ & OS & 14 & 0.364 & 0.577 & 0.709 & 0.791 \\
+ & OS & 13$^{\ddagger}$ & 0.391 & 0.647 & 0.803 & 0.891 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+In the first two scenarios the $N_E = 2N$ external controls of Table~\ref{M-tab:empirical} carry the information of $N$ or $N/2$ unweighted controls, as after weighting by a propensity score, the probability of an event is 0.7 for every patient and the power of the RCT is that of Table~\ref{M-tab:empirical}. In the third, $N_E = 2N$ and the probability of an event is 0.7 on the control and $1 - (1 - 0.7)^{0.6}$ on the experimental treatment, as under exponential survival with a common follow-up time. A smaller probability of an event among the external controls corresponds to a smaller effective number. The margin $m_{\mathrm{avg}}$ is derived again in each scenario from the posterior medians of Table~\ref{M-tab:margins} of the main article. $\S$, $m_{\mathrm{avg}}$ exceeds $m_{\mathrm{crit}}$, so that the SAT with $m_{\mathrm{avg}}$ is less powerful than the RCT when the external control is unbiased; $\P$, the averaged power is below the power of the RCT in (a). Values of $K$ marked with $\ddagger$ exclude the study that the authors identified as an outlier. OS, overall survival; PFS, progression-free survival.
+\end{minipage}
+\end{table}

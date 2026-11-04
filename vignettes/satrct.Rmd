@@ -87,12 +87,91 @@ res
 ```
 
 The RCT tested at the one-sided level
-`r signif(res[["alpha_matched"]], 2)` has the power of the SAT
+`r signif(res[["alpha_matched"]], 2)` has the power of the SAT without bias
 (`r signif(res[["power"]], 2)`). The SAT has the smaller type I error only
 while the bias is below `r signif(res[["bias_crossing"]], 2)`, which equals the
 critical margin `r signif(critical_margin(40, 0.6, 120), 2)` whatever the
-margin. Preferring the SAT to the RCT at the relaxed level is therefore a
-judgement that the bias is smaller than this value.
+margin.
+
+The comparison matches the RCT to the planned power of the SAT without bias
+and then lets the bias vary. A positive bias raises both the type I error and
+the power of the SAT, so above the critical margin the SAT is not a worse test
+in every respect. If the RCT were instead matched to the power that the SAT has
+at the same bias, the SAT would have the smaller type I error at every bias.
+The critical margin therefore answers one question: how large the bias may be
+before the SAT has a larger risk of a false positive conclusion than an RCT
+relaxed to its planned power. Whether the SAT is preferable also depends on
+what is assumed about the bias, on the error criterion, on the planned effect
+and on the clinical requirements for an external control, which these
+calculations do not cover. The calculations use a normal model with known
+variances, in which the crossing at the critical margin is exact; for binary
+and time-to-event endpoints it is an approximation.
+
+## A random bias and fixed margins
+
+When the bias varies between trials, it can be described by a normal
+distribution with mean $\bar{b}$ and standard deviation $\tau$, estimated
+for example from benchmarking studies. Two margins can be derived from it
+before the trial: $m_{avg}$ keeps the type I error averaged over this
+distribution at $\alpha$, and $m_{0.95} = \bar{b} + z_{0.95} \tau$ keeps the
+type I error given the bias at most $\alpha$ in 95% of trials.
+
+```{r}
+n <- 60
+n_e <- 120
+delta <- 0.5
+b_bar <- 0.1
+tau <- 0.1
+v_s <- mse_sat(n, n_e)
+m_avg <- b_bar + qnorm(0.975) * (sqrt(v_s + tau^2) - sqrt(v_s))
+m_95 <- b_bar + qnorm(0.95) * tau
+c(m_avg = m_avg, m_95 = m_95, m_crit = critical_margin(n, delta, n_e))
+```
+
+The power of the SAT with such a margin can be evaluated without bias or
+averaged over the distribution of the bias, and the two differ:
+
+```{r}
+sapply(c(m_avg = m_avg, m_95 = m_95), function(m) {
+  c(type1_averaged = power_sat(n, 0, n_e, bias = b_bar, margin = m, tau = tau),
+    power_without_bias = power_sat(n, delta, n_e, margin = m),
+    power_averaged = power_sat(n, delta, n_e, bias = b_bar, margin = m, tau = tau))
+})
+power_rct(n, delta)
+```
+
+With $m_{avg}$, the averaged power exceeds the power of the RCT exactly when
+$\tau$ is below the break-even bias, here
+`r round(breakeven_bias(60, n_e = 120), 3)`. The margin $m_{0.95}$ exceeds the
+critical margin, so the SAT with it is less powerful than the RCT when the
+external control is unbiased.
+
+A margin stated in a protocol stays fixed, while the distribution from which
+it was derived may be wrong. With $m_{avg}$ kept at `r round(m_avg, 3)`, the
+averaged type I error rises when the actual mean or standard deviation of the
+bias is larger than planned:
+
+```{r}
+c(planned = power_sat(n, 0, n_e, bias = b_bar, margin = m_avg, tau = tau),
+  mean_0.2 = power_sat(n, 0, n_e, bias = 0.2, margin = m_avg, tau = tau),
+  tau_0.2 = power_sat(n, 0, n_e, bias = b_bar, margin = m_avg, tau = 0.2))
+```
+
+These are plug-in calculations at chosen values of $\bar{b}$ and $\tau$. When
+the distribution of the bias is estimated from a few studies, a margin can
+instead be calibrated on the posterior predictive distribution of the bias of
+a new trial, which also reflects the uncertainty of the estimates.
+
+## Sample sizes
+
+`n_rct()` and `n_sat()` return continuous planning values. A trial needs whole
+numbers of patients in each group, so the values are rounded up to a feasible
+allocation, for example an even total for 1:1 randomization:
+
+```{r}
+n_plan <- n_rct(delta = 0.5, power = 0.8)
+c(planning_value = n_plan, total = 2 * ceiling(n_plan / 2))
+```
 
 ## Hybrid designs
 

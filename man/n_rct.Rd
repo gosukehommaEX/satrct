@@ -36,8 +36,11 @@ Defaults to \code{0.5}.}
 \code{\link{power_rct}}.}
 }
 \value{
-A numeric vector of total sample sizes. Vector arguments are
-  recycled to a common length.
+A numeric vector of total sample sizes, as continuous planning
+  values: a trial needs whole numbers of patients in each group, for
+  example an even total for 1:1 randomization, so the values are rounded
+  up to a feasible allocation. Vector arguments are recycled to a common
+  length.
 }
 \description{
 Computes the total sample size at which a randomized controlled trial

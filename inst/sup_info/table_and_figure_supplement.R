@@ -1,5 +1,5 @@
 # Draw the figures and write the tables of the Supporting Information from the results saved
-# by data_generate_supplement.R, except Table S6, which summarizes the verdicts of the scripts
+# by data_generate_supplement.R, except Table S8, which summarizes the verdicts of the scripts
 # in inst/reproduce and inst/validation.
 #
 # Figures: FigureS<k>.pdf and FigureS<k>.eps. Tables: tableS<k>_<content>.tex, each a complete
@@ -85,6 +85,50 @@ draw_fig_s2 <- function() {
                 lwd = rep(1.6, 5), ncol = 3)
 }
 save_figure(fig_dir, "FigureS2", draw_fig_s2)
+
+# ---- Figure S3: bias at which the type I error rate of the SAT reaches that of the RCT ----
+fig_s3a <- read_data("figS3_binary_crossing.csv")
+fig_s3b <- read_data("figS3_survival_crossing.csv")
+draw_fig_s3 <- function() {
+  start_panels(legend_lines = 3.2)
+  # (a) binary endpoint, exact crossing and normal approximation m_crit
+  graphics::plot(NA, xlim = c(20, 100), ylim = c(0, 0.15), xaxs = "i", yaxs = "i",
+                 xlab = expression("Total sample size" ~ italic(N)),
+                 ylab = expression("Bias" ~ italic(b)))
+  graphics::lines(fig_s3a[["n"]], fig_s3a[["critical_margin_normal"]], col = "black", lty = 2,
+                  lwd = 1.6)
+  graphics::lines(fig_s3a[["n"]], fig_s3a[["crossing_exact"]], col = pal[1], lty = 1, lwd = 1.6)
+  panel_title(quote(bold("(a)") ~~ "Binary endpoint, exact"))
+  # (b) time-to-event endpoint, simulated crossing for each margin and m_crit with a common
+  # event probability (dashed) and with the event probability of each group (dot-dashed)
+  sizes <- sort(unique(fig_s3b[["n"]]))
+  graphics::plot(NA, xlim = c(20, 130), ylim = c(0, 0.25), xaxs = "i", yaxs = "i", xaxt = "n",
+                 xlab = expression("Total sample size" ~ italic(N)),
+                 ylab = expression("Bias" ~ italic(b)))
+  graphics::axis(1, at = sizes)
+  stopifnot(diff(range(fig_s3b[["critical_margin_common"]])) < 1e-12,
+            diff(range(fig_s3b[["critical_margin_groups"]])) < 1e-12)
+  graphics::abline(h = fig_s3b[["critical_margin_common"]][1], col = "black", lty = 2, lwd = 1.6)
+  graphics::abline(h = fig_s3b[["critical_margin_groups"]][1], col = "black", lty = 4, lwd = 1.6)
+  margins <- sort(unique(fig_s3b[["margin"]]))
+  for (i in seq_along(margins)) {
+    d <- fig_s3b[fig_s3b[["margin"]] == margins[i], ]
+    d <- d[order(d[["n"]]), ]
+    graphics::lines(d[["n"]], d[["crossing_sim"]], col = pal[i], lty = 1, lwd = 1.6)
+    graphics::points(d[["n"]], d[["crossing_sim"]], pch = c(21, 24)[i], bg = pal[i],
+                     col = "black", cex = 1.1)
+  }
+  panel_title(quote(bold("(b)") ~~ "Time-to-event endpoint, simulated"))
+  labels <- list(
+    paste0("Crossing, margin ", fmt_setting(unique(fig_s3a[["margin"]])), " (a) or ",
+           fmt_setting(margins[1]), " (b)"),
+    paste0("Crossing, margin ", fmt_setting(margins[2]), " (b)"),
+    quote(italic(m)[crit] * ", common SD (a) or event probability (b)"),
+    quote(italic(m)[crit] * ", event probability of each group (b)"))
+  bottom_legend(labels, col = c(pal[1], pal[2], "black", "black"), lty = c(1, 1, 2, 4),
+                lwd = rep(1.6, 4), ncol = 2)
+}
+save_figure(fig_dir, "FigureS3", draw_fig_s3)
 
 # ---- Table S1: z-test and t-test ----
 tab_s1 <- read_data("tableS1_z_t.csv")
@@ -331,7 +375,10 @@ settings_s4 <- paste0(
 cells_s4 <- function(d) {
   stopifnot(diff(range(d[["margin_q95"]])) < 1e-12)
   q95_cell <- if (is.na(d[["tau"]][1])) "--" else mark_above_crit_s4(d[["margin_q95"]][1])
-  c(q95_cell, mark_above_crit_s4(d[["margin_avg"]]))
+  # a margin truncated at zero is marked instead of compared with m_crit
+  c(q95_cell, ifelse(d[["margin_avg_truncated"]],
+                     paste0(fmt_signed(d[["margin_avg"]]), "$^{\\|}$"),
+                     mark_above_crit_s4(d[["margin_avg"]])))
 }
 n_col_s4 <- 5 + length(sizes_s3)
 body_s4 <- rows_by_variation(n_col_s4, cells_s4)
@@ -352,7 +399,10 @@ note_s4 <- paste0(
   "margins above it are marked with $\\S$. The rows are those of ",
   "Table~\\ref{tab:bias_uncertainty}, which gives $\\bar{b}$ and $\\tau$. IVW mean is used ",
   "with $\\tau = 0$, so that $m_{0.95}$ is not shown and $m_{\\mathrm{avg}}$ equals ",
-  "$\\bar{b}$. ", abbreviations_s4)
+  "$\\bar{b}$, unless $\\bar{b}$ is negative: a bias margin is nonnegative, so that the ",
+  "negative value ", fmt_signed(min(tab_s3[["margin_avg_signed"]])), " of the formula for ",
+  "$m_{\\mathrm{avg}}$ is replaced by zero (marked with $\\|$), and the averaged type I error ",
+  "rate is then below $\\alpha$. ", abbreviations_s4)
 write_table(tab_dir, "tableS4_margin_uncertainty",
             table_lines(caption_s4, "tab:margin_uncertainty",
                         paste0("lcllc", strrep("c", length(sizes_s3))),
@@ -385,7 +435,9 @@ note_s5 <- paste0(
   "rows with the upper limit of $\\bar{b}$ repeat Table~\\ref{M-tab:margins}(b) of the main ",
   "article, and it exceeds the power of the RCT exactly when $\\tau$ is below the break-even ",
   "bias $b^{*}$ (Table~\\ref{M-tab:empirical}(a) of the main article). Powers below the power ",
-  "of the RCT in the same column are marked with $\\P$. IVW mean is used with $\\tau = 0$. ",
+  "of the RCT in the same column are marked with $\\P$. IVW mean is used with $\\tau = 0$, and a ",
+  "negative $m_{\\mathrm{avg}}$ is replaced by zero (Table~\\ref{tab:margin_uncertainty}), so ",
+  "that the mean bias does not cancel in that row. ",
   abbreviations_s4)
 write_table(tab_dir, "tableS5_power_uncertainty",
             table_lines(caption_s5, "tab:power_uncertainty",
@@ -393,7 +445,199 @@ write_table(tab_dir, "tableS5_power_uncertainty",
                         header_s5, body_s5, note_s5,
                         size = c("\\small", "\\setlength{\\tabcolsep}{3pt}")))
 
-# ---- Table S6: reproduction of published results and validation ----
+# ---- Table S6: bias margins fixed before the trial ----
+# Rows for N = 60, the size of the example in Section 4 of the main text; the results for the
+# other sizes are in tableS6_fixed_margin.csv. Averaged powers below the power of the RCT are
+# marked.
+tab_fm <- read_data("tableS6_fixed_margin.csv")
+n_fm <- 60
+d_fm <- tab_fm[tab_fm[["n"]] == n_fm, ]
+scenario_label_fm <- c(planning = "Planning", mean_upper = "Upper $\\bar{b}$",
+                       tau_upper = "Upper $\\tau$", both_upper = "Both upper")
+stopifnot(nrow(d_fm) == 6 * length(scenario_label_fm),
+          all(d_fm[["scenario"]] %in% names(scenario_label_fm)),
+          diff(range(d_fm[["power_rct"]])) < 1e-12, length(unique(d_fm[["alpha"]])) == 1)
+power_rct_fm <- d_fm[["power_rct"]][1]
+mark_below_rct_fm <- function(x) {
+  ifelse(x < power_rct_fm, paste0(fmt_prob(x), "$^{\\P}$"), fmt_prob(x))
+}
+n_col_fm <- 12
+body_fm <- character(0)
+previous_source <- ""
+for (s in unique(d_fm[["id"]])) {
+  d <- d_fm[d_fm[["id"]] == s, ]
+  d <- d[match(names(scenario_label_fm), d[["scenario"]]), ]
+  first <- d[1, ]
+  if (first[["bibkey"]] != previous_source) {
+    body_fm <- c(body_fm, if (length(body_fm) > 0) "\\addlinespace",
+                 paste0("\\multicolumn{", n_col_fm, "}{l}{", first[["author"]], "~\\cite{",
+                        first[["bibkey"]], "}} \\\\"))
+  }
+  previous_source <- first[["bibkey"]]
+  for (j in seq_len(nrow(d))) {
+    lead <- if (j == 1) {
+      c(first[["endpoint"]], fmt_setting(first[["n_comparisons"]]),
+        if (first[["subset"]] == "Outlier removed") {
+          paste0(first[["analysis"]], "$^{\\ddagger}$")
+        } else {
+          first[["analysis"]]
+        })
+    } else {
+      c("", "", "")
+    }
+    cells <- c(lead, scenario_label_fm[[d[["scenario"]][j]]], fmt_num(d[["bias_mean_true"]][j]),
+               fmt_num(d[["tau_true"]][j]), fmt_prob(d[["type1_margin_avg"]][j]),
+               mark_below_rct_fm(d[["power_margin_avg"]][j]),
+               fmt_prob(d[["prob_bias_above_margin_avg"]][j]),
+               fmt_prob(d[["type1_margin_q95"]][j]),
+               mark_below_rct_fm(d[["power_margin_q95"]][j]),
+               fmt_prob(d[["prob_bias_above_margin_q95"]][j]))
+    body_fm <- c(body_fm, paste0(paste(cells, collapse = " & "), " \\\\"))
+  }
+}
+header_fm <- c(
+  paste0(" & & & & & & \\multicolumn{3}{c}{$m_{\\mathrm{avg}}$ fixed} & ",
+         "\\multicolumn{3}{c}{$m_{0.95}$ fixed} \\\\"),
+  "\\cmidrule(lr){7-9} \\cmidrule(lr){10-12}",
+  paste0("Endpoint & $K$ & Analysis & Actual & $\\bar{b}$ & $\\tau$ & Type I & Power & ",
+         "$P(B > m)$ & Type I & Power & $P(B > m)$ \\\\"))
+caption_fm <- paste0(
+  "Single-arm trial (SAT) of Table~\\ref{M-tab:margins} of the main article with $N = ",
+  fmt_setting(n_fm), "$ when the margins $m_{\\mathrm{avg}}$ and $m_{0.95}$ derived from the ",
+  "posterior medians of the published estimates are kept fixed and the actual distribution of ",
+  "the bias has the mean $\\bar{b}$ and the standard deviation $\\tau$ shown: averaged type I ",
+  "error rate, averaged power and proportion $P(B > m)$ of trials whose bias exceeds the ",
+  "margin, for a time-to-event endpoint with hazard ratio ", fmt_setting(hr_s3),
+  " and an external control of $N_E = ", fmt_setting(2 * n_fm), "$ patients, with one-sided ",
+  "$\\alpha = ", fmt_setting(alpha_s3), "$.")
+note_fm <- paste0(
+  "Planning uses the posterior medians from which the margins are derived; upper $\\bar{b}$ ",
+  "and upper $\\tau$ replace one of them by the upper limit of its 95\\% credible interval ",
+  "(Table~\\ref{tab:bias_uncertainty}), and both upper replaces both, a stress scenario rather ",
+  "than a joint credible bound. The margins are those of Table~\\ref{M-tab:margins}(a) of the ",
+  "main article at $N = ", fmt_setting(n_fm), "$. The type I error rate and the power are ",
+  "averaged over a normal distribution of the bias with the actual mean and standard ",
+  "deviation, and in the trials whose bias exceeds the margin the type I error rate given the ",
+  "bias exceeds $\\alpha$. Averaged powers below the power ", fmt_prob(power_rct_fm), " of the ",
+  "randomized controlled trial with 1:1 randomization at $\\alpha$ are marked with $\\P$. The ",
+  "results for the other sizes of Table~\\ref{M-tab:empirical} of the main article are given ",
+  "in the file \\texttt{tableS6\\_fixed\\_margin.csv} of the package. ", abbreviations_s4)
+write_table(tab_dir, "tableS6_fixed_margin",
+            table_lines(caption_fm, "tab:fixed_margin", "lcllcccccccc", header_fm, body_fm,
+                        note_fm, size = c("\\footnotesize", "\\setlength{\\tabcolsep}{2pt}")))
+
+# ---- Table S7: effective number of external controls and unequal event probabilities ----
+tab_ds <- read_data("tableS7_design_sensitivity.csv")
+sizes_ds <- sort(unique(tab_ds[["n"]]))
+scenarios_ds <- c("ne_n", "ne_half", "psi_t")
+stopifnot(all(sizes_ds == sizes_s3), all(scenarios_ds %in% tab_ds[["scenario"]]),
+          length(unique(tab_ds[["alpha"]])) == 1)
+psi_t_ds <- unique(tab_ds[["prob_event_t"]][tab_ds[["scenario"]] == "psi_t"])
+psi_c_ds <- unique(tab_ds[["prob_event_c"]])
+stopifnot(length(psi_t_ds) == 1, length(psi_c_ds) == 1)
+scenario_label_ds <- c(
+  ne_n = "Effective number of external controls $N$",
+  ne_half = "Effective number of external controls $N/2$",
+  psi_t = paste0("Event probability ", fmt_num(psi_t_ds), " on the experimental treatment"))
+by_n_ds <- function(d, column) {
+  d <- d[!duplicated(d[["n"]]), ]
+  d <- d[order(d[["n"]]), ]
+  stopifnot(all(d[["n"]] == sizes_ds))
+  d[[column]]
+}
+n_col_ds <- 3 + length(sizes_ds)
+row_ds <- function(label, values) {
+  paste0("\\multicolumn{3}{l}{", label, "} & ", paste(values, collapse = " & "), " \\\\")
+}
+body_ds <- paste0("\\multicolumn{", n_col_ds, "}{l}{\\textit{(a) Designs}} \\\\")
+# with the common probability of an event, the power of the RCT does not depend on N_E
+power_rct_common_ds <- by_n_ds(tab_ds[tab_ds[["scenario"]] == "ne_n", ], "power_rct")
+stopifnot(max(abs(power_rct_common_ds -
+                    by_n_ds(tab_ds[tab_ds[["scenario"]] == "ne_half", ], "power_rct"))) < 1e-12)
+body_ds <- c(body_ds, row_ds(paste0("Power of RCT (probability of an event ",
+                                    fmt_setting(psi_c_ds), ")"),
+                             fmt_prob(power_rct_common_ds)))
+for (sc in scenarios_ds) {
+  d <- tab_ds[tab_ds[["scenario"]] == sc, ]
+  body_ds <- c(body_ds, paste0("\\multicolumn{", n_col_ds, "}{l}{", scenario_label_ds[[sc]],
+                               "} \\\\"))
+  if (sc == "psi_t") {
+    body_ds <- c(body_ds, row_ds("\\quad Power of RCT", fmt_prob(by_n_ds(d, "power_rct"))))
+  }
+  body_ds <- c(body_ds,
+               row_ds("\\quad $b^{*}$", fmt_num(by_n_ds(d, "breakeven_bias"))),
+               row_ds("\\quad $m_{\\mathrm{crit}}$", fmt_num(by_n_ds(d, "critical_margin"))))
+}
+mark_ds <- function(d) {
+  marks <- paste0(ifelse(d[["margin_avg_above_critical"]], "\\S", ""),
+                  ifelse(d[["power_sat_margin_avg_averaged"]] < d[["power_rct"]], "\\P", ""))
+  ifelse(marks == "", fmt_prob(d[["power_sat_margin_avg_averaged"]]),
+         paste0(fmt_prob(d[["power_sat_margin_avg_averaged"]]), "$^{", marks, "}$"))
+}
+body_ds <- c(body_ds, "\\addlinespace",
+             paste0("\\multicolumn{", n_col_ds, "}{l}{\\textit{(b) Power of the SAT with ",
+                    "$m_{\\mathrm{avg}}$, averaged over the distribution of the bias}} \\\\"))
+for (sc in scenarios_ds) {
+  d_sc <- tab_ds[tab_ds[["scenario"]] == sc, ]
+  body_ds <- c(body_ds, paste0("\\multicolumn{", n_col_ds, "}{l}{", scenario_label_ds[[sc]],
+                               "} \\\\"))
+  previous_source <- ""
+  for (s in unique(d_sc[["id"]])) {
+    d <- d_sc[d_sc[["id"]] == s, ]
+    d <- d[order(d[["n"]]), ]
+    stopifnot(all(d[["n"]] == sizes_ds))
+    first <- d[1, ]
+    source_cell <- if (first[["bibkey"]] == previous_source) {
+      ""
+    } else {
+      paste0("\\quad ", first[["author"]], "~\\cite{", first[["bibkey"]], "}")
+    }
+    previous_source <- first[["bibkey"]]
+    k_cell <- if (first[["subset"]] == "Outlier removed") {
+      paste0(fmt_setting(first[["n_comparisons"]]), "$^{\\ddagger}$")
+    } else {
+      fmt_setting(first[["n_comparisons"]])
+    }
+    body_ds <- c(body_ds, paste0(paste(c(source_cell, first[["endpoint"]], k_cell, mark_ds(d)),
+                                       collapse = " & "), " \\\\"))
+  }
+}
+header_ds <- c(
+  paste0(" & Endpoint & $K$ & \\multicolumn{", length(sizes_ds), "}{c}{$N$} \\\\"),
+  paste0("\\cmidrule(lr){4-", n_col_ds, "}"),
+  paste0(" & & & ", paste(fmt_setting(sizes_ds), collapse = " & "), " \\\\"))
+caption_ds <- paste0(
+  "Single-arm trial (SAT) and randomized controlled trial (RCT) with 1:1 randomization of ",
+  "Table~\\ref{M-tab:empirical} of the main article when the external control carries the ",
+  "information of fewer patients or the experimental treatment has a smaller probability of an ",
+  "event, for a time-to-event endpoint with hazard ratio ", fmt_setting(hr_s3), ", by the total ",
+  "size $N$, with one-sided $\\alpha = ", fmt_setting(alpha_s3), "$. (a) Power of the RCT, ",
+  "break-even bias $b^{*}$ and critical margin $m_{\\mathrm{crit}}$. (b) Power of the SAT with ",
+  "the margin $m_{\\mathrm{avg}}$, ",
+  "averaged over the distribution of the bias, under the published estimates with ",
+  "$\\tau > 0$.")
+note_ds <- paste0(
+  "In the first two scenarios the $N_E = 2N$ external controls of ",
+  "Table~\\ref{M-tab:empirical} carry the information of $N$ or $N/2$ unweighted controls, as ",
+  "after weighting by a propensity score, the probability of an event is ",
+  fmt_setting(psi_c_ds), " for every patient and the power of the RCT is that of ",
+  "Table~\\ref{M-tab:empirical}. In the third, $N_E = 2N$ and the probability of an event is ",
+  fmt_setting(psi_c_ds), " on the control and $1 - (1 - ", fmt_setting(psi_c_ds), ")^{",
+  fmt_setting(hr_s3), "}$ on the experimental treatment, as under exponential survival with a ",
+  "common follow-up time. A smaller probability of an event among the external controls ",
+  "corresponds to a smaller effective number. The margin $m_{\\mathrm{avg}}$ is derived again ",
+  "in each scenario from the posterior medians of Table~\\ref{M-tab:margins} of the main ",
+  "article. $\\S$, $m_{\\mathrm{avg}}$ exceeds $m_{\\mathrm{crit}}$, so that the SAT with ",
+  "$m_{\\mathrm{avg}}$ is less powerful than the RCT when the external control is unbiased; ",
+  "$\\P$, the averaged power is below the power of the RCT in (a). Values of $K$ marked with ",
+  "$\\ddagger$ exclude the study that the authors identified as an outlier. OS, overall ",
+  "survival; PFS, progression-free survival.")
+write_table(tab_dir, "tableS7_design_sensitivity",
+            table_lines(caption_ds, "tab:design_sensitivity",
+                        paste0("llc", strrep("c", length(sizes_ds))), header_ds, body_ds,
+                        note_ds, size = c("\\footnotesize", "\\setlength{\\tabcolsep}{4pt}")))
+
+# ---- Table S8: reproduction of published results and validation ----
 # The numbers of verdicts are read from the summaries written by
 # inst/reproduce/summarize_reproduction.R and inst/validation/summarize_validation.R, the
 # description of each script from inst/sup_info/validation_descriptions.csv, the reason for each
@@ -430,7 +674,7 @@ if (any(rowSums(summary_s6[verdict_names]) != summary_s6[["total"]])) {
   stop("The verdicts in the summaries do not add up to their totals.", call. = FALSE)
 }
 if (sum(summary_s6[["FAIL"]]) > 0) {
-  stop("Some comparisons failed, so Table S6 is not written.", call. = FALSE)
+  stop("Some comparisons failed, so Table S8 is not written.", call. = FALSE)
 }
 # Escape the special characters of LaTeX in the names and reasons taken from the results; stop
 # for characters that cannot be escaped this way
@@ -438,7 +682,7 @@ tex_escape <- function(x) {
   unsupported <- c("\\", "{", "}", "~", "^")
   for (ch in unsupported) {
     if (any(grepl(ch, x, fixed = TRUE))) {
-      stop("Unsupported character '", ch, "' in a name or reason for Table S6.", call. = FALSE)
+      stop("Unsupported character '", ch, "' in a name or reason for Table S8.", call. = FALSE)
     }
   }
   gsub("([_%&#$])", "\\\\\\1", x)
@@ -484,21 +728,29 @@ for (g in names(group_label_s6)) {
   }
 }
 caption_s6 <- paste0(
-  "Verdicts of the scripts that reproduce published results with the \\texttt{R} package ",
-  "\\texttt{satrct} (version ", version_s6, ") and validate it, by script.")
+  "Verdicts of the scripts that reproduce published results and validate the \\texttt{R} ",
+  "package \\texttt{satrct} (version ", version_s6, "), by script.")
 note_s6 <- paste0(
   "PASS, the recomputed value agrees with the reference under the stated rule; EXPLAINED, it ",
   "does not, and the reason is identified and recorded; FAIL, it does not; INFO, no pass or fail ",
   "rule applies (values read from figures, qualitative statements or the accuracy of an ",
   "approximation). The scripts are the files \\texttt{reproduce\\_}\\textit{name}\\texttt{.R} in ",
   "\\texttt{inst/reproduce} and \\texttt{validate\\_}\\textit{name}\\texttt{.R} in ",
-  "\\texttt{inst/validation}.")
+  "\\texttt{inst/validation}. The script for Taylor et al.\\ reconstructs the calculation of ",
+  "that article in base \\texttt{R} and checks the reading of the article rather than ",
+  "functions of the package. The Monte Carlo estimates for binary endpoints use the rejection ",
+  "rule of the package and check the enumeration of the outcomes, whereas the Python ",
+  "implementation finds the restricted maximum likelihood estimates of the score test ",
+  "numerically. The check of the unit tests confirms that each test fails when an expected ",
+  "value is altered, against an unchanged baseline; it is not a mutation test of the ",
+  "functions. The counts include the self-check of every script and related quantities at ",
+  "the same settings, so that they are not numbers of independent validations.")
 if (length(explained_s6) > 0) {
   note_s6 <- paste(note_s6, paste(explained_s6, collapse = " "))
 }
 # The comparison column is a paragraph column, so the rows end with \tabularnewline, which
 # \raggedright does not redefine
-write_table(tab_dir, "tableS6_validation", c(
+write_table(tab_dir, "tableS8_validation", c(
   "\\begin{table}[!htb]",
   "\\centering",
   "\\small",

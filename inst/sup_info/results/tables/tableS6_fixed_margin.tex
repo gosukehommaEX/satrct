@@ -1,0 +1,47 @@
+\begin{table}[!htb]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\caption{Single-arm trial (SAT) of Table~\ref{M-tab:margins} of the main article with $N = 60$ when the margins $m_{\mathrm{avg}}$ and $m_{0.95}$ derived from the posterior medians of the published estimates are kept fixed and the actual distribution of the bias has the mean $\bar{b}$ and the standard deviation $\tau$ shown: averaged type I error rate, averaged power and proportion $P(B > m)$ of trials whose bias exceeds the margin, for a time-to-event endpoint with hazard ratio 0.6 and an external control of $N_E = 120$ patients, with one-sided $\alpha = 0.025$.}
+\label{tab:fixed_margin}
+\begin{tabular}{lcllcccccccc}
+\toprule
+ & & & & & & \multicolumn{3}{c}{$m_{\mathrm{avg}}$ fixed} & \multicolumn{3}{c}{$m_{0.95}$ fixed} \\
+\cmidrule(lr){7-9} \cmidrule(lr){10-12}
+Endpoint & $K$ & Analysis & Actual & $\bar{b}$ & $\tau$ & Type I & Power & $P(B > m)$ & Type I & Power & $P(B > m)$ \\
+\midrule
+\multicolumn{12}{l}{Incerti et al.~\cite{Incerti2023}} \\
+OS & 14 & Weighted & Planning & 0.098 & 0.114 & 0.025 & 0.639 & 0.293 & 0.006 & 0.416 & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.200 & 0.114 & 0.067 & 0.793 & 0.637 & 0.019 & 0.598 & 0.227 \\
+ &  &  & Upper $\tau$ & 0.098 & 0.263 & 0.091 & 0.595 & 0.407 & 0.042 & 0.442 & 0.238 \\
+ &  &  & Both upper & 0.200 & 0.263 & 0.154 & 0.711 & 0.560 & 0.080 & 0.567 & 0.373 \\
+OS & 13 & Weighted$^{\ddagger}$ & Planning & 0.132 & 0.061 & 0.025 & 0.730 & 0.379 & 0.009 & 0.580 & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.221 & 0.061 & 0.065 & 0.855 & 0.873 & 0.027 & 0.741 & 0.422 \\
+ &  &  & Upper $\tau$ & 0.132 & 0.168 & 0.062 & 0.685 & 0.455 & 0.031 & 0.563 & 0.275 \\
+ &  &  & Both upper & 0.221 & 0.168 & 0.117 & 0.797 & 0.660 & 0.065 & 0.694 & 0.471 \\
+\addlinespace
+\multicolumn{12}{l}{Bahmane et al.~\cite{Bahmane2025}} \\
+PFS & 14 & Weighted & Planning & 0.001 & 0.164 & 0.025 & 0.532 & 0.232 & 0.005 & 0.303$^{\P}$ & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.118 & 0.164 & 0.068 & 0.708 & 0.492 & 0.018 & 0.480 & 0.175 \\
+ &  &  & Upper $\tau$ & 0.001 & 0.314 & 0.090 & 0.522 & 0.351 & 0.040 & 0.362$^{\P}$ & 0.195 \\
+ &  &  & Both upper & 0.118 & 0.314 & 0.154 & 0.646 & 0.496 & 0.077 & 0.486 & 0.313 \\
+PFS & 13 & Weighted$^{\ddagger}$ & Planning & 0.031 & 0.091 & 0.025 & 0.683 & 0.327 & 0.007 & 0.482 & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.122 & 0.091 & 0.063 & 0.818 & 0.709 & 0.020 & 0.651 & 0.258 \\
+ &  &  & Upper $\tau$ & 0.031 & 0.219 & 0.078 & 0.635 & 0.426 & 0.036 & 0.487 & 0.247 \\
+ &  &  & Both upper & 0.122 & 0.219 & 0.134 & 0.745 & 0.590 & 0.069 & 0.611 & 0.394 \\
+OS & 14 & Weighted & Planning & 0.061 & 0.109 & 0.025 & 0.649 & 0.300 & 0.006 & 0.429 & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.161 & 0.109 & 0.067 & 0.800 & 0.655 & 0.020 & 0.611 & 0.235 \\
+ &  &  & Upper $\tau$ & 0.061 & 0.273 & 0.099 & 0.599 & 0.417 & 0.049 & 0.453 & 0.256 \\
+ &  &  & Both upper & 0.161 & 0.273 & 0.162 & 0.710 & 0.563 & 0.088 & 0.574 & 0.386 \\
+OS & 13 & Weighted$^{\ddagger}$ & Planning & 0.086 & 0.059 & 0.025 & 0.732 & 0.383 & 0.009 & 0.587 & 0.050 \\
+ &  &  & Upper $\bar{b}$ & 0.173 & 0.059 & 0.065 & 0.856 & 0.882 & 0.028 & 0.746 & 0.436 \\
+ &  &  & Upper $\tau$ & 0.086 & 0.170 & 0.063 & 0.685 & 0.459 & 0.033 & 0.568 & 0.284 \\
+ &  &  & Both upper & 0.173 & 0.170 & 0.119 & 0.796 & 0.660 & 0.068 & 0.697 & 0.478 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{0.95\linewidth}
+\footnotesize
+Planning uses the posterior medians from which the margins are derived; upper $\bar{b}$ and upper $\tau$ replace one of them by the upper limit of its 95\% credible interval (Table~\ref{tab:bias_uncertainty}), and both upper replaces both, a stress scenario rather than a joint credible bound. The margins are those of Table~\ref{M-tab:margins}(a) of the main article at $N = 60$. The type I error rate and the power are averaged over a normal distribution of the bias with the actual mean and standard deviation, and in the trials whose bias exceeds the margin the type I error rate given the bias exceeds $\alpha$. Averaged powers below the power 0.380 of the randomized controlled trial with 1:1 randomization at $\alpha$ are marked with $\P$. The results for the other sizes of Table~\ref{M-tab:empirical} of the main article are given in the file \texttt{tableS6\_fixed\_margin.csv} of the package. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
+\end{minipage}
+\end{table}

@@ -1,6 +1,6 @@
 group,script,comparison,bibkey
 Reproduction,reproduce_Pocock1976,Worked examples of combined estimates and of optimal numbers of randomized controls,Pocock1976
-Reproduction,reproduce_Taylor2006,Error rates of single-arm and randomized designs,Taylor2006
+Reproduction,reproduce_Taylor2006,"Error rates of single-arm and randomized designs, reconstructed in base \texttt{R}",Taylor2006
 Reproduction,reproduce_Tang2010,Error rates of single-arm decision rules,Tang2010
 Reproduction,reproduce_Viele2014,"Operating characteristics of single-arm, separate and pooled analyses",Viele2014
 Reproduction,reproduce_Collignon2020,Worked example and values read from a figure,Collignon2020
@@ -9,5 +9,5 @@ Reproduction,reproduce_KoppSchneider2024,Power of one- and two-group tests and c
 Validation,validate_python_reference,Independent implementation in Python with numerical root finding and minimization,
 Validation,validate_rpact,Power functions of the \texttt{R} package \texttt{rpact},rpact2026
 Validation,validate_simulation,"Patient-level simulation of power, type I error rate and mean squared error",
-Validation,validate_exact_binary,Monte Carlo estimates of exact rejection probabilities for binary endpoints,
-Validation,test_mutation,Unit tests fail when an expected value is altered,
+Validation,validate_exact_binary,"Monte Carlo estimates of exact rejection probabilities for binary endpoints, with the rejection rule of the package",
+Validation,test_mutation,"Unit tests fail when an expected value is altered, against an unchanged baseline",

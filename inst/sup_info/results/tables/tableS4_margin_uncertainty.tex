@@ -33,7 +33,7 @@ OS & 14 & Unadjusted$^{\ddagger}$ & Trial SD & 0.525$^{\S}$ & 0.322$^{\S}$ & 0.3
 OS & 15 & Weighted & IVW mean & -- & 0.080 & 0.080 & 0.080 & 0.080 \\
  &  &  & Trial SD & 0.660$^{\S}$ & 0.427$^{\S}$ & 0.491$^{\S}$ & 0.527$^{\S}$ & 0.550$^{\S}$ \\
 OS & 14 & Weighted$^{\ddagger}$ & Trial SD & 0.316$^{\S}$ & 0.145 & 0.171 & 0.188 & 0.200$^{\S}$ \\
-OS & 15 & Weighted, QBA & IVW mean & -- & $-$0.006 & $-$0.006 & $-$0.006 & $-$0.006 \\
+OS & 15 & Weighted, QBA & IVW mean & -- & 0.000$^{\|}$ & 0.000$^{\|}$ & 0.000$^{\|}$ & 0.000$^{\|}$ \\
  &  &  & Trial SD & 0.631$^{\S}$ & 0.398$^{\S}$ & 0.463$^{\S}$ & 0.499$^{\S}$ & 0.523$^{\S}$ \\
 OS & 14 & Weighted, QBA$^{\ddagger}$ & Trial SD & 0.286$^{\S}$ & 0.110 & 0.138 & 0.156 & 0.169 \\
 \bottomrule
@@ -41,6 +41,6 @@ OS & 14 & Weighted, QBA$^{\ddagger}$ & Trial SD & 0.286$^{\S}$ & 0.110 & 0.138 &
 \par\smallskip
 \begin{minipage}{0.95\linewidth}
 \footnotesize
-With $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha$, and $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution. The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$, and margins above it are marked with $\S$. The rows are those of Table~\ref{tab:bias_uncertainty}, which gives $\bar{b}$ and $\tau$. IVW mean is used with $\tau = 0$, so that $m_{0.95}$ is not shown and $m_{\mathrm{avg}}$ equals $\bar{b}$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
+With $m_{\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the bias with mean $\bar{b}$ and standard deviation $\tau$ equals $\alpha$, and $m_{0.95} = \bar{b} + z_{0.95}\tau$ is the 95th percentile of this distribution. The critical margin is $m_{\mathrm{crit}} = 0.198$ at every $N$, and margins above it are marked with $\S$. The rows are those of Table~\ref{tab:bias_uncertainty}, which gives $\bar{b}$ and $\tau$. IVW mean is used with $\tau = 0$, so that $m_{0.95}$ is not shown and $m_{\mathrm{avg}}$ equals $\bar{b}$, unless $\bar{b}$ is negative: a bias margin is nonnegative, so that the negative value $-$0.006 of the formula for $m_{\mathrm{avg}}$ is replaced by zero (marked with $\|$), and the averaged type I error rate is then below $\alpha$. Analyses marked with $\ddagger$ exclude the study that the authors identified as an outlier. $K$ is the number of comparisons. IVW, inverse variance-weighted; OS, overall survival; PFS, progression-free survival; QBA, quantitative bias analysis; SD, standard deviation.
 \end{minipage}
 \end{table}

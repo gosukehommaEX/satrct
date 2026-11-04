@@ -24,8 +24,11 @@
 #'   that it can be compared across designs; round it up as needed, for
 #'   example to an even number for 1:1 allocation.
 #'
-#' @return A numeric vector of total sample sizes. Vector arguments are
-#'   recycled to a common length.
+#' @return A numeric vector of total sample sizes, as continuous planning
+#'   values: a trial needs whole numbers of patients in each group, for
+#'   example an even total for 1:1 randomization, so the values are rounded
+#'   up to a feasible allocation. Vector arguments are recycled to a common
+#'   length.
 #'
 #' @seealso \code{\link{power_rct}}, \code{\link{n_sat}}
 #'

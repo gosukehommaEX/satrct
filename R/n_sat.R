@@ -31,8 +31,9 @@
 #'   \code{Inf}. With \code{method = "t"} the sample size is found with
 #'   \code{\link[stats]{uniroot}}. The result is not rounded.
 #'
-#' @return A numeric vector of sample sizes. Vector arguments are recycled to
-#'   a common length.
+#' @return A numeric vector of sample sizes, as continuous planning values to
+#'   be rounded up to whole numbers of patients. Vector arguments are
+#'   recycled to a common length.
 #'
 #' @seealso \code{\link{power_sat}}, \code{\link{n_rct}}
 #'
