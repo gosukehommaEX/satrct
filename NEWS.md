@@ -22,6 +22,9 @@
   `figS3_survival_crossing.csv` also gives the normal approximation of the
   crossing with the variance under the null hypothesis, and the note of Table
   S6 lists only the abbreviations used in the table.
+* After the fifth independent review, before the first release,
+  `figS3_binary_crossing.csv` also gives the normal approximation of the
+  crossing with the variance under the null hypothesis.
 * Normal-approximation comparison of a single-arm trial with an external
   control and an RCT of the same size: `mse_rct()`, `mse_sat()`,
   `breakeven_bias()`, `breakeven_n()`, `power_rct()`, `power_sat()`,

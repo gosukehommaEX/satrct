@@ -470,7 +470,8 @@ save_csv(tab_s7, "tableS7_design_sensitivity.csv")
 # without bias. The type I error rate of the RCT is its exact rejection probability at
 # p_t = p_c, and the crossing is the bias at which the exact type I error rate of the SAT, with
 # p_t = p_c and external response probability p_c - b, equals it. The normal approximation of
-# the crossing is m_crit, with the standard deviations evaluated at p_t and p_c.
+# the crossing is m_crit, with the standard deviations evaluated at p_t and p_c, and the crossing
+# is also approximated with the variance under the null hypothesis.
 smallest_level <- function(power_at, target) {
   lo <- 1e-8
   hi <- 0.9
@@ -507,6 +508,23 @@ fig_s3a[["crossing_minus_mcrit"]] <- fig_s3a[["crossing_exact"]] -
   fig_s3a[["critical_margin_normal"]]
 fig_s3a[["rct_type1_minus_alpha_matched"]] <- fig_s3a[["rct_exact_type1"]] -
   fig_s3a[["alpha_matched_normal"]]
+# normal approximation of the crossing with the variance under the null hypothesis for the type I
+# error rate of the SAT, in which its patients have the response probability p_c and the external
+# controls p_c - b, and with the variances under the alternative hypothesis for the level of the
+# RCT matched to the power of the SAT, as for the time-to-event endpoint below
+crossing_normal_null_s3a <- function(n, n_e, m) {
+  z_a <- qnorm(alpha, lower.tail = FALSE)
+  v_alt <- p_t * (1 - p_t) / n + p_c * (1 - p_c) / n_e
+  w_alt <- 2 * p_t * (1 - p_t) / n + 2 * p_c * (1 - p_c) / n
+  z_matched <- z_a + (p_t - p_c) / sqrt(w_alt) - (p_t - p_c - m) / sqrt(v_alt)
+  f <- function(b) {
+    v_null <- p_c * (1 - p_c) / n + (p_c - b) * (1 - p_c + b) / n_e
+    (b - m) / sqrt(v_null) - z_a + z_matched
+  }
+  stats::uniroot(f, c(0, p_c - 1e-6), tol = 1e-12)[["root"]]
+}
+fig_s3a[["crossing_normal_null"]] <- mapply(crossing_normal_null_s3a, fig_s3a[["n"]],
+                                            fig_s3a[["n_e"]], fig_s3a[["margin"]])
 # the convention gives the smallest exact power of the RCT that is at least that of the SAT,
 # and the exact power of the SAT without bias is that of Figure S2
 stopifnot(all(fig_s3a[["rct_exact_power"]] >= fig_s3a[["sat_exact_power"]]))
