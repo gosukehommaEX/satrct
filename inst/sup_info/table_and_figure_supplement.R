@@ -510,6 +510,11 @@ caption_fm <- paste0(
   "margin, for a time-to-event endpoint with hazard ratio ", fmt_setting(hr_s3),
   " and an external control of $N_E = ", fmt_setting(2 * n_fm), "$ patients, with one-sided ",
   "$\\alpha = ", fmt_setting(alpha_s3), "$.")
+# the note of Table S6 lists only the abbreviations used in the table
+abbreviations_fm <- paste0(
+  "Analyses marked with $\\ddagger$ exclude the study that the authors identified as an ",
+  "outlier. $K$ is the number of comparisons. OS, overall survival; PFS, progression-free ",
+  "survival.")
 note_fm <- paste0(
   "Planning uses the posterior medians from which the margins are derived; upper $\\bar{b}$ ",
   "and upper $\\tau$ replace one of them by the upper limit of its 95\\% credible interval ",
@@ -521,7 +526,7 @@ note_fm <- paste0(
   "bias exceeds $\\alpha$. Averaged powers below the power ", fmt_prob(power_rct_fm), " of the ",
   "randomized controlled trial with 1:1 randomization at $\\alpha$ are marked with $\\P$. The ",
   "results for the other sizes of Table~\\ref{M-tab:empirical} of the main article are given ",
-  "in the file \\texttt{tableS6\\_fixed\\_margin.csv} of the package. ", abbreviations_s4)
+  "in the file \\texttt{tableS6\\_fixed\\_margin.csv} of the package. ", abbreviations_fm)
 write_table(tab_dir, "tableS6_fixed_margin",
             table_lines(caption_fm, "tab:fixed_margin", "lcllcccccccc", header_fm, body_fm,
                         note_fm, size = c("\\footnotesize", "\\setlength{\\tabcolsep}{2pt}")))

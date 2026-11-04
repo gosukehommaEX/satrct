@@ -528,7 +528,8 @@ save_csv(fig_s3a, "figS3_binary_crossing.csv")
 # type I error rate of the SAT is simulated on a grid of biases with common random numbers,
 # and the crossing is found by linear interpolation. The margins are 0 and 0.1. The
 # approximation m_crit is given with the common event probability 0.7 of Table 3 and with the
-# event probability of each group. Simulation with 100,000 samples per size and a fixed seed.
+# event probability of each group, and the crossing is also approximated with the variance under
+# the null hypothesis. Simulation with 100,000 samples per size and a fixed seed.
 reps_s3 <- 100000
 chunk_s3 <- 10000
 margins_s3 <- c(0, 0.1)
@@ -618,6 +619,23 @@ assert_close(fig_s3b[["critical_margin_common"]], table3[["critical_margin"]][k]
 # mean of the simulated crossings over the sizes, for each margin
 fig_s3b[["crossing_sim_mean"]] <- stats::ave(fig_s3b[["crossing_sim"]], fig_s3b[["margin"]])
 fig_s3b[["sat_power_minus_rct_power"]] <- fig_s3b[["sat_sim_power"]] - fig_s3b[["rct_sim_power"]]
+# normal approximation of the crossing with the variance under the null hypothesis for the type I
+# error rate of the SAT, in which its patients have the event probability of the controls and the
+# external controls the event probability raised by the bias, and with the variances under the
+# alternative hypothesis for the level of the RCT matched to the power of the SAT
+crossing_normal_null_s3 <- function(n, n_e, m) {
+  v_alt <- 1 / (prob_event_t_s3 * n) + 1 / (prob_event_s7 * n_e)
+  w_alt <- 2 / (prob_event_t_s3 * n) + 2 / (prob_event_s7 * n)
+  z_matched <- z_s3 + delta_s3 / sqrt(w_alt) - (delta_s3 - m) / sqrt(v_alt)
+  f <- function(b) {
+    prob_event_e <- 1 - exp(-lambda_c_s3 * exp(b))
+    v_null <- 1 / (prob_event_s7 * n) + 1 / (prob_event_e * n_e)
+    (b - m) / sqrt(v_null) - z_s3 + z_matched
+  }
+  stats::uniroot(f, c(0, 1), tol = 1e-12)[["root"]]
+}
+fig_s3b[["crossing_normal_null"]] <- mapply(crossing_normal_null_s3, fig_s3b[["n"]],
+                                            fig_s3b[["n_e"]], fig_s3b[["margin"]])
 save_csv(fig_s3b, "figS3_survival_crossing.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]

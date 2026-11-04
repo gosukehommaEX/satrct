@@ -18,6 +18,10 @@
   - The documentation states that `n_rct()` and `n_sat()` return continuous
     planning values, and the vignette covers a random bias and fixed
     margins.
+* After the fourth independent review, before the first release,
+  `figS3_survival_crossing.csv` also gives the normal approximation of the
+  crossing with the variance under the null hypothesis, and the note of Table
+  S6 lists only the abbreviations used in the table.
 * Normal-approximation comparison of a single-arm trial with an external
   control and an RCT of the same size: `mse_rct()`, `mse_sat()`,
   `breakeven_bias()`, `breakeven_n()`, `power_rct()`, `power_sat()`,
