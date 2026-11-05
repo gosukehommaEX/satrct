@@ -123,7 +123,7 @@ draw_fig_s3 <- function() {
     paste0("Crossing, margin ", fmt_setting(unique(fig_s3a[["margin"]])), " (a) or ",
            fmt_setting(margins[1]), " (b)"),
     paste0("Crossing, margin ", fmt_setting(margins[2]), " (b)"),
-    quote(italic(m)[crit] * ", common SD (a) or event probability (b)"),
+    quote(italic(m)[crit] * ", planned variances (a) or event probability (b)"),
     quote(italic(m)[crit] * ", event probability of each group (b)"))
   bottom_legend(labels, col = c(pal[1], pal[2], "black", "black"), lty = c(1, 1, 2, 4),
                 lwd = rep(1.6, 4), ncol = 2)
@@ -392,7 +392,8 @@ caption_s4 <- paste0(
   "Bias margins $m_{\\mathrm{avg}}$ and $m_{0.95}$ of Table~\\ref{M-tab:margins} of the main ",
   "article ", settings_s4)
 note_s4 <- paste0(
-  "With $m_{\\mathrm{avg}}$, the type I error rate averaged over a normal distribution of the ",
+  "With $m_{\\mathrm{avg}}$ not replaced by zero, the type I error rate averaged over a normal ",
+  "distribution of the ",
   "bias with mean $\\bar{b}$ and standard deviation $\\tau$ equals $\\alpha$, and ",
   "$m_{0.95} = \\bar{b} + z_{0.95}\\tau$ is the 95th percentile of this distribution. The ",
   "critical margin is $m_{\\mathrm{crit}} = ", fmt_num(m_crit_s4), "$ at every $N$, and ",
@@ -431,7 +432,8 @@ caption_s5 <- paste0(
   "randomized controlled trial (RCT) with 1:1 randomization, ", settings_s4)
 note_s5 <- paste0(
   "The power of the SAT is averaged over a normal distribution of the bias with mean ",
-  "$\\bar{b}$ and standard deviation $\\tau$. It does not depend on $\\bar{b}$, so that the ",
+  "$\\bar{b}$ and standard deviation $\\tau$. Unless $m_{\\mathrm{avg}}$ is replaced by zero, ",
+  "it does not depend on $\\bar{b}$, so that the ",
   "rows with the upper limit of $\\bar{b}$ repeat Table~\\ref{M-tab:margins}(b) of the main ",
   "article, and it exceeds the power of the RCT exactly when $\\tau$ is below the break-even ",
   "bias $b^{*}$ (Table~\\ref{M-tab:empirical}(a) of the main article). Powers below the power ",

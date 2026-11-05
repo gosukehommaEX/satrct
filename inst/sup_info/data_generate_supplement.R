@@ -543,13 +543,20 @@ save_csv(fig_s3a, "figS3_binary_crossing.csv")
 # has no event does not lead to rejection. The RCT is matched to the SAT by the critical value
 # at which its simulated power equals the simulated power of the SAT without bias, and its type
 # I error rate is its simulated rejection rate at hazard ratio 1 with this critical value. The
-# type I error rate of the SAT is simulated on a grid of biases with common random numbers,
-# and the crossing is found by linear interpolation. The margins are 0 and 0.1. The
-# approximation m_crit is given with the common event probability 0.7 of Table 3 and with the
-# event probability of each group, and the crossing is also approximated with the variance under
-# the null hypothesis. Simulation with 100,000 samples per size and a fixed seed.
+# type I error rate of the SAT is simulated on a grid of biases 0.005 apart with common random
+# numbers, and the crossing is found by linear interpolation between the two grid points around
+# it. The margins are 0 and 0.1. The approximation m_crit is given with the common event
+# probability 0.7 of Table 3 and with the event probability of each group, and the crossing is
+# also approximated with the variance under the null hypothesis. Simulation with 100,000
+# samples per size, generated in ten batches of 10,000, and a fixed seed. The Monte Carlo
+# standard error of the crossing is the standard deviation of the crossings of the ten batches,
+# in each of which the matching and the interpolation are repeated, divided by sqrt(10). The
+# error of the linear interpolation is assessed on the normal approximation with the variance
+# under the null hypothesis, whose crossing is known: the same interpolation on the same grid is
+# compared with its root.
 reps_s3 <- 100000
 chunk_s3 <- 10000
+n_batch_s3 <- reps_s3 / chunk_s3
 margins_s3 <- c(0, 0.1)
 bias_grid_s3 <- round(seq(0.10, 0.30, by = 0.005), 3)
 lambda_c_s3 <- -log(1 - prob_event_s7)
@@ -569,14 +576,31 @@ wald <- function(g1, g2, m) {
   z[ok] <- (g1[["mu"]][ok] - g2[["mu"]][ok] - m) / sqrt(1 / g1[["d"]][ok] + 1 / g2[["d"]][ok])
   z
 }
+# crossing of the simulated type I error rates: the RCT is matched by the critical value at
+# which its simulated power equals the simulated power of the SAT without bias, and the simulated
+# type I error rate of the SAT on the grid of biases is interpolated linearly
+crossing_sim_s3 <- function(z_sat_alt, z_rct_alt, z_rct_null, type1_sat) {
+  power_sat_sim <- mean(z_sat_alt > z_s3)
+  crit <- stats::quantile(z_rct_alt, 1 - power_sat_sim, names = FALSE)
+  type1_rct <- mean(z_rct_null > crit)
+  j <- which(type1_sat >= type1_rct)[1]
+  stopifnot(!is.na(j), j > 1)
+  crossing <- bias_grid_s3[j - 1] + (type1_rct - type1_sat[j - 1]) *
+    (bias_grid_s3[j] - bias_grid_s3[j - 1]) / (type1_sat[j] - type1_sat[j - 1])
+  list(crossing = crossing, j = j, power_sat_sim = power_sat_sim, crit = crit,
+       type1_rct = type1_rct)
+}
 set.seed(20261104)
 fig_s3b <- do.call(rbind, lapply(sort(unique(table3[["n"]])), function(n) {
   n_e <- 2 * n
   n_half <- n / 2
   z_rct_alt <- z_rct_null <- numeric(0)
   z_sat_alt <- lapply(margins_s3, function(m) numeric(0))
-  reject_sat_null <- lapply(margins_s3, function(m) numeric(length(bias_grid_s3)))
-  for (chunk in seq_len(reps_s3 / chunk_s3)) {
+  # numbers of rejections of the SAT under the null hypothesis, by bias (rows) and batch (columns)
+  reject_sat_null <- lapply(margins_s3, function(m) {
+    matrix(0, length(bias_grid_s3), n_batch_s3)
+  })
+  for (chunk in seq_len(n_batch_s3)) {
     z_rct_alt <- c(z_rct_alt, wald(summarize_group(chunk_s3, n_half, lambda_t_s3),
                                    summarize_group(chunk_s3, n_half, lambda_c_s3), 0))
     z_rct_null <- c(z_rct_null, wald(summarize_group(chunk_s3, n_half, lambda_c_s3),
@@ -591,21 +615,25 @@ fig_s3b <- do.call(rbind, lapply(sort(unique(table3[["n"]])), function(n) {
     for (j in seq_along(bias_grid_s3)) {
       g_e0 <- summarize_group(chunk_s3, n_e, lambda_c_s3 * exp(bias_grid_s3[j]), e = e0)
       for (i in seq_along(margins_s3)) {
-        reject_sat_null[[i]][j] <- reject_sat_null[[i]][j] +
-          sum(wald(g_t0, g_e0, margins_s3[i]) > z_s3)
+        reject_sat_null[[i]][j, chunk] <- sum(wald(g_t0, g_e0, margins_s3[i]) > z_s3)
       }
     }
   }
   do.call(rbind, lapply(seq_along(margins_s3), function(i) {
     m <- margins_s3[i]
-    power_sat_sim <- mean(z_sat_alt[[i]] > z_s3)
-    crit <- stats::quantile(z_rct_alt, 1 - power_sat_sim, names = FALSE)
-    type1_rct <- mean(z_rct_null > crit)
-    type1_sat <- reject_sat_null[[i]] / reps_s3
-    j <- which(type1_sat >= type1_rct)[1]
-    stopifnot(!is.na(j), j > 1)
-    crossing <- bias_grid_s3[j - 1] + (type1_rct - type1_sat[j - 1]) *
-      (bias_grid_s3[j] - bias_grid_s3[j - 1]) / (type1_sat[j] - type1_sat[j - 1])
+    type1_sat <- rowSums(reject_sat_null[[i]]) / reps_s3
+    full <- crossing_sim_s3(z_sat_alt[[i]], z_rct_alt, z_rct_null, type1_sat)
+    power_sat_sim <- full[["power_sat_sim"]]
+    crit <- full[["crit"]]
+    type1_rct <- full[["type1_rct"]]
+    j <- full[["j"]]
+    crossing <- full[["crossing"]]
+    # the matching and the interpolation repeated within each batch of chunk_s3 samples
+    crossing_batch <- vapply(seq_len(n_batch_s3), function(b) {
+      idx <- (b - 1) * chunk_s3 + seq_len(chunk_s3)
+      crossing_sim_s3(z_sat_alt[[i]][idx], z_rct_alt[idx], z_rct_null[idx],
+                      reject_sat_null[[i]][, b] / chunk_s3)[["crossing"]]
+    }, numeric(1))
     v_groups <- 1 / (prob_event_t_s3 * n) + 1 / (prob_event_s7 * n_e)
     w_groups <- 2 / (prob_event_t_s3 * n) + 2 / (prob_event_s7 * n)
     j_m <- match(m, bias_grid_s3)
@@ -619,6 +647,8 @@ fig_s3b <- do.call(rbind, lapply(sort(unique(table3[["n"]])), function(n) {
                                            endpoint_sd("survival", prob_event = prob_event_s7),
                                            alpha)[["alpha_matched"]],
       crossing_sim = crossing,
+      crossing_se_batch = stats::sd(crossing_batch) / sqrt(n_batch_s3), batches = n_batch_s3,
+      crossing_grid_lower = bias_grid_s3[j - 1], crossing_grid_upper = bias_grid_s3[j],
       critical_margin_common = critical_margin(n, delta_s3, n_e,
                                                endpoint_sd("survival", prob_event = prob_event_s7)),
       critical_margin_groups = delta_s3 * (1 - sqrt(v_groups / w_groups)),
@@ -654,6 +684,28 @@ crossing_normal_null_s3 <- function(n, n_e, m) {
 }
 fig_s3b[["crossing_normal_null"]] <- mapply(crossing_normal_null_s3, fig_s3b[["n"]],
                                             fig_s3b[["n_e"]], fig_s3b[["margin"]])
+# error of the linear interpolation between grid points, assessed on the normal approximation
+# with the variance under the null hypothesis, whose crossing crossing_normal_null is the root
+# found above: the same interpolation on the same grid is compared with this root
+interpolation_error_s3 <- function(n, n_e, m, root) {
+  v_alt <- 1 / (prob_event_t_s3 * n) + 1 / (prob_event_s7 * n_e)
+  w_alt <- 2 / (prob_event_t_s3 * n) + 2 / (prob_event_s7 * n)
+  z_matched <- z_s3 + delta_s3 / sqrt(w_alt) - (delta_s3 - m) / sqrt(v_alt)
+  prob_event_e <- 1 - exp(-lambda_c_s3 * exp(bias_grid_s3))
+  v_null <- 1 / (prob_event_s7 * n) + 1 / (prob_event_e * n_e)
+  type1_sat <- pnorm((bias_grid_s3 - m) / sqrt(v_null) - z_s3)
+  type1_rct <- pnorm(-z_matched)
+  j <- which(type1_sat >= type1_rct)[1]
+  stopifnot(!is.na(j), j > 1)
+  bias_grid_s3[j - 1] + (type1_rct - type1_sat[j - 1]) *
+    (bias_grid_s3[j] - bias_grid_s3[j - 1]) / (type1_sat[j] - type1_sat[j - 1]) - root
+}
+fig_s3b[["interpolation_error_normal"]] <- mapply(interpolation_error_s3, fig_s3b[["n"]],
+                                                  fig_s3b[["n_e"]], fig_s3b[["margin"]],
+                                                  fig_s3b[["crossing_normal_null"]])
+# the simulated crossing lies between the two grid points around it, by construction
+stopifnot(all(fig_s3b[["crossing_sim"]] >= fig_s3b[["crossing_grid_lower"]]),
+          all(fig_s3b[["crossing_sim"]] <= fig_s3b[["crossing_grid_upper"]]))
 save_csv(fig_s3b, "figS3_survival_crossing.csv")
 
 elapsed <- (proc.time() - start_time)[["elapsed"]]

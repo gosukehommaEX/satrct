@@ -25,6 +25,17 @@
 * After the fifth independent review, before the first release,
   `figS3_binary_crossing.csv` also gives the normal approximation of the
   crossing with the variance under the null hypothesis.
+* After the second review by the co-author, before the first release:
+  - `figS3_survival_crossing.csv` also gives the Monte Carlo standard error
+    of the simulated crossing from ten batches, the grid points around the
+    crossing and the error of the linear interpolation, assessed on the
+    normal approximation.
+  - The legend of Figure S3 and the notes of Tables S4 and S5 state when a
+    margin is replaced by zero and which variances give m_crit.
+  - The vignette replaces a negative margin by zero and qualifies the
+    comparison with an RCT matched at the same bias.
+  - The README gives the version used for the article and the prerequisites
+    of `inst/run_all.R`.
 * Normal-approximation comparison of a single-arm trial with an external
   control and an RCT of the same size: `mse_rct()`, `mse_sat()`,
   `breakeven_bias()`, `breakeven_n()`, `power_rct()`, `power_sat()`,

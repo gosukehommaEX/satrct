@@ -22,10 +22,15 @@ enrols the same total number of patients. It provides
 
 ## Installation
 
+The version used in the accompanying article is the release v0.1.0:
+
 ``` r
 # install.packages("remotes")
-remotes::install_github("gosukehommaEX/satrct")
+remotes::install_github("gosukehommaEX/satrct@v0.1.0")
 ```
+
+The development version is installed with
+`remotes::install_github("gosukehommaEX/satrct")`.
 
 ## Example
 
@@ -65,9 +70,26 @@ runs all of them in order, stops if a comparison fails, and records the
 versions of R and of the packages in
 `inst/scripts/results/session_info.txt`. Copying the tables and figures
 into a manuscript folder is optional (set the environment variable
-`SATRCT_MANUSCRIPT_DIR`). The validation uses the suggested packages
-rpact, survival and testthat. The order of the scripts and their outputs
-are described in `inst/scripts/README.md`.
+`SATRCT_MANUSCRIPT_DIR`). The order of the scripts and their outputs are
+described in `inst/scripts/README.md`.
+
+### Prerequisites
+
+- devtools, for `devtools::load_all()`.
+- The suggested packages rpact, survival and testthat, for the
+  validation. Without rpact or survival, the comparisons with them give
+  the verdict INFO instead of being run, so that a run that completes
+  without these packages is not the complete validation summarized in
+  Table S8 of the Supporting Information. testthat is needed for the
+  check of the unit tests.
+- knitr and rmarkdown, for the vignette.
+
+`inst/run_all.R` compares the package with the independent Python
+implementation through the reference values saved in
+`inst/validation/reference/grid_*.csv` and does not run Python.
+Regenerating these values requires Python 3 with NumPy and SciPy: run
+`python3 make_python_grid.py` in that folder. `make_test_values.py`
+there gives the expected values written into the unit tests.
 
 ## References
 

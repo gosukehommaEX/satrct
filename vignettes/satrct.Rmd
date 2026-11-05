@@ -97,7 +97,10 @@ The comparison matches the RCT to the planned power of the SAT without bias
 and then lets the bias vary. A positive bias raises both the type I error and
 the power of the SAT, so above the critical margin the SAT is not a worse test
 in every respect. If the RCT were instead matched to the power that the SAT has
-at the same bias, the SAT would have the smaller type I error at every bias.
+at the same bias, the SAT would have the smaller type I error at every bias
+when $\delta > 0$ and the SAT estimate has the smaller variance, as here; with
+equal variances the two would be equal, and with a larger variance of the SAT
+estimate the RCT would have the smaller type I error.
 The critical margin therefore answers one question: how large the bias may be
 before the SAT has a larger risk of a false positive conclusion than an RCT
 relaxed to its planned power. Whether the SAT is preferable also depends on
@@ -114,7 +117,11 @@ distribution with mean $\bar{b}$ and standard deviation $\tau$, estimated
 for example from benchmarking studies. Two margins can be derived from it
 before the trial: $m_{avg}$ keeps the type I error averaged over this
 distribution at $\alpha$, and $m_{0.95} = \bar{b} + z_{0.95} \tau$ keeps the
-type I error given the bias at most $\alpha$ in 95% of trials.
+type I error given the bias at most $\alpha$ in 95% of trials. A bias margin is
+nonnegative, so a negative value of either formula, which can occur only when
+$\bar{b}$ is negative, is replaced by zero. The averaged type I error is then
+below $\alpha$ with $m_{avg}$, and the type I error given the bias is at most
+$\alpha$ in at least 95% of trials with $m_{0.95}$.
 
 ```{r}
 n <- 60
@@ -123,8 +130,8 @@ delta <- 0.5
 b_bar <- 0.1
 tau <- 0.1
 v_s <- mse_sat(n, n_e)
-m_avg <- b_bar + qnorm(0.975) * (sqrt(v_s + tau^2) - sqrt(v_s))
-m_95 <- b_bar + qnorm(0.95) * tau
+m_avg <- pmax(0, b_bar + qnorm(0.975) * (sqrt(v_s + tau^2) - sqrt(v_s)))
+m_95 <- pmax(0, b_bar + qnorm(0.95) * tau)
 c(m_avg = m_avg, m_95 = m_95, m_crit = critical_margin(n, delta, n_e))
 ```
 
@@ -140,8 +147,8 @@ sapply(c(m_avg = m_avg, m_95 = m_95), function(m) {
 power_rct(n, delta)
 ```
 
-With $m_{avg}$, the averaged power exceeds the power of the RCT exactly when
-$\tau$ is below the break-even bias, here
+With $m_{avg}$, unless it is replaced by zero, the averaged power exceeds the
+power of the RCT exactly when $\tau$ is below the break-even bias, here
 `r round(breakeven_bias(60, n_e = 120), 3)`. The margin $m_{0.95}$ exceeds the
 critical margin, so the SAT with it is less powerful than the RCT when the
 external control is unbiased.

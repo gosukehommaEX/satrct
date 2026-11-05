@@ -21,7 +21,12 @@
 # Without it, the copy step is skipped.
 #
 # The validation uses the suggested packages rpact (validate_rpact.R), survival
-# (validate_simulation.R) and testthat (validate_test_mutation.R).
+# (validate_simulation.R) and testthat (validate_test_mutation.R). Without rpact or survival,
+# those comparisons give the verdict INFO instead of being run, so that the run is not the
+# complete validation summarized in Table S8. The comparison with the independent Python
+# implementation (validate_python_reference.R) uses the reference values saved in
+# inst/validation/reference/grid_*.csv and does not run Python; regenerating them requires
+# Python 3 with NumPy and SciPy (make_python_grid.py in that folder).
 
 if (!exists("power_sat", mode = "function")) {
   stop("Run devtools::load_all() (or library(satrct)) before sourcing this script.",
